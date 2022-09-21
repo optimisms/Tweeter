@@ -14,16 +14,14 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class UserService {
-
     public interface LoginObserver {
-        public void loginSuccess(User user, AuthToken authToken);
-        public void loginFailed(String message);
+        void loginSuccess(User user, AuthToken authToken);
+        void loginFailed(String message);
     }
 
     public void login(String username, String password, LoginObserver loginObserver) {
         // Send the login request.
-        LoginTask loginTask = new LoginTask(username,
-                password, new LoginHandler(loginObserver));
+        LoginTask loginTask = new LoginTask(username, password, new LoginHandler(loginObserver));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(loginTask);
     }
@@ -50,10 +48,10 @@ public class UserService {
                 mObserver.loginSuccess(loggedInUser, authToken);
             } else if (msg.getData().containsKey(LoginTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(LoginTask.MESSAGE_KEY);
-                mObserver.loginFailed(message);
+                mObserver.loginFailed("Failed to login: " + message);
             } else if (msg.getData().containsKey(LoginTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(LoginTask.EXCEPTION_KEY);
-                mObserver.loginFailed(ex.getMessage());
+                mObserver.loginFailed("Failed to login because of exception" + ex.getMessage());
             }
         }
     }
