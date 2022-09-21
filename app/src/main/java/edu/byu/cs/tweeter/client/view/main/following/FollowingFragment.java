@@ -166,12 +166,6 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
         private final List<User> users = new ArrayList<>();
 
         /**
-         * Creates an instance and loads the first page of following data.
-         */
-        FollowingRecyclerViewAdapter() {
-        }
-
-        /**
          * Adds new users to the list from which the RecyclerView retrieves the users it displays
          * and notifies the RecyclerView that items have been added.
          *
@@ -240,9 +234,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
          */
         @Override
         public void onBindViewHolder(@NonNull FollowingHolder followingHolder, int position) {
-            if (!presenter.isLoading()) {
-                followingHolder.bindUser(users.get(position));
-            }
+            if (!presenter.isLoading()) { followingHolder.bindUser(users.get(position)); }
         }
 
         /**
@@ -251,9 +243,7 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
          * @return the number of followees available for display.
          */
         @Override
-        public int getItemCount() {
-            return users.size();
-        }
+        public int getItemCount() { return users.size(); }
 
         /**
          * Returns the type of the view that should be displayed for the item currently at the
@@ -364,5 +354,4 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
 
     @Override
     public void addFollowees(List<User> followees) { followingRecyclerViewAdapter.addItems(followees); }
-
 }

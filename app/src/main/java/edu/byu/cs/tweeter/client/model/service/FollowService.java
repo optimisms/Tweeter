@@ -14,7 +14,6 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowService {
-
     public interface GetFollowingObserver {
         void getFollowingSuccess(List<User> followings, boolean isMorePages);
         void getFollowingFailure(String message);
@@ -24,7 +23,6 @@ public class FollowService {
         GetFollowingTask getFollowingTask = new GetFollowingTask(authToken, user, pageSize, lastFollowee, new GetFollowingHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getFollowingTask);
-
     }
 
     /**
