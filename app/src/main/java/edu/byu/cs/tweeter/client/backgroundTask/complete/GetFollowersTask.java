@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.backgroundTask;
+package edu.byu.cs.tweeter.client.backgroundTask.complete;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,13 +14,13 @@ import edu.byu.cs.tweeter.util.FakeData;
 import edu.byu.cs.tweeter.util.Pair;
 
 /**
- * Background task that retrieves a page of other users being followed by a specified user.
+ * Background task that retrieves a page of followers.
  */
-public class GetFollowingTask implements Runnable {
-    private static final String LOG_TAG = "GetFollowingTask";
+public class GetFollowersTask implements Runnable {
+    private static final String LOG_TAG = "GetFollowersTask";
 
     public static final String SUCCESS_KEY = "success";
-    public static final String FOLLOWEES_KEY = "followees";
+    public static final String FOLLOWERS_KEY = "followers";
     public static final String MORE_PAGES_KEY = "more-pages";
     public static final String MESSAGE_KEY = "message";
     public static final String EXCEPTION_KEY = "exception";
@@ -30,45 +30,45 @@ public class GetFollowingTask implements Runnable {
      */
     private AuthToken authToken;
     /**
-     * The user whose following is being retrieved.
+     * The user whose followers are being retrieved.
      * (This can be any user, not just the currently logged-in user.)
      */
     private User targetUser;
     /**
-     * Maximum number of followed users to return (i.e., page size).
+     * Maximum number of followers to return (i.e., page size).
      */
     private int limit;
     /**
-     * The last person being followed returned in the previous page of results (can be null).
+     * The last follower returned in the previous page of results (can be null).
      * This allows the new page to begin where the previous page ended.
      */
-    private User lastFollowee;
+    private User lastFollower;
     /**
      * Message handler that will receive task results.
      */
     private Handler messageHandler;
 
-    public GetFollowingTask(AuthToken authToken, User targetUser, int limit, User lastFollowee,
+    public GetFollowersTask(AuthToken authToken, User targetUser, int limit, User lastFollower,
                             Handler messageHandler) {
         this.authToken = authToken;
         this.targetUser = targetUser;
         this.limit = limit;
-        this.lastFollowee = lastFollowee;
+        this.lastFollower = lastFollower;
         this.messageHandler = messageHandler;
     }
 
     @Override
     public void run() {
         try {
-            Pair<List<User>, Boolean> pageOfUsers = getFollowees();
+            Pair<List<User>, Boolean> pageOfUsers = getFollowers();
 
-            List<User> followees = pageOfUsers.getFirst();
+            List<User> followers = pageOfUsers.getFirst();
             boolean hasMorePages = pageOfUsers.getSecond();
 
-            sendSuccessMessage(followees, hasMorePages);
+            sendSuccessMessage(followers, hasMorePages);
 
         } catch (Exception ex) {
-            Log.e(LOG_TAG, "Failed to get followees", ex);
+            Log.e(LOG_TAG, ex.getMessage(), ex);
             sendExceptionMessage(ex);
         }
     }
@@ -77,15 +77,15 @@ public class GetFollowingTask implements Runnable {
         return FakeData.getInstance();
     }
 
-    private Pair<List<User>, Boolean> getFollowees() {
-        return getFakeData().getPageOfUsers((User) lastFollowee, limit, targetUser);
+    private Pair<List<User>, Boolean> getFollowers() {
+        Pair<List<User>, Boolean> pageOfUsers = getFakeData().getPageOfUsers(lastFollower, limit, targetUser);
+        return pageOfUsers;
     }
 
-
-    private void sendSuccessMessage(List<User> followees, boolean hasMorePages) {
+    private void sendSuccessMessage(List<User> followers, boolean hasMorePages) {
         Bundle msgBundle = new Bundle();
         msgBundle.putBoolean(SUCCESS_KEY, true);
-        msgBundle.putSerializable(FOLLOWEES_KEY, (Serializable) followees);
+        msgBundle.putSerializable(FOLLOWERS_KEY, (Serializable) followers);
         msgBundle.putBoolean(MORE_PAGES_KEY, hasMorePages);
 
         Message msg = Message.obtain();
