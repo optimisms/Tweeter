@@ -24,8 +24,8 @@ public class LoginFragment extends Fragment implements LoginPresenter.View {
     private static final String LOG_TAG = "LoginFragment";
 
     private Toast infoToast;
-    private EditText usernameText;
-    private EditText passwordText;
+    private EditText username;
+    private EditText password;
     private TextView errorView;
     private LoginPresenter presenter = new LoginPresenter(this);
 
@@ -35,22 +35,20 @@ public class LoginFragment extends Fragment implements LoginPresenter.View {
      *
      * @return the fragment.
      */
-    public static LoginFragment newInstance() {
-        return new LoginFragment();
-    }
+    public static LoginFragment newInstance() { return new LoginFragment(); }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
 
-        usernameText = view.findViewById(R.id.loginUsername);
-        passwordText = view.findViewById(R.id.loginPassword);
+        username = view.findViewById(R.id.loginUsername);
+        password = view.findViewById(R.id.loginPassword);
         errorView = view.findViewById(R.id.loginError);
         Button loginButton = view.findViewById(R.id.loginButton);
         loginButton.setOnClickListener(tempView -> {
-            String uname = usernameText.getText().toString();
-            String pwd = passwordText.getText().toString();
+            String uname = username.getText().toString();
+            String pwd = password.getText().toString();
             presenter.initiateLogin(uname, pwd);
         });
 
@@ -73,10 +71,10 @@ public class LoginFragment extends Fragment implements LoginPresenter.View {
     }
 
     @Override
-    public void displayErrorMessage(String message) {errorView.setText(message);}
+    public void displayErrorMessage(String message) { errorView.setText(message); }
 
     @Override
-    public void clearErrorMessage() {errorView.setText("");}
+    public void clearErrorMessage() { errorView.setText(""); }
 
     @Override
     public void navigateToUser(User user) {
