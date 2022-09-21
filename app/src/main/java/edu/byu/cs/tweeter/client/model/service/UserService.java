@@ -32,9 +32,9 @@ public class UserService {
         executor.execute(loginTask);
     }
 
-    public void register(String firstName, String lastName, String username, String password, String image, RegisterObserver observer) {
+    public void register(String firstName, String lastName, String username, String password, String imageBytes, RegisterObserver observer) {
         // Send the register request.
-        RegisterTask registerTask = new RegisterTask(firstName, lastName, username, password, image, new RegisterHandler(observer));
+        RegisterTask registerTask = new RegisterTask(firstName, lastName, username, password, imageBytes, new RegisterHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(registerTask);
     }

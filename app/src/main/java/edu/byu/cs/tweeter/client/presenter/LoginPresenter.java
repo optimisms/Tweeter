@@ -21,8 +21,8 @@ public class LoginPresenter implements UserService.LoginObserver {
         String message = validateLogin(username, password);
         if (message != null) { //Login invalid
             mView.clearInfoMessage();
-            mView.displayErrorMessage(message); }
-        else { //Login valid
+            mView.displayErrorMessage(message);
+        } else { //Login valid
             mView.clearErrorMessage();
             mView.displayInfoMessage("Logging in...");
             new UserService().login(username, password, this);
