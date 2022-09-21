@@ -6,22 +6,22 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowingPresenter {
+public class FollowersPresenter {
     public interface View {
         void displayMessage(String message);
         void clearMessage();
         void setLoadingFooter();
-        void addFollowees(List<User> followees);
+        void addFollowers(List<User> followers);
     }
 
     private static final int PAGE_SIZE = 10;
 
     private View mView;
-    private User lastFollowee;
+    private User lastFollower;
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    public FollowingPresenter(View inView) { mView = inView; }
+    public FollowersPresenter(View inView) { mView = inView; }
 
     public boolean isLoading() { return isLoading; }
     public boolean hasMorePages() { return hasMorePages; }
@@ -30,22 +30,22 @@ public class FollowingPresenter {
         isLoading = true;
         mView.setLoadingFooter();
 
-        new FollowService().loadMoreFollowingItems(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollowee, new GetFollowingObserver());
+        new FollowService().loadMoreFollowerItems(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollower, new GetFollowerObserver());
     }
 
-    private class GetFollowingObserver implements FollowService.GetFollowingObserver {
+    private class GetFollowerObserver implements FollowService.GetFollowersObserver {
         @Override
-        public void getFollowingSuccess(List<User> followees, boolean morePages) {
+        public void getFollowersSuccess(List<User> followers, boolean morePages) {
             isLoading = false;
             mView.setLoadingFooter();
 
-            lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
+            lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
             hasMorePages = morePages;
-            mView.addFollowees(followees);
+            mView.addFollowers(followers);
         }
 
         @Override
-        public void getFollowingFailure(String message) {
+        public void getFollowersFailure(String message) {
             isLoading = false;
             mView.setLoadingFooter();
 
