@@ -70,13 +70,16 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
 
         registerButton.setOnClickListener(tempView -> {
             try { //TODO: is try/catch necessary??
-                errorView.setText(null); //TODO: necessary??
+                errorView.setText(null); //TODO: necessary?
 
                 String fName = firstName.getText().toString();
                 String lName = lastName.getText().toString();
                 String uname = username.getText().toString();
                 String pwd = password.getText().toString();
-                Bitmap image = ((BitmapDrawable) imageToUpload.getDrawable()).getBitmap(); //TODO: Reorder validation, see Slack
+
+                Bitmap image;
+                if (imageToUpload.getDrawable() == null) { image = null; }
+                else { image = ((BitmapDrawable) imageToUpload.getDrawable()).getBitmap(); }
 
                 presenter.initiateRegister(fName, lName, uname, pwd, image);
             } catch (Exception e) {
