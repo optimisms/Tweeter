@@ -122,8 +122,6 @@ public class UserService {
         public void handleMessage(@NonNull Message msg) {
             boolean success = msg.getData().getBoolean(LogoutTask.SUCCESS_KEY);
             if (success) {
-//                logOutToast.cancel();
-//                logoutUser();
                 mObserver.logoutSuccess();
             } else if (msg.getData().containsKey(LogoutTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(LogoutTask.MESSAGE_KEY);
