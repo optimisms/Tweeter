@@ -45,7 +45,7 @@ public class FollowersPresenter {
         }
 
         @Override
-        public void getFollowersFailure(String message) {
+        public void getFollowersFailed(String message) {
             isLoading = false;
             mView.setLoadingFooter();
 
