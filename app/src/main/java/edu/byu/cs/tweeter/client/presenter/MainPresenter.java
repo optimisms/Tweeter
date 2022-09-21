@@ -6,6 +6,7 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 public class MainPresenter {
     public interface View {
         void logoutUser();
+        void displayLogoutMessage();
         void clearLogoutMessage();
         void displayLogoutErrorMessage(String message);
     }
@@ -24,6 +25,7 @@ public class MainPresenter {
             //Clear user data (cached data).
             Cache.getInstance().clearCache();
             mView.clearLogoutMessage();
+            mView.displayLogoutMessage();
             mView.logoutUser();
         }
 
