@@ -63,21 +63,20 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
         registerButton = view.findViewById(R.id.registerButton);
         errorView = view.findViewById(R.id.registerError);
 
-        //Ask Hannah how she did this part
         imageUploaderButton.setOnClickListener(tempView -> {
             Intent gallery = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(gallery, RESULT_IMAGE);
         });
 
         registerButton.setOnClickListener(tempView -> {
-            try { //is try/catch necessary??
-                errorView.setText(null); //necessary??
+            try { //TODO: is try/catch necessary??
+                errorView.setText(null); //TODO: necessary??
 
                 String fName = firstName.getText().toString();
                 String lName = lastName.getText().toString();
                 String uname = username.getText().toString();
                 String pwd = password.getText().toString();
-                Bitmap image = ((BitmapDrawable) imageToUpload.getDrawable()).getBitmap(); //Might have to change this level
+                Bitmap image = ((BitmapDrawable) imageToUpload.getDrawable()).getBitmap(); //TODO: Reorder validation, see Slack
 
                 presenter.initiateRegister(fName, lName, uname, pwd, image);
             } catch (Exception e) {
@@ -89,7 +88,6 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
     }
 
     // Get image if uploaded from gallery.
-    // And this part
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
