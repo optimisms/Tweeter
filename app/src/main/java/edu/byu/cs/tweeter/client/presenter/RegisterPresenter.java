@@ -55,7 +55,7 @@ public class RegisterPresenter implements UserService.RegisterObserver {
 
     @Override
     public void registerSuccess(User user, AuthToken authToken) {
-        mView.displayInfoMessage("Hello" + user.getFirstName());
+        mView.displayInfoMessage("Hello " + user.getFirstName());
         mView.clearErrorMessage();
         mView.navigateToUser(user);
     }
