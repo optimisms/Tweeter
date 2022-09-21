@@ -6,11 +6,11 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class LoginPresenter implements UserService.LoginObserver {
     public interface View {
-        public void displayInfoMessage(String message);
-        public void clearInfoMessage();
-        public void displayErrorMessage(String message);
-        public void clearErrorMessage();
-        public void navigateToUser(User user);
+        void displayInfoMessage(String message);
+        void clearInfoMessage();
+        void displayErrorMessage(String message);
+        void clearErrorMessage();
+        void navigateToUser(User user);
     }
 
     private View mView;
