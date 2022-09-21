@@ -38,7 +38,7 @@ public class LoginPresenter implements UserService.LoginObserver {
 
     @Override
     public void loginSuccess(User user, AuthToken authToken) {
-        mView.clearInfoMessage();
+        mView.displayInfoMessage("Hello " + user.getFirstName());
         mView.clearErrorMessage();
         mView.navigateToUser(user);
     }
