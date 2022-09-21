@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.complete.LoginTask;
 import edu.byu.cs.tweeter.client.backgroundTask.complete.RegisterTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
@@ -25,6 +26,11 @@ public class UserService {
         void registerFailed(String message);
     }
 
+    public interface LogoutObserver {
+        void logoutSuccess();
+        void logoutFailed(String message);
+    }
+
     public void login(String username, String password, LoginObserver observer) {
         // Send the login request.
         LoginTask loginTask = new LoginTask(username, password, new LoginHandler(observer));
@@ -37,6 +43,13 @@ public class UserService {
         RegisterTask registerTask = new RegisterTask(firstName, lastName, username, password, imageBytes, new RegisterHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(registerTask);
+    }
+
+    public void logout(AuthToken authToken, LogoutObserver observer) {
+        // Send the logout request.
+        LogoutTask logoutTask = new LogoutTask(authToken, new LogoutHandler(observer));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(logoutTask);
     }
 
     /**
@@ -93,6 +106,31 @@ public class UserService {
             } else if (msg.getData().containsKey(RegisterTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(RegisterTask.EXCEPTION_KEY);
                 mObserver.registerFailed("Failed to register because of exception: " + ex.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Message handler (i.e., observer) for LogoutTask
+     */
+    private class LogoutHandler extends Handler {
+        LogoutObserver mObserver;
+
+        public LogoutHandler(LogoutObserver inObs) { mObserver = inObs; }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            boolean success = msg.getData().getBoolean(LogoutTask.SUCCESS_KEY);
+            if (success) {
+//                logOutToast.cancel();
+//                logoutUser();
+                mObserver.logoutSuccess();
+            } else if (msg.getData().containsKey(LogoutTask.MESSAGE_KEY)) {
+                String message = msg.getData().getString(LogoutTask.MESSAGE_KEY);
+                mObserver.logoutFailed("Failed to logout: " + message);
+            } else if (msg.getData().containsKey(LogoutTask.EXCEPTION_KEY)) {
+                Exception ex = (Exception) msg.getData().getSerializable(LogoutTask.EXCEPTION_KEY);
+                mObserver.logoutFailed("Failed to logout because of exception: " + ex.getMessage());
             }
         }
     }
