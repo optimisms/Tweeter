@@ -17,12 +17,12 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class FollowService {
     public interface GetFollowingObserver {
         void getFollowingSuccess(List<User> followings, boolean morePages);
-        void getFollowingFailure(String message);
+        void getFollowingFailed(String message);
     }
 
     public interface GetFollowersObserver {
         void getFollowersSuccess(List<User> followers, boolean morePages);
-        void getFollowersFailure(String message);
+        void getFollowersFailed(String message);
     }
 
     public void loadMoreFollowing(AuthToken authToken, User user, int pageSize, User lastFollowee, GetFollowingObserver observer) {
@@ -54,10 +54,10 @@ public class FollowService {
                 observer.getFollowingSuccess(followees, hasMorePages);
             } else if (msg.getData().containsKey(GetFollowingTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetFollowingTask.MESSAGE_KEY);
-                observer.getFollowingFailure("Failed to get following: " + message);
+                observer.getFollowingFailed("Failed to get following: " + message);
             } else if (msg.getData().containsKey(GetFollowingTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetFollowingTask.EXCEPTION_KEY);
-                observer.getFollowingFailure("Failed to get following because of exception: " + ex.getMessage());
+                observer.getFollowingFailed("Failed to get following because of exception: " + ex.getMessage());
             }
         }
     }
@@ -79,10 +79,10 @@ public class FollowService {
                 observer.getFollowersSuccess(followers, hasMorePages);
             } else if (msg.getData().containsKey(GetFollowersTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetFollowersTask.MESSAGE_KEY);
-                observer.getFollowersFailure("Failed to get followers: " + message);
+                observer.getFollowersFailed("Failed to get followers: " + message);
             } else if (msg.getData().containsKey(GetFollowersTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetFollowersTask.EXCEPTION_KEY);
-                observer.getFollowersFailure("Failed to get followers because of exception: " + ex.getMessage());
+                observer.getFollowersFailed("Failed to get followers because of exception: " + ex.getMessage());
             }
         }
     }
