@@ -31,7 +31,7 @@ public class FollowingPresenter {
         isLoading = true;
         mView.setLoadingFooter();
 
-        new FollowService().loadMoreItems(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollowee, new GetFollowingObserver());
+        new FollowService().loadMoreFollowingItems(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollowee, new GetFollowingObserver());
     }
 
     private class GetFollowingObserver implements FollowService.GetFollowingObserver {
