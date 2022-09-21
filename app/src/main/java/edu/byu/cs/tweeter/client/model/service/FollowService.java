@@ -25,13 +25,13 @@ public class FollowService {
         void getFollowersFailure(String message);
     }
 
-    public void loadMoreFollowingItems(AuthToken authToken, User user, int pageSize, User lastFollowee, GetFollowingObserver observer) {
+    public void loadMoreFollowing(AuthToken authToken, User user, int pageSize, User lastFollowee, GetFollowingObserver observer) {
         GetFollowingTask getFollowingTask = new GetFollowingTask(authToken, user, pageSize, lastFollowee, new GetFollowingHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getFollowingTask);
     }
 
-    public void loadMoreFollowerItems(AuthToken authToken, User user, int pageSize, User lastFollower, GetFollowersObserver observer) {
+    public void loadMoreFollowers(AuthToken authToken, User user, int pageSize, User lastFollower, GetFollowersObserver observer) {
         GetFollowersTask getFollowersTask = new GetFollowersTask(authToken, user, pageSize, lastFollower, new GetFollowersHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(getFollowersTask);

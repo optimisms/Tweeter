@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +38,6 @@ import edu.byu.cs.tweeter.model.domain.User;
  * Implements the "Following" tab.
  */
 public class FollowingFragment extends Fragment implements FollowingPresenter.View {
-
     private static final String LOG_TAG = "FollowingFragment";
     private static final String USER_KEY = "UserKey";
 
@@ -129,6 +129,8 @@ public class FollowingFragment extends Fragment implements FollowingPresenter.Vi
          * @param user the user.
          */
         void bindUser(User user) {
+            if (user == null)
+                Log.e(LOG_TAG, "user is null!");
             userAlias.setText(user.getAlias());
             userName.setText(user.getName());
             Picasso.get().load(user.getImageUrl()).into(userImage);

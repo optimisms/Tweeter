@@ -30,7 +30,7 @@ public class FollowersPresenter {
         isLoading = true;
         mView.setLoadingFooter();
 
-        new FollowService().loadMoreFollowerItems(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollower, new GetFollowerObserver());
+        new FollowService().loadMoreFollowers(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollower, new GetFollowerObserver());
     }
 
     private class GetFollowerObserver implements FollowService.GetFollowersObserver {
