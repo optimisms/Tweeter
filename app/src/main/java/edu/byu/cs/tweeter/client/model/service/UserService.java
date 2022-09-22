@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.backgroundTask.complete.LoginTask;
 import edu.byu.cs.tweeter.client.backgroundTask.complete.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.complete.RegisterTask;
@@ -20,15 +21,17 @@ public class UserService {
         void loginSuccess(User user, AuthToken authToken);
         void loginFailed(String message);
     }
-
     public interface RegisterObserver {
         void registerSuccess(User user, AuthToken authToken);
         void registerFailed(String message);
     }
-
     public interface LogoutObserver {
         void logoutSuccess();
         void logoutFailed(String message);
+    }
+    public interface GetUserObserver {
+        void getUserSuccess(User user);
+        void getUserFailed(String message);
     }
 
     public void login(String username, String password, LoginObserver observer) {
@@ -37,19 +40,22 @@ public class UserService {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(loginTask);
     }
-
     public void register(String firstName, String lastName, String username, String password, String imageBytes, RegisterObserver observer) {
         // Send the register request.
         RegisterTask registerTask = new RegisterTask(firstName, lastName, username, password, imageBytes, new RegisterHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(registerTask);
     }
-
     public void logout(AuthToken authToken, LogoutObserver observer) {
         // Send the logout request.
         LogoutTask logoutTask = new LogoutTask(authToken, new LogoutHandler(observer));
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(logoutTask);
+    }
+    public void getUser(AuthToken authToken, String username, GetUserObserver observer) {
+        GetUserTask getUserTask = new GetUserTask(authToken, username, new GetUserHandler(observer));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(getUserTask);
     }
 
     /**
@@ -129,6 +135,30 @@ public class UserService {
             } else if (msg.getData().containsKey(LogoutTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(LogoutTask.EXCEPTION_KEY);
                 mObserver.logoutFailed("Failed to logout because of exception: " + ex.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Message handler (i.e., observer) for GetUserTask.
+     */
+    private class GetUserHandler extends Handler {
+        GetUserObserver mObserver;
+
+        public GetUserHandler(GetUserObserver inObs) { mObserver = inObs; }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
+            if (success) {
+                User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);
+                mObserver.getUserSuccess(user);
+            } else if (msg.getData().containsKey(GetUserTask.MESSAGE_KEY)) {
+                String message = msg.getData().getString(GetUserTask.MESSAGE_KEY);
+                mObserver.getUserFailed("Failed to get user's profile: " + message);
+            } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
+                Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
+                mObserver.getUserFailed("Failed to get user's profile because of exception: " + ex.getMessage());
             }
         }
     }

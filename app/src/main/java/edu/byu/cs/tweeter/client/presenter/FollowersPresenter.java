@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowersPresenter {
@@ -12,6 +13,7 @@ public class FollowersPresenter {
         void clearMessage();
         void setLoadingFooter();
         void addFollowers(List<User> followers);
+        void startUserActivity(User user);
     }
 
     private static final int PAGE_SIZE = 10;
@@ -26,14 +28,17 @@ public class FollowersPresenter {
     public boolean isLoading() { return isLoading; }
     public boolean hasMorePages() { return hasMorePages; }
 
-    public void loadMoreItems(User user) {
+    public void loadMoreFollowers(User user) {
         isLoading = true;
         mView.setLoadingFooter();
 
-        new FollowService().loadMoreFollowers(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollower, new GetFollowerObserver());
+        new FollowService().loadMoreFollowers(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollower, new GetFollowersObserver());
+    }
+    public void initiateGetUser(String username) {
+        new UserService().getUser(Cache.getInstance().getCurrUserAuthToken(), username, new GetUserObserver());
     }
 
-    private class GetFollowerObserver implements FollowService.GetFollowersObserver {
+    private class GetFollowersObserver implements FollowService.GetFollowersObserver {
         @Override
         public void getFollowersSuccess(List<User> followers, boolean morePages) {
             isLoading = false;
@@ -49,6 +54,19 @@ public class FollowersPresenter {
             isLoading = false;
             mView.setLoadingFooter();
 
+            mView.clearMessage();
+            mView.displayMessage(message);
+        }
+    }
+    private class GetUserObserver implements UserService.GetUserObserver {
+        @Override
+        public void getUserSuccess(User user) {
+            mView.displayMessage("Getting user's profile...");
+            mView.startUserActivity(user);
+        }
+
+        @Override
+        public void getUserFailed(String message) {
             mView.clearMessage();
             mView.displayMessage(message);
         }
