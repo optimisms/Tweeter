@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.backgroundTask;
+package edu.byu.cs.tweeter.client.backgroundTask.complete;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,10 +9,10 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
- * Background task that queries how many followers a user has.
+ * Background task that queries how many other users a specified user is following.
  */
-public class GetFollowersCountTask implements Runnable {
-    private static final String LOG_TAG = "GetFollowersCountTask";
+public class GetFollowingCountTask implements Runnable {
+    private static final String LOG_TAG = "GetFollowingCountTask";
 
     public static final String SUCCESS_KEY = "success";
     public static final String COUNT_KEY = "count";
@@ -24,7 +24,7 @@ public class GetFollowersCountTask implements Runnable {
      */
     private AuthToken authToken;
     /**
-     * The user whose follower count is being retrieved.
+     * The user whose following count is being retrieved.
      * (This can be any user, not just the currently logged-in user.)
      */
     private User targetUser;
@@ -33,7 +33,7 @@ public class GetFollowersCountTask implements Runnable {
      */
     private Handler messageHandler;
 
-    public GetFollowersCountTask(AuthToken authToken, User targetUser, Handler messageHandler) {
+    public GetFollowingCountTask(AuthToken authToken, User targetUser, Handler messageHandler) {
         this.authToken = authToken;
         this.targetUser = targetUser;
         this.messageHandler = messageHandler;
