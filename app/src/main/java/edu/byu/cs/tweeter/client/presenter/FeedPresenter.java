@@ -13,8 +13,8 @@ public class FeedPresenter {
         void displayMessage(String message);
         void clearMessage();
         void setLoadingFooter();
-        void startUserActivity(User user);
         void addStatuses(List<Status> statuses);
+        void startUserActivity(User user);
     }
 
     private static final int PAGE_SIZE = 10;
