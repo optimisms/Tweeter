@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
+import edu.byu.cs.tweeter.client.backgroundTask.complete.GetUserTask;
 import edu.byu.cs.tweeter.client.backgroundTask.complete.LoginTask;
 import edu.byu.cs.tweeter.client.backgroundTask.complete.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.complete.RegisterTask;
