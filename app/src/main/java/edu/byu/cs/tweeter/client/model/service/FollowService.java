@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.backgroundTask.complete.FollowTask;
 import edu.byu.cs.tweeter.client.backgroundTask.complete.GetFollowersCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.complete.GetFollowersTask;
@@ -28,6 +29,10 @@ public class FollowService {
         void unfollowSuccess();
         void unfollowFailed(String message);
         void enableButton();
+    }
+    public interface IsFollowerObserver {
+        void isFollowerSuccess(boolean isFollower);
+        void isFollowerFailed(String message);
     }
     public interface GetFollowingObserver {
         void getFollowingSuccess(List<User> followings, boolean morePages);
@@ -77,6 +82,11 @@ public class FollowService {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(unfollowTask);
     }
+    public void isFollower(AuthToken authToken, User user, User selectedUser, IsFollowerObserver observer) {
+        IsFollowerTask isFollowerTask = new IsFollowerTask(authToken, user, selectedUser, new IsFollowerHandler(observer));
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(isFollowerTask);
+    }
 
     private class FollowHandler extends Handler {
         FollowObserver mObserver;
@@ -116,6 +126,26 @@ public class FollowService {
                 mObserver.unfollowFailed("Failed to unfollow because of exception: " + ex.getMessage());
             }
             mObserver.enableButton();
+        }
+    }
+    private class IsFollowerHandler extends Handler {
+        IsFollowerObserver mObserver;
+
+        public IsFollowerHandler(IsFollowerObserver inObs) { mObserver = inObs; }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            boolean success = msg.getData().getBoolean(IsFollowerTask.SUCCESS_KEY);
+            if (success) {
+                boolean isFollower = msg.getData().getBoolean(IsFollowerTask.IS_FOLLOWER_KEY);
+                mObserver.isFollowerSuccess(isFollower);
+            } else if (msg.getData().containsKey(IsFollowerTask.MESSAGE_KEY)) {
+                String message = msg.getData().getString(IsFollowerTask.MESSAGE_KEY);
+                mObserver.isFollowerFailed("Failed to determine following relationship: " + message);
+            } else if (msg.getData().containsKey(IsFollowerTask.EXCEPTION_KEY)) {
+                Exception ex = (Exception) msg.getData().getSerializable(IsFollowerTask.EXCEPTION_KEY);
+                mObserver.isFollowerFailed("Failed to determine following relationship because of exception: " + ex.getMessage());
+            }
         }
     }
 

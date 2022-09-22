@@ -117,6 +117,9 @@ public class MainPresenter {
             user, new GetFollowersCountObserver(), new GetFollowingCountObserver()); }
     public void initiateFollow(User user) { new FollowService().follow(Cache.getInstance().getCurrUserAuthToken(), user, new FollowObserver()); }
     public void initiateUnfollow(User user) { new FollowService().unfollow(Cache.getInstance().getCurrUserAuthToken(), user, new UnfollowObserver()); }
+    public void initiateIsFollower(User user) {
+        new FollowService().isFollower(Cache.getInstance().getCurrUserAuthToken(), Cache.getInstance().getCurrUser(), user, new IsFollowerObserver());
+    }
 
     private class LogoutObserver implements UserService.LogoutObserver {
         @Override
@@ -151,7 +154,7 @@ public class MainPresenter {
         @Override
         public void followSuccess() {
             mView.updateCounts();
-            mView.updateFollowButtonState(false);
+            mView.updateFollowButtonState(true);
             mView.displayFollowMessage();
         }
 
@@ -165,7 +168,7 @@ public class MainPresenter {
         @Override
         public void unfollowSuccess() {
             mView.updateCounts();
-            mView.updateFollowButtonState(true);
+            mView.updateFollowButtonState(false);
             mView.displayUnfollowMessage();
         }
 
@@ -174,6 +177,17 @@ public class MainPresenter {
 
         @Override
         public void enableButton() { mView.enableFollowButton(); }
+    }
+    private class IsFollowerObserver implements FollowService.IsFollowerObserver {
+        @Override
+        public void isFollowerSuccess(boolean isFollower) {
+            mView.updateFollowButtonState(isFollower);
+        }
+
+        @Override
+        public void isFollowerFailed(String message) {
+            mView.displayErrorMessage(message);
+        }
     }
     private class GetFollowingCountObserver implements FollowService.GetFollowingCountObserver {
         @Override
