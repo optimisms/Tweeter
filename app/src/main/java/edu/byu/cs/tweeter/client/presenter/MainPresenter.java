@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.service.FollowService;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter {
     public interface View {
@@ -23,6 +25,10 @@ public class MainPresenter {
         void displayPostingMessage();
         void clearPostingMessage();
         void displayPostingErrorMessage(String message);
+        void updateFolloweeCount(int count);
+        void updateFollowerCount(int count);
+
+        void displayErrorMessage(String message);
     }
 
     private static final String LOG_TAG = "MainActivity";
@@ -103,6 +109,10 @@ public class MainPresenter {
         return containedMentions;
     }
 
+    public void initiateGetCounts(User user) {
+        new FollowService().getCounts(Cache.getInstance().getCurrUserAuthToken(), user, new GetFollowersCountObserver(), new GetFollowingCountObserver());
+    }
+
     private class LogoutObserver implements UserService.LogoutObserver {
         @Override
         public void logoutSuccess() {
@@ -131,6 +141,20 @@ public class MainPresenter {
             mView.clearPostingMessage();
             mView.displayLogoutErrorMessage(message);
         }
+    }
+    private class GetFollowingCountObserver implements FollowService.GetFollowingCountObserver {
+        @Override
+        public void getFollowingCountSuccess(int count) { mView.updateFolloweeCount(count); }
+
+        @Override
+        public void getFollowingCountFailed(String message) { mView.displayErrorMessage(message); }
+    }
+    private class GetFollowersCountObserver implements FollowService.GetFollowersCountObserver {
+        @Override
+        public void getFollowersCountSuccess(int count) { mView.updateFollowerCount(count); }
+
+        @Override
+        public void getFollowersCountFailed(String message) { mView.displayErrorMessage(message); }
     }
 
 }
