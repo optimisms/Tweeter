@@ -27,8 +27,12 @@ public class MainPresenter {
         void displayPostingErrorMessage(String message);
         void updateFolloweeCount(int count);
         void updateFollowerCount(int count);
-
         void displayErrorMessage(String message);
+        void enableFollowButton();
+        void updateCounts();
+        void updateFollowButtonState(boolean state);
+        void displayFollowMessage();
+        void displayUnfollowMessage();
     }
 
     private static final String LOG_TAG = "MainActivity";
@@ -109,9 +113,10 @@ public class MainPresenter {
         return containedMentions;
     }
 
-    public void initiateGetCounts(User user) {
-        new FollowService().getCounts(Cache.getInstance().getCurrUserAuthToken(), user, new GetFollowersCountObserver(), new GetFollowingCountObserver());
-    }
+    public void initiateGetCounts(User user) { new FollowService().getCounts(Cache.getInstance().getCurrUserAuthToken(),
+            user, new GetFollowersCountObserver(), new GetFollowingCountObserver()); }
+    public void initiateFollow(User user) { new FollowService().follow(Cache.getInstance().getCurrUserAuthToken(), user, new FollowObserver()); }
+    public void initiateUnfollow(User user) { new FollowService().unfollow(Cache.getInstance().getCurrUserAuthToken(), user, new UnfollowObserver()); }
 
     private class LogoutObserver implements UserService.LogoutObserver {
         @Override
@@ -141,6 +146,34 @@ public class MainPresenter {
             mView.clearPostingMessage();
             mView.displayLogoutErrorMessage(message);
         }
+    }
+    private class FollowObserver implements FollowService.FollowObserver {
+        @Override
+        public void followSuccess() {
+            mView.updateCounts();
+            mView.updateFollowButtonState(false);
+            mView.displayFollowMessage();
+        }
+
+        @Override
+        public void followFailed(String message) { mView.displayErrorMessage(message); }
+
+        @Override
+        public void enableButton() { mView.enableFollowButton(); }
+    }
+    private class UnfollowObserver implements FollowService.UnfollowObserver {
+        @Override
+        public void unfollowSuccess() {
+            mView.updateCounts();
+            mView.updateFollowButtonState(true);
+            mView.displayUnfollowMessage();
+        }
+
+        @Override
+        public void unfollowFailed(String message) { mView.displayErrorMessage(message); }
+
+        @Override
+        public void enableButton() { mView.enableFollowButton(); }
     }
     private class GetFollowingCountObserver implements FollowService.GetFollowingCountObserver {
         @Override
