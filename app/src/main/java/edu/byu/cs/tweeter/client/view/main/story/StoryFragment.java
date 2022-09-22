@@ -411,7 +411,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
         }
     }
 
-
     @Override
     public void displayMessage(String message) {
         clearMessage();
@@ -433,5 +432,4 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
         intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
         startActivity(intent);
     }
-
 }
