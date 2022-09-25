@@ -98,7 +98,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
      * The ViewHolder for the RecyclerView that displays the story data.
      */
     private class StoryHolder extends RecyclerView.ViewHolder {
-
         private final ImageView userImage;
         private final TextView userAlias;
         private final TextView userName;
@@ -118,7 +117,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
             userName = itemView.findViewById(R.id.statusName);
             post = itemView.findViewById(R.id.statusPost);
             datetime = itemView.findViewById(R.id.statusDatetime);
-            
+
             itemView.setOnClickListener(view -> presenter.initiateGetUser(userAlias.getText().toString()));
         }
 
@@ -183,7 +182,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
      * The adapter for the RecyclerView that displays the story data.
      */
     private class StoryRecyclerViewAdapter extends RecyclerView.Adapter<StoryHolder> {
-
         private final List<Status> story = new ArrayList<>();
 
         /**
@@ -237,7 +235,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
 
             if (viewType == LOADING_DATA_VIEW) {
                 view = layoutInflater.inflate(R.layout.loading_row, parent, false);
-
             } else {
                 view = layoutInflater.inflate(R.layout.status_row, parent, false);
             }
@@ -255,9 +252,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
          */
         @Override
         public void onBindViewHolder(@NonNull StoryHolder storyHolder, int position) {
-            if (!presenter.isLoading()) {
-                storyHolder.bindStatus(story.get(position));
-            }
+            if (!presenter.isLoading()) { storyHolder.bindStatus(story.get(position)); }
         }
 
         /**
@@ -266,9 +261,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
          * @return the number of statuses available for display.
          */
         @Override
-        public int getItemCount() {
-            return story.size();
-        }
+        public int getItemCount() { return story.size(); }
 
         /**
          * Returns the type of the view that should be displayed for the item currently at the
@@ -278,9 +271,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
          * @return the view type.
          */
         @Override
-        public int getItemViewType(int position) {
-            return (position == story.size() - 1 && presenter.isLoading()) ? LOADING_DATA_VIEW : ITEM_VIEW;
-        }
+        public int getItemViewType(int position) { return (position == story.size() - 1 && presenter.isLoading()) ? LOADING_DATA_VIEW : ITEM_VIEW; }
 
         /**
          * Causes the Adapter to display a loading footer and make a request to get more story
@@ -297,9 +288,9 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
          * loading footer view) at the bottom of the list.
          */
         private void addLoadingFooter() {
-            addItem(new Status("Dummy Post", new User("firstName", "lastName", "@coolAlias"), "2020-10-31 00:00:00", new ArrayList<String>() {{
+            addItem(new Status("Dummy Post", new User("firstName", "lastName", "@coolAlias"), "2020-10-31 00:00:00", new ArrayList<>() {{
                 add("https://youtube.com");
-            }}, new ArrayList<String>() {{
+            }}, new ArrayList<>() {{
                 add("@Dude1");
             }}));
         }
@@ -308,9 +299,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
          * Removes the dummy status from the list of statuses so the RecyclerView will stop displaying
          * the loading footer at the bottom of the list.
          */
-        private void removeLoadingFooter() {
-            removeItem(story.get(story.size() - 1));
-        }
+        private void removeLoadingFooter() { removeItem(story.get(story.size() - 1)); }
     }
 
     /**
@@ -318,7 +307,6 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
      * available data.
      */
     private class StoryRecyclerViewPaginationScrollListener extends RecyclerView.OnScrollListener {
-
         private final LinearLayoutManager layoutManager;
 
         /**
@@ -326,9 +314,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
          *
          * @param layoutManager the layout manager being used by the RecyclerView.
          */
-        StoryRecyclerViewPaginationScrollListener(LinearLayoutManager layoutManager) {
-            this.layoutManager = layoutManager;
-        }
+        StoryRecyclerViewPaginationScrollListener(LinearLayoutManager layoutManager) { this.layoutManager = layoutManager; }
 
         /**
          * Determines whether the user has scrolled to the bottom of the currently available data
@@ -352,9 +338,7 @@ public class StoryFragment extends Fragment implements StoryPresenter.View{
                         totalItemCount && firstVisibleItemPosition >= 0) {
                     // Run this code later on the UI thread
                     final Handler handler = new Handler(Looper.getMainLooper());
-                    handler.postDelayed(() -> {
-                            storyRecyclerViewAdapter.loadMoreItems();
-                    }, 0);
+                    handler.postDelayed(() -> storyRecyclerViewAdapter.loadMoreItems(), 0);
                 }
             }
         }

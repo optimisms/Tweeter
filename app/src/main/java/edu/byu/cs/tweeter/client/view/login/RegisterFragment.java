@@ -69,8 +69,8 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.View
         });
 
         registerButton.setOnClickListener(tempView -> {
-            try { //TODO: is try/catch necessary??
-                errorView.setText(null); //TODO: necessary?
+            try {
+                errorView.setText(null);
 
                 String fName = firstName.getText().toString();
                 String lName = lastName.getText().toString();

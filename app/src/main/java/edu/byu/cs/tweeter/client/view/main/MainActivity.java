@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
         followButton = findViewById(R.id.followButton);
 
+        //Presenter?
         if (selectedUser.compareTo(Cache.getInstance().getCurrUser()) == 0) {
             followButton.setVisibility(View.GONE);
         } else {

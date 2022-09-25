@@ -134,7 +134,6 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
      * The adapter for the RecyclerView that displays the follower data.
      */
     private class FollowersRecyclerViewAdapter extends RecyclerView.Adapter<FollowersHolder> {
-
         private final List<User> users = new ArrayList<>();
 
         /**
