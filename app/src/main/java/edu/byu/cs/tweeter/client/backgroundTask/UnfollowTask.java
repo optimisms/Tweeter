@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.backgroundTask.complete;
+package edu.byu.cs.tweeter.client.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -7,50 +7,42 @@ import android.util.Log;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.util.FakeData;
-import edu.byu.cs.tweeter.util.Pair;
 
 /**
- * Background task that logs in a user (i.e., starts a session).
+ * Background task that removes a following relationship between two users.
  */
-public class LoginTask implements Runnable {
-
-    private static final String LOG_TAG = "LoginTask";
+public class UnfollowTask implements Runnable {
+    private static final String LOG_TAG = "UnfollowTask";
 
     public static final String SUCCESS_KEY = "success";
-    public static final String USER_KEY = "user";
-    public static final String AUTH_TOKEN_KEY = "auth-token";
     public static final String MESSAGE_KEY = "message";
     public static final String EXCEPTION_KEY = "exception";
 
     /**
-     * The user's username (or "alias" or "handle"). E.g., "@susan".
+     * Auth token for logged-in user.
+     * This user is the "follower" in the relationship.
      */
-    private String username;
+    private AuthToken authToken;
     /**
-     * The user's password.
+     * The user that is being followed.
      */
-    private String password;
+    private User followee;
     /**
      * Message handler that will receive task results.
      */
     private Handler messageHandler;
 
-    public LoginTask(String username, String password, Handler messageHandler) {
-        this.username = username;
-        this.password = password;
+    public UnfollowTask(AuthToken authToken, User followee, Handler messageHandler) {
+        this.authToken = authToken;
+        this.followee = followee;
         this.messageHandler = messageHandler;
     }
 
     @Override
     public void run() {
         try {
-            Pair<User, AuthToken> loginResult = doLogin();
 
-            User loggedInUser = loginResult.getFirst();
-            AuthToken authToken = loginResult.getSecond();
-
-            sendSuccessMessage(loggedInUser, authToken);
+            sendSuccessMessage();
 
         } catch (Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
@@ -58,21 +50,9 @@ public class LoginTask implements Runnable {
         }
     }
 
-    private FakeData getFakeData() {
-        return FakeData.getInstance();
-    }
-
-    private Pair<User, AuthToken> doLogin() {
-        User loggedInUser = getFakeData().getFirstUser();
-        AuthToken authToken = getFakeData().getAuthToken();
-        return new Pair<>(loggedInUser, authToken);
-    }
-
-    private void sendSuccessMessage(User loggedInUser, AuthToken authToken) {
+    private void sendSuccessMessage() {
         Bundle msgBundle = new Bundle();
         msgBundle.putBoolean(SUCCESS_KEY, true);
-        msgBundle.putSerializable(USER_KEY, loggedInUser);
-        msgBundle.putSerializable(AUTH_TOKEN_KEY, authToken);
 
         Message msg = Message.obtain();
         msg.setData(msgBundle);

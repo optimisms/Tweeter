@@ -9,13 +9,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import edu.byu.cs.tweeter.client.backgroundTask.FollowTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersCountTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFollowersTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
-import edu.byu.cs.tweeter.client.backgroundTask.complete.FollowTask;
-import edu.byu.cs.tweeter.client.backgroundTask.complete.GetFollowersCountTask;
-import edu.byu.cs.tweeter.client.backgroundTask.complete.GetFollowersTask;
-import edu.byu.cs.tweeter.client.backgroundTask.complete.GetFollowingCountTask;
-import edu.byu.cs.tweeter.client.backgroundTask.complete.GetFollowingTask;
-import edu.byu.cs.tweeter.client.backgroundTask.complete.UnfollowTask;
+import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 

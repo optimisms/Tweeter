@@ -1,27 +1,22 @@
-package edu.byu.cs.tweeter.client.backgroundTask.complete;
+package edu.byu.cs.tweeter.client.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import java.io.Serializable;
-import java.util.List;
-
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.util.FakeData;
-import edu.byu.cs.tweeter.util.Pair;
 
 /**
- * Background task that retrieves a page of followers.
+ * Background task that returns the profile for a specified user.
  */
-public class GetFollowersTask implements Runnable {
-    private static final String LOG_TAG = "GetFollowersTask";
+public class GetUserTask implements Runnable {
+    private static final String LOG_TAG = "GetUserTask";
 
     public static final String SUCCESS_KEY = "success";
-    public static final String FOLLOWERS_KEY = "followers";
-    public static final String MORE_PAGES_KEY = "more-pages";
+    public static final String USER_KEY = "user";
     public static final String MESSAGE_KEY = "message";
     public static final String EXCEPTION_KEY = "exception";
 
@@ -30,42 +25,26 @@ public class GetFollowersTask implements Runnable {
      */
     private AuthToken authToken;
     /**
-     * The user whose followers are being retrieved.
-     * (This can be any user, not just the currently logged-in user.)
+     * Alias (or handle) for user whose profile is being retrieved.
      */
-    private User targetUser;
-    /**
-     * Maximum number of followers to return (i.e., page size).
-     */
-    private int limit;
-    /**
-     * The last follower returned in the previous page of results (can be null).
-     * This allows the new page to begin where the previous page ended.
-     */
-    private User lastFollower;
+    private String alias;
     /**
      * Message handler that will receive task results.
      */
     private Handler messageHandler;
 
-    public GetFollowersTask(AuthToken authToken, User targetUser, int limit, User lastFollower,
-                            Handler messageHandler) {
+    public GetUserTask(AuthToken authToken, String alias, Handler messageHandler) {
         this.authToken = authToken;
-        this.targetUser = targetUser;
-        this.limit = limit;
-        this.lastFollower = lastFollower;
+        this.alias = alias;
         this.messageHandler = messageHandler;
     }
 
     @Override
     public void run() {
         try {
-            Pair<List<User>, Boolean> pageOfUsers = getFollowers();
+            User user = getUser();
 
-            List<User> followers = pageOfUsers.getFirst();
-            boolean hasMorePages = pageOfUsers.getSecond();
-
-            sendSuccessMessage(followers, hasMorePages);
+            sendSuccessMessage(user);
 
         } catch (Exception ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
@@ -77,16 +56,15 @@ public class GetFollowersTask implements Runnable {
         return FakeData.getInstance();
     }
 
-    private Pair<List<User>, Boolean> getFollowers() {
-        Pair<List<User>, Boolean> pageOfUsers = getFakeData().getPageOfUsers(lastFollower, limit, targetUser);
-        return pageOfUsers;
+    private User getUser() {
+        User user = getFakeData().findUserByAlias(alias);
+        return user;
     }
 
-    private void sendSuccessMessage(List<User> followers, boolean hasMorePages) {
+    private void sendSuccessMessage(User user) {
         Bundle msgBundle = new Bundle();
         msgBundle.putBoolean(SUCCESS_KEY, true);
-        msgBundle.putSerializable(FOLLOWERS_KEY, (Serializable) followers);
-        msgBundle.putBoolean(MORE_PAGES_KEY, hasMorePages);
+        msgBundle.putSerializable(USER_KEY, user);
 
         Message msg = Message.obtain();
         msg.setData(msgBundle);
@@ -115,5 +93,4 @@ public class GetFollowersTask implements Runnable {
 
         messageHandler.sendMessage(msg);
     }
-
 }

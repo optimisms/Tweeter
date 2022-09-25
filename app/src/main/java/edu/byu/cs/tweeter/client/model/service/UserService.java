@@ -8,10 +8,10 @@ import androidx.annotation.NonNull;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import edu.byu.cs.tweeter.client.backgroundTask.complete.GetUserTask;
-import edu.byu.cs.tweeter.client.backgroundTask.complete.LoginTask;
-import edu.byu.cs.tweeter.client.backgroundTask.complete.LogoutTask;
-import edu.byu.cs.tweeter.client.backgroundTask.complete.RegisterTask;
+import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
+import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
+import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
+import edu.byu.cs.tweeter.client.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;

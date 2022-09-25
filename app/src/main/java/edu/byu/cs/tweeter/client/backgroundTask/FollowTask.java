@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.backgroundTask.complete;
+package edu.byu.cs.tweeter.client.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -6,13 +6,13 @@ import android.os.Message;
 import android.util.Log;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.domain.User;
 
 /**
- * Background task that posts a new status sent by a user.
+ * Background task that establishes a following relationship between two users.
  */
-public class PostStatusTask implements Runnable {
-    private static final String LOG_TAG = "PostStatusTask";
+public class FollowTask implements Runnable {
+    private static final String LOG_TAG = "FollowTask";
 
     public static final String SUCCESS_KEY = "success";
     public static final String MESSAGE_KEY = "message";
@@ -20,21 +20,21 @@ public class PostStatusTask implements Runnable {
 
     /**
      * Auth token for logged-in user.
+     * This user is the "follower" in the relationship.
      */
     private AuthToken authToken;
     /**
-     * The new status being sent. Contains all properties of the status,
-     * including the identity of the user sending the status.
+     * The user that is being followed.
      */
-    private Status status;
+    private User followee;
     /**
      * Message handler that will receive task results.
      */
     private Handler messageHandler;
 
-    public PostStatusTask(AuthToken authToken, Status status, Handler messageHandler) {
+    public FollowTask(AuthToken authToken, User followee, Handler messageHandler) {
         this.authToken = authToken;
-        this.status = status;
+        this.followee = followee;
         this.messageHandler = messageHandler;
     }
 

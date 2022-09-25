@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.backgroundTask.complete;
+package edu.byu.cs.tweeter.client.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,10 +15,10 @@ import edu.byu.cs.tweeter.util.FakeData;
 import edu.byu.cs.tweeter.util.Pair;
 
 /**
- * Background task that retrieves a page of statuses from a user's feed.
+ * Background task that retrieves a page of statuses from a user's story.
  */
-public class GetFeedTask implements Runnable {
-    private static final String LOG_TAG = "GetFeedTask";
+public class GetStoryTask implements Runnable {
+    private static final String LOG_TAG = "GetStoryTask";
 
     public static final String SUCCESS_KEY = "success";
     public static final String STATUSES_KEY = "statuses";
@@ -31,7 +31,7 @@ public class GetFeedTask implements Runnable {
      */
     private AuthToken authToken;
     /**
-     * The user whose feed is being retrieved.
+     * The user whose story is being retrieved.
      * (This can be any user, not just the currently logged-in user.)
      */
     private User targetUser;
@@ -49,8 +49,8 @@ public class GetFeedTask implements Runnable {
      */
     private Handler messageHandler;
 
-    public GetFeedTask(AuthToken authToken, User targetUser, int limit, Status lastStatus,
-                       Handler messageHandler) {
+    public GetStoryTask(AuthToken authToken, User targetUser, int limit, Status lastStatus,
+                        Handler messageHandler) {
         this.authToken = authToken;
         this.targetUser = targetUser;
         this.limit = limit;
@@ -61,7 +61,7 @@ public class GetFeedTask implements Runnable {
     @Override
     public void run() {
         try {
-            Pair<List<Status>, Boolean> pageOfStatus = getFeed();
+            Pair<List<Status>, Boolean> pageOfStatus = getStory();
 
             List<Status> statuses = pageOfStatus.getFirst();
             boolean hasMorePages = pageOfStatus.getSecond();
@@ -78,7 +78,7 @@ public class GetFeedTask implements Runnable {
         return FakeData.getInstance();
     }
 
-    private Pair<List<Status>, Boolean> getFeed() {
+    private Pair<List<Status>, Boolean> getStory() {
         Pair<List<Status>, Boolean> pageOfStatus = getFakeData().getPageOfStatus(lastStatus, limit);
         return pageOfStatus;
     }

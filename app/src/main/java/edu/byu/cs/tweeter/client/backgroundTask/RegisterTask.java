@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.backgroundTask.complete;
+package edu.byu.cs.tweeter.client.backgroundTask;
 
 import android.os.Bundle;
 import android.os.Handler;
