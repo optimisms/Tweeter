@@ -61,7 +61,7 @@ public class RegisterPresenter implements UserService.RegisterObserver {
     }
 
     @Override
-    public void registerFailed(String message) {
+    public void taskFailed(String message) {
         mView.clearInfoMessage();
         mView.displayErrorMessage(message);
     }

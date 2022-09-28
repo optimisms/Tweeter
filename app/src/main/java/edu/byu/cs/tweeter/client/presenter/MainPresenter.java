@@ -132,7 +132,7 @@ public class MainPresenter {
         }
 
         @Override
-        public void logoutFailed(String message) {
+        public void taskFailed(String message) {
             mView.clearLogoutMessage();
             mView.displayLogoutErrorMessage(message);
         }

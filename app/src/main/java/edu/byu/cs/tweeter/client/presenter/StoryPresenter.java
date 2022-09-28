@@ -67,7 +67,7 @@ public class StoryPresenter {
         }
 
         @Override
-        public void getUserFailed(String message) {
+        public void taskFailed(String message) {
             mView.clearMessage();
             mView.displayMessage(message);
         }

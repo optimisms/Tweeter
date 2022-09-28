@@ -5,9 +5,6 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
@@ -16,46 +13,38 @@ import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class UserService {
-    public interface LoginObserver {
+public class UserService extends Service {
+    public interface LoginObserver extends Observer {
         void loginSuccess(User user, AuthToken authToken);
-        void loginFailed(String message);
     }
-    public interface RegisterObserver {
+    public interface RegisterObserver extends Observer {
         void registerSuccess(User user, AuthToken authToken);
-        void registerFailed(String message);
     }
-    public interface LogoutObserver {
+    public interface LogoutObserver extends Observer {
         void logoutSuccess();
-        void logoutFailed(String message);
     }
-    public interface GetUserObserver {
+    public interface GetUserObserver extends Observer {
         void getUserSuccess(User user);
-        void getUserFailed(String message);
     }
 
     public void login(String username, String password, LoginObserver observer) {
         // Send the login request.
         LoginTask loginTask = new LoginTask(username, password, new LoginHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(loginTask);
+        executeTask(loginTask);
     }
     public void register(String firstName, String lastName, String username, String password, String imageBytes, RegisterObserver observer) {
         // Send the register request.
         RegisterTask registerTask = new RegisterTask(firstName, lastName, username, password, imageBytes, new RegisterHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(registerTask);
+        executeTask(registerTask);
     }
     public void logout(AuthToken authToken, LogoutObserver observer) {
         // Send the logout request.
         LogoutTask logoutTask = new LogoutTask(authToken, new LogoutHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(logoutTask);
+        executeTask(logoutTask);
     }
     public void getUser(AuthToken authToken, String username, GetUserObserver observer) {
         GetUserTask getUserTask = new GetUserTask(authToken, username, new GetUserHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getUserTask);
+        executeTask(getUserTask);
     }
 
     /**
@@ -79,10 +68,10 @@ public class UserService {
                 mObserver.loginSuccess(loggedInUser, authToken);
             } else if (msg.getData().containsKey(LoginTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(LoginTask.MESSAGE_KEY);
-                mObserver.loginFailed("Failed to login: " + message);
+                mObserver.taskFailed("Failed to login: " + message);
             } else if (msg.getData().containsKey(LoginTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(LoginTask.EXCEPTION_KEY);
-                mObserver.loginFailed("Failed to login because of exception" + ex.getMessage());
+                mObserver.taskFailed("Failed to login because of exception" + ex.getMessage());
             }
         }
     }
@@ -108,10 +97,10 @@ public class UserService {
                 mObserver.registerSuccess(registeredUser, authToken);
             } else if (msg.getData().containsKey(RegisterTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(RegisterTask.MESSAGE_KEY);
-                mObserver.registerFailed("Failed to register: " + message);
+                mObserver.taskFailed("Failed to register: " + message);
             } else if (msg.getData().containsKey(RegisterTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(RegisterTask.EXCEPTION_KEY);
-                mObserver.registerFailed("Failed to register because of exception: " + ex.getMessage());
+                mObserver.taskFailed("Failed to register because of exception: " + ex.getMessage());
             }
         }
     }
@@ -131,10 +120,10 @@ public class UserService {
                 mObserver.logoutSuccess();
             } else if (msg.getData().containsKey(LogoutTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(LogoutTask.MESSAGE_KEY);
-                mObserver.logoutFailed("Failed to logout: " + message);
+                mObserver.taskFailed("Failed to logout: " + message);
             } else if (msg.getData().containsKey(LogoutTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(LogoutTask.EXCEPTION_KEY);
-                mObserver.logoutFailed("Failed to logout because of exception: " + ex.getMessage());
+                mObserver.taskFailed("Failed to logout because of exception: " + ex.getMessage());
             }
         }
     }
@@ -155,10 +144,10 @@ public class UserService {
                 mObserver.getUserSuccess(user);
             } else if (msg.getData().containsKey(GetUserTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetUserTask.MESSAGE_KEY);
-                mObserver.getUserFailed("Failed to get user's profile: " + message);
+                mObserver.taskFailed("Failed to get user's profile: " + message);
             } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
-                mObserver.getUserFailed("Failed to get user's profile because of exception: " + ex.getMessage());
+                mObserver.taskFailed("Failed to get user's profile because of exception: " + ex.getMessage());
             }
         }
     }
