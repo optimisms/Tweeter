@@ -51,7 +51,7 @@ public class StoryPresenter {
         }
 
         @Override
-        public void getStoryFailed(String message) {
+        public void taskFailed(String message) {
             isLoading = false;
             mView.setLoadingFooter();
 

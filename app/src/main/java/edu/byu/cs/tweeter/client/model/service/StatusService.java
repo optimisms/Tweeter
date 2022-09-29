@@ -5,24 +5,20 @@ import android.os.Message;
 
 import androidx.annotation.NonNull;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 
-public class StatusService {
-    public interface PostStatusObserver {
+public class StatusService extends Service {
+    public interface PostStatusObserver extends Observer {
         void postStatusSuccess();
-        void postStatusFailed(String message);
     }
 
     public void postStatus(AuthToken authToken, Status newStatus, PostStatusObserver observer) {
+        //TODO: make sure this commented line is safe to delete
         //Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
         PostStatusTask statusTask = new PostStatusTask(authToken, newStatus, new PostStatusHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(statusTask);
+        executeTask(statusTask);
     }
 
     private class PostStatusHandler extends Handler {
@@ -34,15 +30,16 @@ public class StatusService {
         public void handleMessage(@NonNull Message msg) {
             boolean success = msg.getData().getBoolean(PostStatusTask.SUCCESS_KEY);
             if (success) {
+                //TODO: make sure this commented line is safe to delete
                 //postingToast.cancel();
                 //Toast.makeText(MainActivity.this, "Successfully Posted!", Toast.LENGTH_LONG).show();
                 mObserver.postStatusSuccess();
             } else if (msg.getData().containsKey(PostStatusTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(PostStatusTask.MESSAGE_KEY);
-                mObserver.postStatusFailed( "Failed to post status: " + message);
+                mObserver.taskFailed( "Failed to post status: " + message);
             } else if (msg.getData().containsKey(PostStatusTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(PostStatusTask.EXCEPTION_KEY);
-                mObserver.postStatusFailed("Failed to post status because of exception: " + ex.getMessage());
+                mObserver.taskFailed("Failed to post status because of exception: " + ex.getMessage());
             }
         }
     }

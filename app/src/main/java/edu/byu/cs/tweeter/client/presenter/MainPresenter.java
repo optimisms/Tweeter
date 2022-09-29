@@ -145,7 +145,7 @@ public class MainPresenter {
         }
 
         @Override
-        public void postStatusFailed(String message) {
+        public void taskFailed(String message) {
             mView.clearPostingMessage();
             mView.displayLogoutErrorMessage(message);
         }
@@ -159,7 +159,7 @@ public class MainPresenter {
         }
 
         @Override
-        public void followFailed(String message) { mView.displayErrorMessage(message); }
+        public void taskFailed(String message) { mView.displayErrorMessage(message); }
 
         @Override
         public void enableButton() { mView.enableFollowButton(); }
@@ -173,7 +173,7 @@ public class MainPresenter {
         }
 
         @Override
-        public void unfollowFailed(String message) { mView.displayErrorMessage(message); }
+        public void taskFailed(String message) { mView.displayErrorMessage(message); }
 
         @Override
         public void enableButton() { mView.enableFollowButton(); }
@@ -185,7 +185,7 @@ public class MainPresenter {
         }
 
         @Override
-        public void isFollowerFailed(String message) {
+        public void taskFailed(String message) {
             mView.displayErrorMessage(message);
         }
     }
@@ -194,14 +194,14 @@ public class MainPresenter {
         public void getFollowingCountSuccess(int count) { mView.updateFolloweeCount(count); }
 
         @Override
-        public void getFollowingCountFailed(String message) { mView.displayErrorMessage(message); }
+        public void taskFailed(String message) { mView.displayErrorMessage(message); }
     }
     private class GetFollowersCountObserver implements FollowService.GetFollowersCountObserver {
         @Override
         public void getFollowersCountSuccess(int count) { mView.updateFollowerCount(count); }
 
         @Override
-        public void getFollowersCountFailed(String message) { mView.displayErrorMessage(message); }
+        public void taskFailed(String message) { mView.displayErrorMessage(message); }
     }
 
 }

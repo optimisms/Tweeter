@@ -6,24 +6,20 @@ import android.os.Message;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FeedService {
-    public interface GetFeedObserver {
+public class FeedService extends Service {
+    public interface GetFeedObserver extends Observer {
         void getFeedSuccess(List<Status> statuses, boolean morePages);
-        void getFeedFailed(String message);
     }
 
     public void getFeed(AuthToken authToken, User user, int pageSize, Status lastStatus, GetFeedObserver observer) {
         GetFeedTask getFeedTask = new GetFeedTask(authToken, user, pageSize, lastStatus, new GetFeedHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getFeedTask);
+        executeTask(getFeedTask);
     }
 
     /**
@@ -43,10 +39,10 @@ public class FeedService {
                 mObserver.getFeedSuccess(statuses, hasMorePages);
             } else if (msg.getData().containsKey(GetFeedTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetFeedTask.MESSAGE_KEY);
-                mObserver.getFeedFailed("Failed to get feed: " + message);
+                mObserver.taskFailed("Failed to get feed: " + message);
             } else if (msg.getData().containsKey(GetFeedTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetFeedTask.EXCEPTION_KEY);
-                mObserver.getFeedFailed("Failed to get feed because of exception: " + ex.getMessage());
+                mObserver.taskFailed("Failed to get feed because of exception: " + ex.getMessage());
             }
         }
     }

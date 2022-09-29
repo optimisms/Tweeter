@@ -6,24 +6,20 @@ import android.os.Message;
 import androidx.annotation.NonNull;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import edu.byu.cs.tweeter.client.backgroundTask.GetStoryTask;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class StoryService {
-    public interface GetStoryObserver {
+public class StoryService extends Service {
+    public interface GetStoryObserver extends Observer  {
         void getStorySuccess(List<Status> statuses, boolean morePages);
-        void getStoryFailed(String message);
     }
 
     public void getStory(AuthToken authToken, User user, int pageSize, Status lastStatus, GetStoryObserver observer) {
         GetStoryTask getStoryTask = new GetStoryTask(authToken, user, pageSize, lastStatus, new GetStoryHandler(observer));
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        executor.execute(getStoryTask);
+        executeTask(getStoryTask);
     }
 
 
@@ -44,10 +40,10 @@ public class StoryService {
                 mObserver.getStorySuccess(statuses, hasMorePages);
             } else if (msg.getData().containsKey(GetStoryTask.MESSAGE_KEY)) {
                 String message = msg.getData().getString(GetStoryTask.MESSAGE_KEY);
-                mObserver.getStoryFailed("Failed to get story: " + message);
+                mObserver.taskFailed("Failed to get story: " + message);
             } else if (msg.getData().containsKey(GetStoryTask.EXCEPTION_KEY)) {
                 Exception ex = (Exception) msg.getData().getSerializable(GetStoryTask.EXCEPTION_KEY);
-                mObserver.getStoryFailed("Failed to get story because of exception: " + ex.getMessage());
+                mObserver.taskFailed("Failed to get story because of exception: " + ex.getMessage());
             }
         }
     }

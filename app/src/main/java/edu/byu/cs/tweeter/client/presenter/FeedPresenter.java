@@ -53,7 +53,7 @@ public class FeedPresenter {
         }
 
         @Override
-        public void getFeedFailed(String message) {
+        public void taskFailed(String message) {
             isLoading = false;
             mView.setLoadingFooter();
 
