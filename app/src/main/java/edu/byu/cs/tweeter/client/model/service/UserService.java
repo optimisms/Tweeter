@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.client.model.service;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
@@ -50,81 +51,80 @@ public class UserService extends Service {
     /**
      * Message handler (i.e., observer) for LoginTask
      */
-    private class LoginHandler extends Handler {
-        private LoginObserver mObserver;
-
-        public LoginHandler(LoginObserver inObs) { mObserver = inObs; }
+    private class LoginHandler extends BackgroundTaskHandler<LoginObserver> {
+        public LoginHandler(LoginObserver observer) {
+            super(observer);
+        }
 
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(LoginTask.SUCCESS_KEY);
-            if (success) {
-                User loggedInUser = (User) msg.getData().getSerializable(LoginTask.USER_KEY);
-                AuthToken authToken = (AuthToken) msg.getData().getSerializable(LoginTask.AUTH_TOKEN_KEY);
+        protected void handleSuccessMessage(LoginObserver observer, Bundle data) {
+            User loggedInUser = (User) data.getSerializable(LoginTask.USER_KEY);
+            AuthToken authToken = (AuthToken) data.getSerializable(LoginTask.AUTH_TOKEN_KEY);
 
-                Cache.getInstance().setCurrUser(loggedInUser);
-                Cache.getInstance().setCurrUserAuthToken(authToken);
+            Cache.getInstance().setCurrUser(loggedInUser);
+            Cache.getInstance().setCurrUserAuthToken(authToken);
 
-                mObserver.loginSuccess(loggedInUser, authToken);
-            } else if (msg.getData().containsKey(LoginTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(LoginTask.MESSAGE_KEY);
-                mObserver.taskFailed("Failed to login: " + message);
-            } else if (msg.getData().containsKey(LoginTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(LoginTask.EXCEPTION_KEY);
-                mObserver.taskFailed("Failed to login because of exception" + ex.getMessage());
-            }
+            observer.loginSuccess(loggedInUser, authToken);
+        }
+
+        @Override
+        protected void handleFailureMessage(LoginObserver observer, String message) {
+            observer.taskFailed("Failed to login: " + message);
+        }
+
+        @Override
+        protected void handleExceptionMessage(LoginObserver observer, String message) {
+            observer.taskFailed("Failed to login because of exception: " + message);
         }
     }
 
     /**
      * Message handler (i.e., observer) for RegisterTask
      */
-    private class RegisterHandler extends Handler {
-        private RegisterObserver mObserver;
-
-        public RegisterHandler(RegisterObserver inObs) { mObserver = inObs; }
+    private class RegisterHandler extends BackgroundTaskHandler<RegisterObserver>{
+        public RegisterHandler(RegisterObserver inObs) { super(inObs); }
 
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(RegisterTask.SUCCESS_KEY);
-            if (success) {
-                User registeredUser = (User) msg.getData().getSerializable(RegisterTask.USER_KEY);
-                AuthToken authToken = (AuthToken) msg.getData().getSerializable(RegisterTask.AUTH_TOKEN_KEY);
+        protected void handleSuccessMessage(RegisterObserver observer, Bundle data) {
+            User registeredUser = (User) data.getSerializable(RegisterTask.USER_KEY);
+            AuthToken authToken = (AuthToken) data.getSerializable(RegisterTask.AUTH_TOKEN_KEY);
 
-                Cache.getInstance().setCurrUser(registeredUser);
-                Cache.getInstance().setCurrUserAuthToken(authToken);
+            Cache.getInstance().setCurrUser(registeredUser);
+            Cache.getInstance().setCurrUserAuthToken(authToken);
 
-                mObserver.registerSuccess(registeredUser, authToken);
-            } else if (msg.getData().containsKey(RegisterTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(RegisterTask.MESSAGE_KEY);
-                mObserver.taskFailed("Failed to register: " + message);
-            } else if (msg.getData().containsKey(RegisterTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(RegisterTask.EXCEPTION_KEY);
-                mObserver.taskFailed("Failed to register because of exception: " + ex.getMessage());
-            }
+            observer.registerSuccess(registeredUser, authToken);
+        }
+
+        @Override
+        protected void handleFailureMessage(RegisterObserver observer, String message) {
+            observer.taskFailed("Failed to register: " + message);
+        }
+
+        @Override
+        protected void handleExceptionMessage(RegisterObserver observer, String message) {
+            observer.taskFailed("Failed to register because of exception: " + message);
         }
     }
 
     /**
      * Message handler (i.e., observer) for LogoutTask
      */
-    private class LogoutHandler extends Handler {
-        LogoutObserver mObserver;
-
-        public LogoutHandler(LogoutObserver inObs) { mObserver = inObs; }
+    private class LogoutHandler extends BackgroundTaskHandler<LogoutObserver> {
+        public LogoutHandler(LogoutObserver inObs) { super(inObs); }
 
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(LogoutTask.SUCCESS_KEY);
-            if (success) {
-                mObserver.logoutSuccess();
-            } else if (msg.getData().containsKey(LogoutTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(LogoutTask.MESSAGE_KEY);
-                mObserver.taskFailed("Failed to logout: " + message);
-            } else if (msg.getData().containsKey(LogoutTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(LogoutTask.EXCEPTION_KEY);
-                mObserver.taskFailed("Failed to logout because of exception: " + ex.getMessage());
-            }
+        protected void handleSuccessMessage(LogoutObserver observer, Bundle data) {
+            observer.logoutSuccess();
+        }
+
+        @Override
+        protected void handleFailureMessage(LogoutObserver observer, String message) {
+            observer.taskFailed("Failed to logout: " + message);
+        }
+
+        @Override
+        protected void handleExceptionMessage(LogoutObserver observer, String message) {
+            observer.taskFailed("Failed to logout because of exception: " + message);
         }
     }
 
