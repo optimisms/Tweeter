@@ -1,10 +1,6 @@
 package edu.byu.cs.tweeter.client.model.service;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-
-import androidx.annotation.NonNull;
 
 import edu.byu.cs.tweeter.client.backgroundTask.GetUserTask;
 import edu.byu.cs.tweeter.client.backgroundTask.LoginTask;
@@ -131,24 +127,23 @@ public class UserService extends Service {
     /**
      * Message handler (i.e., observer) for GetUserTask.
      */
-    private class GetUserHandler extends Handler {
-        GetUserObserver mObserver;
-
-        public GetUserHandler(GetUserObserver inObs) { mObserver = inObs; }
+    private class GetUserHandler extends BackgroundTaskHandler<GetUserObserver> {
+        public GetUserHandler(GetUserObserver inObs) { super(inObs); }
 
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(GetUserTask.SUCCESS_KEY);
-            if (success) {
-                User user = (User) msg.getData().getSerializable(GetUserTask.USER_KEY);
-                mObserver.getUserSuccess(user);
-            } else if (msg.getData().containsKey(GetUserTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(GetUserTask.MESSAGE_KEY);
-                mObserver.taskFailed("Failed to get user's profile: " + message);
-            } else if (msg.getData().containsKey(GetUserTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(GetUserTask.EXCEPTION_KEY);
-                mObserver.taskFailed("Failed to get user's profile because of exception: " + ex.getMessage());
-            }
+        protected void handleSuccessMessage(GetUserObserver observer, Bundle data) {
+            User user = (User) data.getSerializable(GetUserTask.USER_KEY);
+            observer.getUserSuccess(user);
+        }
+
+        @Override
+        protected void handleFailureMessage(GetUserObserver observer, String message) {
+            observer.taskFailed("Failed to get user's profile: " + message);
+        }
+
+        @Override
+        protected void handleExceptionMessage(GetUserObserver observer, String message) {
+            observer.taskFailed("Failed to get user's profile because of exception: " + message);
         }
     }
 }

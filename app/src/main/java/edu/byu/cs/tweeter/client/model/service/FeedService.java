@@ -1,9 +1,6 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import android.os.Handler;
-import android.os.Message;
-
-import androidx.annotation.NonNull;
+import android.os.Bundle;
 
 import java.util.List;
 
@@ -25,25 +22,24 @@ public class FeedService extends Service {
     /**
      * Message handler (i.e., observer) for GetFeedTask.
      */
-    private class GetFeedHandler extends Handler {
-        GetFeedObserver mObserver;
-
-        public GetFeedHandler(GetFeedObserver inObs) { mObserver = inObs; }
+    private class GetFeedHandler extends BackgroundTaskHandler<GetFeedObserver> {
+        public GetFeedHandler(GetFeedObserver inObs) { super(inObs); }
 
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(GetFeedTask.SUCCESS_KEY);
-            if (success) {
-                List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetFeedTask.ITEMS_KEY);
-                boolean hasMorePages = msg.getData().getBoolean(GetFeedTask.MORE_PAGES_KEY);
-                mObserver.getFeedSuccess(statuses, hasMorePages);
-            } else if (msg.getData().containsKey(GetFeedTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(GetFeedTask.MESSAGE_KEY);
-                mObserver.taskFailed("Failed to get feed: " + message);
-            } else if (msg.getData().containsKey(GetFeedTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(GetFeedTask.EXCEPTION_KEY);
-                mObserver.taskFailed("Failed to get feed because of exception: " + ex.getMessage());
-            }
+        protected void handleSuccessMessage(GetFeedObserver observer, Bundle data) {
+            List<Status> statuses = (List<Status>) data.getSerializable(GetFeedTask.ITEMS_KEY);
+            boolean hasMorePages = data.getBoolean(GetFeedTask.MORE_PAGES_KEY);
+            observer.getFeedSuccess(statuses, hasMorePages);
+        }
+
+        @Override
+        protected void handleFailureMessage(GetFeedObserver observer, String message) {
+            observer.taskFailed("Failed to get feed: " + message);
+        }
+
+        @Override
+        protected void handleExceptionMessage(GetFeedObserver observer, String message) {
+            observer.taskFailed("Failed to get feed because of exception: " + message);
         }
     }
 }

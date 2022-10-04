@@ -1,9 +1,6 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import android.os.Handler;
-import android.os.Message;
-
-import androidx.annotation.NonNull;
+import android.os.Bundle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,162 +72,165 @@ public class FollowService extends Service {
         executeTask(isFollowerTask);
     }
 
-    private class FollowHandler extends Handler {
-        FollowObserver mObserver;
+    private class FollowHandler extends BackgroundTaskHandler<FollowObserver> {
+        public FollowHandler(FollowObserver inObs) { super(inObs); }
 
-        public FollowHandler(FollowObserver inObs) { mObserver = inObs; }
+        //TODO: explore creating a super class with a template method to call enableButton()
+        // Alternatively, could create an abstract super class for the two, and then an if statement
+        // for if(T extends __abstract super__) { enableButtons() }
 
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(FollowTask.SUCCESS_KEY);
-            if (success) {
-                mObserver.followSuccess();
-            } else if (msg.getData().containsKey(FollowTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(FollowTask.MESSAGE_KEY);
-                mObserver.taskFailed("Failed to follow: " + message);
-            } else if (msg.getData().containsKey(FollowTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(FollowTask.EXCEPTION_KEY);
-                mObserver.taskFailed("Failed to follow because of exception: " + ex.getMessage());
-            }
-            mObserver.enableButton();
+        protected void handleSuccessMessage(FollowObserver observer, Bundle data) {
+            observer.followSuccess();
+            observer.enableButton();
+        }
+
+        @Override
+        protected void handleFailureMessage(FollowObserver observer, String message) {
+            observer.taskFailed("Failed to follow: " + message);
+            observer.enableButton();
+        }
+
+        @Override
+        protected void handleExceptionMessage(FollowObserver observer, String message) {
+            observer.taskFailed("Failed to follow because of exception: " + message);
+            observer.enableButton();
         }
     }
-    private class UnfollowHandler extends Handler {
-        UnfollowObserver mObserver;
 
-        public UnfollowHandler(UnfollowObserver inObs) { mObserver = inObs; }
+    private class UnfollowHandler extends BackgroundTaskHandler<UnfollowObserver> {
+        public UnfollowHandler(UnfollowObserver inObs) { super(inObs); }
 
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(UnfollowTask.SUCCESS_KEY);
-            if (success) {
-                mObserver.unfollowSuccess();
-            } else if (msg.getData().containsKey(UnfollowTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(UnfollowTask.MESSAGE_KEY);
-                mObserver.taskFailed("Failed to unfollow: " + message);
-            } else if (msg.getData().containsKey(UnfollowTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(UnfollowTask.EXCEPTION_KEY);
-                mObserver.taskFailed("Failed to unfollow because of exception: " + ex.getMessage());
-            }
-            mObserver.enableButton();
+        protected void handleSuccessMessage(UnfollowObserver observer, Bundle data) {
+            observer.unfollowSuccess();
+            observer.enableButton();
+        }
+
+        @Override
+        protected void handleFailureMessage(UnfollowObserver observer, String message) {
+            observer.taskFailed("Failed to unfollow: " + message);
+            observer.enableButton();
+        }
+
+        @Override
+        protected void handleExceptionMessage(UnfollowObserver observer, String message) {
+            observer.taskFailed("Failed to unfollow because of exception: " + "message");
+            observer.enableButton();
         }
     }
-    private class IsFollowerHandler extends Handler {
-        IsFollowerObserver mObserver;
 
-        public IsFollowerHandler(IsFollowerObserver inObs) { mObserver = inObs; }
+    private class IsFollowerHandler extends BackgroundTaskHandler<IsFollowerObserver> {
+        public IsFollowerHandler(IsFollowerObserver inObs) { super(inObs); }
 
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(IsFollowerTask.SUCCESS_KEY);
-            if (success) {
-                boolean isFollower = msg.getData().getBoolean(IsFollowerTask.IS_FOLLOWER_KEY);
-                mObserver.isFollowerSuccess(isFollower);
-            } else if (msg.getData().containsKey(IsFollowerTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(IsFollowerTask.MESSAGE_KEY);
-                mObserver.taskFailed("Failed to determine following relationship: " + message);
-            } else if (msg.getData().containsKey(IsFollowerTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(IsFollowerTask.EXCEPTION_KEY);
-                mObserver.taskFailed("Failed to determine following relationship because of exception: " + ex.getMessage());
-            }
+        protected void handleSuccessMessage(IsFollowerObserver observer, Bundle data) {
+            boolean isFollower = data.getBoolean(IsFollowerTask.IS_FOLLOWER_KEY);
+            observer.isFollowerSuccess(isFollower);
+        }
+
+        @Override
+        protected void handleFailureMessage(IsFollowerObserver observer, String message) {
+            observer.taskFailed("Failed to determine following relationship: " + message);
+        }
+
+        @Override
+        protected void handleExceptionMessage(IsFollowerObserver observer, String message) {
+            observer.taskFailed("Failed to determine following relationship because of exception: " + message);
         }
     }
 
     /**
      * Message handler (i.e., observer) for GetFollowingTask.
      */
-    private class GetFollowingHandler extends Handler {
-        private GetFollowingObserver observer;
-
-        public GetFollowingHandler(GetFollowingObserver inObs) { observer = inObs; }
+    private class GetFollowingHandler extends BackgroundTaskHandler<GetFollowingObserver> {
+        public GetFollowingHandler(GetFollowingObserver inObs) { super(inObs); }
 
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(GetFollowingTask.SUCCESS_KEY);
-            if (success) {
-                List<User> followees = (List<User>) msg.getData().getSerializable(GetFollowingTask.ITEMS_KEY);
-                boolean hasMorePages = msg.getData().getBoolean(GetFollowingTask.MORE_PAGES_KEY);
-                observer.getFollowingSuccess(followees, hasMorePages);
-            } else if (msg.getData().containsKey(GetFollowingTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(GetFollowingTask.MESSAGE_KEY);
-                observer.taskFailed("Failed to get following: " + message);
-            } else if (msg.getData().containsKey(GetFollowingTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(GetFollowingTask.EXCEPTION_KEY);
-                observer.taskFailed("Failed to get following because of exception: " + ex.getMessage());
-            }
+        protected void handleSuccessMessage(GetFollowingObserver observer, Bundle data) {
+            List<User> followees = (List<User>) data.getSerializable(GetFollowingTask.ITEMS_KEY);
+            boolean hasMorePages = data.getBoolean(GetFollowingTask.MORE_PAGES_KEY);
+            observer.getFollowingSuccess(followees, hasMorePages);
+        }
+
+        @Override
+        protected void handleFailureMessage(GetFollowingObserver observer, String message) {
+            observer.taskFailed("Failed to get following: " + message);
+        }
+
+        @Override
+        protected void handleExceptionMessage(GetFollowingObserver observer, String message) {
+            observer.taskFailed("Failed to get following because of exception: " + message);
         }
     }
 
     /**
      * Message handler (i.e., observer) for GetFollowingCountTask
      */
-    private class GetFollowingCountHandler extends Handler {
-        GetFollowingCountObserver observer;
-
-        public GetFollowingCountHandler(GetFollowingCountObserver inObs) { observer = inObs; }
+    private class GetFollowingCountHandler extends BackgroundTaskHandler<GetFollowingCountObserver> {
+        public GetFollowingCountHandler(GetFollowingCountObserver inObs) { super(inObs); }
 
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(GetFollowingCountTask.SUCCESS_KEY);
-            if (success) {
-                int count = msg.getData().getInt(GetFollowingCountTask.COUNT_KEY);
-                observer.getFollowingCountSuccess(count);
-            } else if (msg.getData().containsKey(GetFollowingCountTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(GetFollowingCountTask.MESSAGE_KEY);
-                observer.taskFailed("Failed to get following count: " + message);
-            } else if (msg.getData().containsKey(GetFollowingCountTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(GetFollowingCountTask.EXCEPTION_KEY);
-                observer.taskFailed("Failed to get following count because of exception: " + ex.getMessage());
-            }
+        protected void handleSuccessMessage(GetFollowingCountObserver observer, Bundle data) {
+            int count = data.getInt(GetFollowingCountTask.COUNT_KEY);
+            observer.getFollowingCountSuccess(count);
+        }
+
+        @Override
+        protected void handleFailureMessage(GetFollowingCountObserver observer, String message) {
+            observer.taskFailed("Failed to get following count: " + message);
+        }
+
+        @Override
+        protected void handleExceptionMessage(GetFollowingCountObserver observer, String message) {
+            observer.taskFailed("Failed to get following count because of exception: " + message);
         }
     }
 
     /**
      * Message handler (i.e., observer) for GetFollowersTask.
      */
-    private class GetFollowersHandler extends Handler {
-        private GetFollowersObserver observer;
-
-        public GetFollowersHandler(GetFollowersObserver inObs) { observer = inObs; }
+    private class GetFollowersHandler extends BackgroundTaskHandler<GetFollowersObserver> {
+        public GetFollowersHandler(GetFollowersObserver inObs) { super(inObs); }
 
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(GetFollowersTask.SUCCESS_KEY);
-            if (success) {
-                List<User> followers = (List<User>) msg.getData().getSerializable(GetFollowersTask.ITEMS_KEY);
-                boolean hasMorePages = msg.getData().getBoolean(GetFollowersTask.MORE_PAGES_KEY);
-                observer.getFollowersSuccess(followers, hasMorePages);
-            } else if (msg.getData().containsKey(GetFollowersTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(GetFollowersTask.MESSAGE_KEY);
-                observer.taskFailed("Failed to get followers: " + message);
-            } else if (msg.getData().containsKey(GetFollowersTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(GetFollowersTask.EXCEPTION_KEY);
-                observer.taskFailed("Failed to get followers because of exception: " + ex.getMessage());
-            }
+        protected void handleSuccessMessage(GetFollowersObserver observer, Bundle data) {
+            List<User> followers = (List<User>) data.getSerializable(GetFollowersTask.ITEMS_KEY);
+            boolean hasMorePages = data.getBoolean(GetFollowersTask.MORE_PAGES_KEY);
+            observer.getFollowersSuccess(followers, hasMorePages);
+        }
+
+        @Override
+        protected void handleFailureMessage(GetFollowersObserver observer, String message) {
+            observer.taskFailed("Failed to get followers: " + message);
+        }
+
+        @Override
+        protected void handleExceptionMessage(GetFollowersObserver observer, String message) {
+            observer.taskFailed("Failed to get followers because of exception: " + message);
         }
     }
 
     /**
      * Message handler (i.e., observer) for GetFollowingCountTask
      */
-    private class GetFollowersCountHandler extends Handler {
-        GetFollowersCountObserver observer;
-
-        public GetFollowersCountHandler(GetFollowersCountObserver inObs) { observer = inObs; }
+    private class GetFollowersCountHandler extends BackgroundTaskHandler<GetFollowersCountObserver> {
+        public GetFollowersCountHandler(GetFollowersCountObserver inObs) { super(inObs); }
 
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(GetFollowersCountTask.SUCCESS_KEY);
-            if (success) {
-                int count = msg.getData().getInt(GetFollowersCountTask.COUNT_KEY);
-                observer.getFollowersCountSuccess(count);
-            } else if (msg.getData().containsKey(GetFollowersCountTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(GetFollowersCountTask.MESSAGE_KEY);
-                observer.taskFailed( "Failed to get followers count: " + message);
-            } else if (msg.getData().containsKey(GetFollowersCountTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(GetFollowersCountTask.EXCEPTION_KEY);
-                observer.taskFailed("Failed to get followers count because of exception: " + ex.getMessage());
-            }
+        protected void handleSuccessMessage(GetFollowersCountObserver observer, Bundle data) {
+            int count = data.getInt(GetFollowersCountTask.COUNT_KEY);
+            observer.getFollowersCountSuccess(count);
+        }
+
+        @Override
+        protected void handleFailureMessage(GetFollowersCountObserver observer, String message) {
+            observer.taskFailed( "Failed to get followers count: " + message);
+        }
+
+        @Override
+        protected void handleExceptionMessage(GetFollowersCountObserver observer, String message) {
+            observer.taskFailed("Failed to get followers count because of exception: " + message);
         }
     }
 

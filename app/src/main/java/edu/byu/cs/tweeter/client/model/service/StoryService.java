@@ -1,9 +1,6 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import android.os.Handler;
-import android.os.Message;
-
-import androidx.annotation.NonNull;
+import android.os.Bundle;
 
 import java.util.List;
 
@@ -26,25 +23,24 @@ public class StoryService extends Service {
     /**
      * Message handler (i.e., observer) for GetStoryTask.
      */
-    private class GetStoryHandler extends Handler {
-        GetStoryObserver mObserver;
-
-        public GetStoryHandler(GetStoryObserver inObs) { mObserver = inObs; }
+    private class GetStoryHandler extends BackgroundTaskHandler<GetStoryObserver> {
+        public GetStoryHandler(GetStoryObserver inObs) { super(inObs); }
 
         @Override
-        public void handleMessage(@NonNull Message msg) {
-            boolean success = msg.getData().getBoolean(GetStoryTask.SUCCESS_KEY);
-            if (success) {
-                List<Status> statuses = (List<Status>) msg.getData().getSerializable(GetStoryTask.ITEMS_KEY);
-                boolean hasMorePages = msg.getData().getBoolean(GetStoryTask.MORE_PAGES_KEY);
-                mObserver.getStorySuccess(statuses, hasMorePages);
-            } else if (msg.getData().containsKey(GetStoryTask.MESSAGE_KEY)) {
-                String message = msg.getData().getString(GetStoryTask.MESSAGE_KEY);
-                mObserver.taskFailed("Failed to get story: " + message);
-            } else if (msg.getData().containsKey(GetStoryTask.EXCEPTION_KEY)) {
-                Exception ex = (Exception) msg.getData().getSerializable(GetStoryTask.EXCEPTION_KEY);
-                mObserver.taskFailed("Failed to get story because of exception: " + ex.getMessage());
-            }
+        protected void handleSuccessMessage(GetStoryObserver observer, Bundle data) {
+            List<Status> statuses = (List<Status>) data.getSerializable(GetStoryTask.ITEMS_KEY);
+            boolean hasMorePages = data.getBoolean(GetStoryTask.MORE_PAGES_KEY);
+            observer.getStorySuccess(statuses, hasMorePages);
+        }
+
+        @Override
+        protected void handleFailureMessage(GetStoryObserver observer, String message) {
+            observer.taskFailed("Failed to get story: " + message);
+        }
+
+        @Override
+        protected void handleExceptionMessage(GetStoryObserver observer, String message) {
+            observer.taskFailed("Failed to get story because of exception: " + message);
         }
     }
 }
