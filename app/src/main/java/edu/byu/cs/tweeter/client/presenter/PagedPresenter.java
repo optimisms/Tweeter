@@ -26,7 +26,7 @@ public abstract class PagedPresenter<T> extends Presenter {
 
     protected PagedTaskData<T> data;
 
-    public PagedPresenter(PagedView<T> inView) { mView = inView; }
+    public PagedPresenter(PagedView<T> inView) { super(inView); mView = inView; }
 
     public boolean isLoading() { return isLoading; }
     public boolean hasMorePages() { return hasMorePages; }

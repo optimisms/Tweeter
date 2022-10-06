@@ -4,8 +4,8 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class LoginPresenter implements UserService.LoginObserver {
-    public interface View {
+public class LoginPresenter extends Presenter implements UserService.LoginObserver {
+    public interface LoginView extends View {
         void displayInfoMessage(String message);
         void clearInfoMessage();
         void displayErrorMessage(String message);
@@ -13,9 +13,9 @@ public class LoginPresenter implements UserService.LoginObserver {
         void navigateToUser(User user);
     }
 
-    private View mView;
+    private LoginView mView;
 
-    public LoginPresenter(View inView) { mView = inView; }
+    public LoginPresenter(LoginView inView) { super(inView); mView = inView; }
 
     public void initiateLogin(String username, String password) {
         String message = validateLogin(username, password);

@@ -9,8 +9,8 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class RegisterPresenter implements UserService.RegisterObserver {
-    public interface View {
+public class RegisterPresenter extends Presenter implements UserService.RegisterObserver {
+    public interface RegisterView extends View {
         void displayInfoMessage(String message);
         void clearInfoMessage();
         void displayErrorMessage(String message);
@@ -18,9 +18,9 @@ public class RegisterPresenter implements UserService.RegisterObserver {
         void navigateToUser(User user);
     }
 
-    private View mView;
+    private RegisterView mView;
 
-    public RegisterPresenter(View inView) { mView = inView; }
+    public RegisterPresenter(RegisterView inView) { super(inView); mView = inView; }
 
     public void initiateRegister(String firstName, String lastName, String username, String password, Bitmap image) {
         String message = validateRegistration(firstName, lastName, username, password, image);

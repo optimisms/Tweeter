@@ -16,8 +16,8 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class MainPresenter {
-    public interface View {
+public class MainPresenter extends Presenter {
+    public interface MainView extends View {
         void logoutUser();
         void displayLogoutMessage();
         void clearLogoutMessage();
@@ -35,11 +35,13 @@ public class MainPresenter {
         void displayUnfollowMessage();
     }
 
+    //TODO: get with a TA to ask how to remove mView from child class without ruining everything
+
+    private MainView mView;
+
     private static final String LOG_TAG = "MainActivity";
 
-    private View mView;
-
-    public MainPresenter(View inView) { mView = inView; }
+    public MainPresenter(MainView inView) { super(inView); mView = inView; }
 
     public void initiateLogout() { new UserService().logout(Cache.getInstance().getCurrUserAuthToken(), new LogoutObserver()); }
     public void initiatePostStatus(String post) {
