@@ -1,13 +1,13 @@
 package edu.byu.cs.tweeter.client.model.service;
 
 import edu.byu.cs.tweeter.client.backgroundTask.GetStoryTask;
-import edu.byu.cs.tweeter.client.presenter.StoryPresenter.GetStoryObserver;
+import edu.byu.cs.tweeter.client.presenter.StoryPresenter;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class StoryService extends Service {
-    public void getStory(AuthToken authToken, User user, int pageSize, Status lastStatus, GetStoryObserver observer) {
+    public void getStory(AuthToken authToken, User user, int pageSize, Status lastStatus, StoryPresenter.PagedObserver observer) {
         GetStoryTask getStoryTask = new GetStoryTask(authToken, user, pageSize, lastStatus, new GetStoryHandler(observer));
         executeTask(getStoryTask);
     }
@@ -15,16 +15,16 @@ public class StoryService extends Service {
     /**
      * Message handler (i.e., observer) for GetStoryTask.
      */
-    private class GetStoryHandler extends PagedTaskHandler<GetStoryObserver, Status> {
-        public GetStoryHandler(GetStoryObserver inObs) { super(inObs); }
+    private class GetStoryHandler extends PagedTaskHandler<StoryPresenter.PagedObserver, Status> {
+        public GetStoryHandler(StoryPresenter.PagedObserver inObs) { super(inObs); }
 
         @Override
-        protected void handleFailureMessage(GetStoryObserver observer, String message) {
+        protected void handleFailureMessage(StoryPresenter.PagedObserver observer, String message) {
             observer.taskFailed("Failed to get story: " + message);
         }
 
         @Override
-        protected void handleExceptionMessage(GetStoryObserver observer, String message) {
+        protected void handleExceptionMessage(StoryPresenter.PagedObserver observer, String message) {
             observer.taskFailed("Failed to get story because of exception: " + message);
         }
     }

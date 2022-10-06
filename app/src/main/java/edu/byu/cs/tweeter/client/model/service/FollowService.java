@@ -16,8 +16,8 @@ import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
-import edu.byu.cs.tweeter.client.presenter.FollowersPresenter.GetFollowersObserver;
-import edu.byu.cs.tweeter.client.presenter.FollowingPresenter.GetFollowingObserver;
+import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
+import edu.byu.cs.tweeter.client.presenter.FollowingPresenter;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -38,11 +38,11 @@ public class FollowService extends Service {
         void getFollowersCountSuccess(int count);
     }
 
-    public void loadMoreFollowing(AuthToken authToken, User user, int pageSize, User lastFollowee, GetFollowingObserver observer) {
+    public void loadMoreFollowing(AuthToken authToken, User user, int pageSize, User lastFollowee, FollowingPresenter.PagedObserver observer) {
         GetFollowingTask getFollowingTask = new GetFollowingTask(authToken, user, pageSize, lastFollowee, new GetFollowingHandler(observer));
         executeTask(getFollowingTask);
     }
-    public void loadMoreFollowers(AuthToken authToken, User user, int pageSize, User lastFollower, GetFollowersObserver observer) {
+    public void loadMoreFollowers(AuthToken authToken, User user, int pageSize, User lastFollower, FollowersPresenter.PagedObserver observer) {
         GetFollowersTask getFollowersTask = new GetFollowersTask(authToken, user, pageSize, lastFollower, new GetFollowersHandler(observer));
         executeTask(getFollowersTask);
     }
@@ -139,16 +139,16 @@ public class FollowService extends Service {
     /**
      * Message handler (i.e., observer) for GetFollowingTask.
      */
-    private class GetFollowingHandler extends PagedTaskHandler<GetFollowingObserver, User> {
-        public GetFollowingHandler(GetFollowingObserver inObs) { super(inObs); }
+    private class GetFollowingHandler extends PagedTaskHandler<FollowingPresenter.PagedObserver, User> {
+        public GetFollowingHandler(FollowingPresenter.PagedObserver inObs) { super(inObs); }
 
         @Override
-        protected void handleFailureMessage(GetFollowingObserver observer, String message) {
+        protected void handleFailureMessage(FollowingPresenter.PagedObserver observer, String message) {
             observer.taskFailed("Failed to get following: " + message);
         }
 
         @Override
-        protected void handleExceptionMessage(GetFollowingObserver observer, String message) {
+        protected void handleExceptionMessage(FollowingPresenter.PagedObserver observer, String message) {
             observer.taskFailed("Failed to get following because of exception: " + message);
         }
     }
@@ -156,15 +156,15 @@ public class FollowService extends Service {
     /**
      * Message handler (i.e., observer) for GetFollowersTask.
      */
-    private class GetFollowersHandler extends PagedTaskHandler<GetFollowersObserver, User> {
-        public GetFollowersHandler(GetFollowersObserver inObs) { super(inObs); }
+    private class GetFollowersHandler extends PagedTaskHandler<FollowersPresenter.PagedObserver, User> {
+        public GetFollowersHandler(FollowersPresenter.PagedObserver inObs) { super(inObs); }
         @Override
-        protected void handleFailureMessage(GetFollowersObserver observer, String message) {
+        protected void handleFailureMessage(FollowersPresenter.PagedObserver observer, String message) {
             observer.taskFailed("Failed to get followers: " + message);
         }
 
         @Override
-        protected void handleExceptionMessage(GetFollowersObserver observer, String message) {
+        protected void handleExceptionMessage(FollowersPresenter.PagedObserver observer, String message) {
             observer.taskFailed("Failed to get followers because of exception: " + message);
         }
     }
