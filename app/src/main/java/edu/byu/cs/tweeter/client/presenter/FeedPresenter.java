@@ -9,23 +9,15 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FeedPresenter {
-    public interface View {
-        void displayMessage(String message);
-        void clearMessage();
-        void setLoadingFooter();
-        void addStatuses(List<Status> statuses);
-        void startUserActivity(User user);
-    }
-
+public class FeedPresenter extends PagedPresenter {
     private static final int PAGE_SIZE = 10;
 
-    private View mView;
+    private PagedView<Status> mView;
     private Status lastStatus;
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    public FeedPresenter(View inView) { mView = inView; }
+    public FeedPresenter(PagedView<Status> inView) { mView = inView; }
 
     public boolean isLoading() { return isLoading; }
     public boolean hasMorePages() { return hasMorePages; }
@@ -48,7 +40,7 @@ public class FeedPresenter {
 
             lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
             hasMorePages = morePages;
-            mView.addStatuses(statuses);
+            mView.addItems(statuses);
         }
 
         @Override

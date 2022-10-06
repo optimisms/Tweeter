@@ -9,20 +9,14 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowingPresenter extends PagedPresenter {
-    public interface View extends PagedView<User> {
-        void displayMessage(String message);
-        void clearMessage();
-        void startUserActivity(User user);
-    }
-
     private static final int PAGE_SIZE = 10;
 
-    private View mView;
+    private PagedView<User> mView;
     private User lastFollowee;
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    public FollowingPresenter(View inView) { mView = inView; }
+    public FollowingPresenter(PagedView<User> inView) { mView = inView; }
 
     public boolean isLoading() { return isLoading; }
     public boolean hasMorePages() { return hasMorePages; }

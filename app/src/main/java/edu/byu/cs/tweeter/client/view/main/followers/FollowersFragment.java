@@ -28,13 +28,14 @@ import java.util.List;
 
 import edu.byu.cs.client.R;
 import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
+import edu.byu.cs.tweeter.client.presenter.PagedPresenter;
 import edu.byu.cs.tweeter.client.view.main.MainActivity;
 import edu.byu.cs.tweeter.model.domain.User;
 
 /**
  * Implements the "Followers" tab.
  */
-public class FollowersFragment extends Fragment implements FollowersPresenter.View {
+public class FollowersFragment extends Fragment implements PagedPresenter.PagedView<User> {
     private static final String LOG_TAG = "FollowersFragment";
     private static final String USER_KEY = "UserKey";
 
@@ -326,7 +327,7 @@ public class FollowersFragment extends Fragment implements FollowersPresenter.Vi
     }
 
     @Override
-    public void addFollowers(List<User> followees) { followersRecyclerViewAdapter.addItems(followees); }
+    public void addItems(List<User> followees) { followersRecyclerViewAdapter.addItems(followees); }
 
     @Override
     public void startUserActivity(User user) {
