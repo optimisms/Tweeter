@@ -19,8 +19,6 @@ public class Service {
     public interface PagedObserver<T> extends Observer {
         void pagedTaskSuccess(List<T> items, boolean morePages);
     }
-    //TODO: ask about having a middle interface below PagedObserver (like with PagedTask)
-    // that just defines the T as a Status or a User because there's two of each...?
 
     public <T extends Runnable> void executeTask(T task) {
         List<T> list = new ArrayList<>(List.of(task));
