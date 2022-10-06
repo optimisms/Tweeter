@@ -18,6 +18,8 @@ import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter extends Presenter {
+    //TODO: try to refactor some of the observers implementations out
+    //TODO: refactor the views but not implementations
     public interface MainView extends View {
         void logoutUser();
         void displayLogoutMessage();
