@@ -19,16 +19,12 @@ import edu.byu.cs.tweeter.client.backgroundTask.PagedTaskData;
 import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
 import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
 import edu.byu.cs.tweeter.client.presenter.FollowingPresenter;
+import edu.byu.cs.tweeter.client.presenter.MainPresenter.FollowObserver;
+import edu.byu.cs.tweeter.client.presenter.MainPresenter.UnfollowObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowService extends Service {
-    public interface FollowObserver extends FollowButtonObserver {
-        void followSuccess();
-    }
-    public interface UnfollowObserver extends FollowButtonObserver {
-        void unfollowSuccess();
-    }
     public interface IsFollowerObserver extends Observer {
         void isFollowerSuccess(boolean isFollower);
     }
@@ -78,7 +74,7 @@ public class FollowService extends Service {
 
         @Override
         protected void handleSuccessMessage(FollowObserver observer, Bundle data) {
-            observer.followSuccess();
+            observer.taskSuccess();
             observer.enableButton();
         }
     }
@@ -88,7 +84,7 @@ public class FollowService extends Service {
 
         @Override
         protected void handleSuccessMessage(UnfollowObserver observer, Bundle data) {
-            observer.unfollowSuccess();
+            observer.taskSuccess();
             observer.enableButton();
         }
     }

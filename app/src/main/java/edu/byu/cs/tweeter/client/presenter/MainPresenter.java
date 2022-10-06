@@ -11,6 +11,7 @@ import java.util.List;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.client.model.service.FollowService;
+import edu.byu.cs.tweeter.client.model.service.Service;
 import edu.byu.cs.tweeter.client.model.service.StatusService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -125,7 +126,7 @@ public class MainPresenter extends Presenter {
 
     private class LogoutObserver implements UserService.LogoutObserver {
         @Override
-        public void logoutSuccess() {
+        public void taskSuccess() {
             //Clear user data (cached data).
             Cache.getInstance().clearCache();
             mView.clearLogoutMessage();
@@ -139,9 +140,9 @@ public class MainPresenter extends Presenter {
             mView.displayLogoutErrorMessage(message);
         }
     }
-    private class PostStatusObserver implements StatusService.PostStatusObserver {
+    public class PostStatusObserver implements Service.NoDataReturnedObserver {
         @Override
-        public void postStatusSuccess() {
+        public void taskSuccess() {
             mView.clearPostingMessage();
             mView.displayPostingMessage();
         }
@@ -152,9 +153,9 @@ public class MainPresenter extends Presenter {
             mView.displayLogoutErrorMessage(message);
         }
     }
-    private class FollowObserver implements FollowService.FollowObserver {
+    public class FollowObserver implements Service.FollowButtonObserver {
         @Override
-        public void followSuccess() {
+        public void taskSuccess() {
             mView.updateCounts();
             mView.updateFollowButtonState(true);
             mView.displayFollowMessage();
@@ -166,9 +167,9 @@ public class MainPresenter extends Presenter {
         @Override
         public void enableButton() { mView.enableFollowButton(); }
     }
-    private class UnfollowObserver implements FollowService.UnfollowObserver {
+    public class UnfollowObserver implements Service.FollowButtonObserver {
         @Override
-        public void unfollowSuccess() {
+        public void taskSuccess() {
             mView.updateCounts();
             mView.updateFollowButtonState(false);
             mView.displayUnfollowMessage();

@@ -12,12 +12,16 @@ public class Service {
         void taskFailed(String message);
     }
 
-    public interface FollowButtonObserver extends Observer {
-        void enableButton();
-    }
-
     public interface PagedObserver<T> extends Observer {
         void pagedTaskSuccess(List<T> items, boolean morePages);
+    }
+
+    public interface NoDataReturnedObserver extends Observer {
+        void taskSuccess();
+    }
+
+    public interface FollowButtonObserver extends NoDataReturnedObserver {
+        void enableButton();
     }
 
     public <T extends Runnable> void executeTask(T task) {

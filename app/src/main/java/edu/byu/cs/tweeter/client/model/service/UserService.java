@@ -17,9 +17,7 @@ public class UserService extends Service {
     public interface RegisterObserver extends Observer {
         void registerSuccess(User user, AuthToken authToken);
     }
-    public interface LogoutObserver extends Observer {
-        void logoutSuccess();
-    }
+    public interface LogoutObserver extends NoDataReturnedObserver {}
     public interface GetUserObserver extends Observer {
         void getUserSuccess(User user);
     }
@@ -90,7 +88,7 @@ public class UserService extends Service {
 
         @Override
         protected void handleSuccessMessage(LogoutObserver observer, Bundle data) {
-            observer.logoutSuccess();
+            observer.taskSuccess();
         }
     }
 
