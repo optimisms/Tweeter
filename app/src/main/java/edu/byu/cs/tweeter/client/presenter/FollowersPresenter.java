@@ -8,24 +8,14 @@ import edu.byu.cs.tweeter.client.model.service.Service;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowersPresenter extends PagedPresenter {
-    private static final int PAGE_SIZE = 10;
+public class FollowersPresenter extends PagedPresenter<User> {
 
-    private PagedView<User> mView;
-    private User lastFollower;
-    private boolean hasMorePages;
-    private boolean isLoading = false;
-
-    public FollowersPresenter(PagedView<User> inView) { mView = inView; }
-
-    public boolean isLoading() { return isLoading; }
-    public boolean hasMorePages() { return hasMorePages; }
+    public FollowersPresenter(PagedView<User> inView) { super(inView); }
 
     public void loadMoreFollowers(User user) {
-        isLoading = true;
-        mView.setLoadingFooter();
+        loadMoreItems();
 
-        new FollowService().loadMoreFollowers(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastFollower, new GetFollowersObserver());
+        new FollowService().loadMoreFollowers(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastItem, new GetFollowersObserver());
     }
     public void initiateGetUser(String username) {
         new UserService().getUser(Cache.getInstance().getCurrUserAuthToken(), username, new GetUserObserver());
@@ -37,7 +27,7 @@ public class FollowersPresenter extends PagedPresenter {
             isLoading = false;
             mView.setLoadingFooter();
 
-            lastFollower = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
+            lastItem = (followers.size() > 0) ? followers.get(followers.size() - 1) : null;
             hasMorePages = morePages;
             mView.addItems(followers);
         }

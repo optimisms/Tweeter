@@ -9,7 +9,7 @@ import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class StoryPresenter extends PagedPresenter {
+public class StoryPresenter extends PagedPresenter<Status> {
     private static final int PAGE_SIZE = 10;
 
     private PagedView<Status> mView;
@@ -17,7 +17,7 @@ public class StoryPresenter extends PagedPresenter {
     private boolean hasMorePages;
     private boolean isLoading = false;
 
-    public StoryPresenter(PagedView<Status> inView) { mView = inView; }
+    public StoryPresenter(PagedView<Status> inView) { super(inView); mView = inView; }
 
     public boolean isLoading() { return isLoading; }
     public boolean hasMorePages() { return hasMorePages; }
