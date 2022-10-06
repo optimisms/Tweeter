@@ -229,7 +229,7 @@ public class FollowingFragment extends Fragment implements PagedPresenter.PagedV
          */
         void loadMoreItems() {
             if (!presenter.isLoading()) {   // This guard is important for avoiding a race condition in the scrolling code.
-                presenter.loadMoreFollowees(user);
+                presenter.loadMoreItems(user);
             }
         }
 

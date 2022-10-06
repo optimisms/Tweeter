@@ -287,7 +287,7 @@ public class FeedFragment extends Fragment implements PagedPresenter.PagedView<S
          */
         void loadMoreItems(){
             if (!presenter.isLoading()) {   // This guard is important for avoiding a race condition in the scrolling code.
-                presenter.initiateGetFeed(user);
+                presenter.loadMoreItems(user);
             }
         }
 

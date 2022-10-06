@@ -6,9 +6,8 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class FollowingPresenter extends PagedPresenter<User> {
     public FollowingPresenter(PagedView<User> inView) { super(inView); }
 
-    public void loadMoreFollowees(User user) {
-        loadMoreItems(user);
-
+    @Override
+    public void callServiceMethod() {
         new FollowService().loadMoreFollowing(data);
     }
 }

@@ -280,7 +280,7 @@ public class StoryFragment extends Fragment implements PagedPresenter.PagedView<
          */
         void loadMoreItems() {
             if (!presenter.isLoading()) {   // This guard is important for avoiding a race condition in the scrolling code.
-                presenter.initiateGetStory(user);
+                presenter.loadMoreItems(user);
             }
         }
 
