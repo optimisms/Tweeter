@@ -38,11 +38,9 @@ public class MainPresenter extends Presenter {
 
     //TODO: get with a TA to ask how to remove mView from child class without ruining everything
 
-    private MainView mView;
-
     private static final String LOG_TAG = "MainActivity";
 
-    public MainPresenter(MainView inView) { super(inView); mView = inView; }
+    public MainPresenter(MainView inView) { super(inView); }
 
     public void initiateLogout() { new UserService().logout(Cache.getInstance().getCurrUserAuthToken(), new LogoutObserver()); }
     public void initiatePostStatus(String post) {
@@ -51,7 +49,7 @@ public class MainPresenter extends Presenter {
             new StatusService().postStatus(Cache.getInstance().getCurrUserAuthToken(), newStatus, new PostStatusObserver());
         } catch (ParseException ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
-            mView.displayPostingErrorMessage("Failed to post the status because of exception: " + ex.getMessage());
+            ((MainView) mView).displayPostingErrorMessage("Failed to post the status because of exception: " + ex.getMessage());
         }
     }
 
@@ -129,82 +127,82 @@ public class MainPresenter extends Presenter {
         public void taskSuccess() {
             //Clear user data (cached data).
             Cache.getInstance().clearCache();
-            mView.clearLogoutMessage();
-            mView.displayLogoutMessage();
-            mView.logoutUser();
+            ((MainView) mView).clearLogoutMessage();
+            ((MainView) mView).displayLogoutMessage();
+            ((MainView) mView).logoutUser();
         }
 
         @Override
         public void taskFailed(String message) {
-            mView.clearLogoutMessage();
-            mView.displayLogoutErrorMessage(message);
+            ((MainView) mView).clearLogoutMessage();
+            ((MainView) mView).displayLogoutErrorMessage(message);
         }
     }
     public class PostStatusObserver implements Service.NoDataReturnedObserver {
         @Override
         public void taskSuccess() {
-            mView.clearPostingMessage();
-            mView.displayPostingMessage();
+            ((MainView) mView).clearPostingMessage();
+            ((MainView) mView).displayPostingMessage();
         }
 
         @Override
         public void taskFailed(String message) {
-            mView.clearPostingMessage();
-            mView.displayLogoutErrorMessage(message);
+            ((MainView) mView).clearPostingMessage();
+            ((MainView) mView).displayLogoutErrorMessage(message);
         }
     }
     public class FollowObserver implements Service.FollowButtonObserver {
         @Override
         public void taskSuccess() {
-            mView.updateCounts();
-            mView.updateFollowButtonState(true);
-            mView.displayFollowMessage();
+            ((MainView) mView).updateCounts();
+            ((MainView) mView).updateFollowButtonState(true);
+            ((MainView) mView).displayFollowMessage();
         }
 
         @Override
-        public void taskFailed(String message) { mView.displayErrorMessage(message); }
+        public void taskFailed(String message) { ((MainView) mView).displayErrorMessage(message); }
 
         @Override
-        public void enableButton() { mView.enableFollowButton(); }
+        public void enableButton() { ((MainView) mView).enableFollowButton(); }
     }
     public class UnfollowObserver implements Service.FollowButtonObserver {
         @Override
         public void taskSuccess() {
-            mView.updateCounts();
-            mView.updateFollowButtonState(false);
-            mView.displayUnfollowMessage();
+            ((MainView) mView).updateCounts();
+            ((MainView) mView).updateFollowButtonState(false);
+            ((MainView) mView).displayUnfollowMessage();
         }
 
         @Override
-        public void taskFailed(String message) { mView.displayErrorMessage(message); }
+        public void taskFailed(String message) { ((MainView) mView).displayErrorMessage(message); }
 
         @Override
-        public void enableButton() { mView.enableFollowButton(); }
+        public void enableButton() { ((MainView) mView).enableFollowButton(); }
     }
     private class IsFollowerObserver implements FollowService.IsFollowerObserver {
         @Override
         public void isFollowerSuccess(boolean isFollower) {
-            mView.updateFollowButtonState(isFollower);
+            ((MainView) mView).updateFollowButtonState(isFollower);
         }
 
         @Override
         public void taskFailed(String message) {
-            mView.displayErrorMessage(message);
+            ((MainView) mView).displayErrorMessage(message);
         }
     }
     private class GetFollowingCountObserver implements FollowService.GetFollowingCountObserver {
         @Override
-        public void getFollowingCountSuccess(int count) { mView.updateFolloweeCount(count); }
+        public void getFollowingCountSuccess(int count) { ((MainView) mView).updateFolloweeCount(count); }
 
         @Override
-        public void taskFailed(String message) { mView.displayErrorMessage(message); }
+        public void taskFailed(String message) { ((MainView) mView).displayErrorMessage(message); }
     }
     private class GetFollowersCountObserver implements FollowService.GetFollowersCountObserver {
         @Override
-        public void getFollowersCountSuccess(int count) { mView.updateFollowerCount(count); }
+        public void getFollowersCountSuccess(int count) { ((MainView) mView).updateFollowerCount(count); }
 
         @Override
-        public void taskFailed(String message) { mView.displayErrorMessage(message); }
+        public void taskFailed(String message) { ((MainView) mView).displayErrorMessage(message); }
     }
 
 }

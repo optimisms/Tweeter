@@ -18,15 +18,13 @@ public class RegisterPresenter extends Presenter implements UserService.Register
         void navigateToUser(User user);
     }
 
-    private RegisterView mView;
-
-    public RegisterPresenter(RegisterView inView) { super(inView); mView = inView; }
+    public RegisterPresenter(RegisterView inView) { super(inView); }
 
     public void initiateRegister(String firstName, String lastName, String username, String password, Bitmap image) {
         String message = validateRegistration(firstName, lastName, username, password, image);
         if (message != null) { //Register invalid
-            mView.clearInfoMessage();
-            mView.displayErrorMessage(message);
+            ((RegisterView) mView).clearInfoMessage();
+            ((RegisterView) mView).displayErrorMessage(message);
         } else { //Register valid
             // Convert image to byte array.
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -36,8 +34,8 @@ public class RegisterPresenter extends Presenter implements UserService.Register
             // Intentionally, Use the java Base64 encoder so it is compatible with M4.
             String imageBytesBase64 = Base64.getEncoder().encodeToString(imageBytes);
 
-            mView.clearErrorMessage();
-            mView.displayInfoMessage("Registering...");
+            ((RegisterView) mView).clearErrorMessage();
+            ((RegisterView) mView).displayInfoMessage("Registering...");
             new UserService().register(firstName, lastName, username, password, imageBytesBase64, this);
         }
     }
@@ -55,14 +53,14 @@ public class RegisterPresenter extends Presenter implements UserService.Register
 
     @Override
     public void registerSuccess(User user, AuthToken authToken) {
-        mView.displayInfoMessage("Hello " + user.getFirstName());
-        mView.clearErrorMessage();
-        mView.navigateToUser(user);
+        ((RegisterView) mView).displayInfoMessage("Hello " + user.getFirstName());
+        ((RegisterView) mView).clearErrorMessage();
+        ((RegisterView) mView).navigateToUser(user);
     }
 
     @Override
     public void taskFailed(String message) {
-        mView.clearInfoMessage();
-        mView.displayErrorMessage(message);
+        ((RegisterView) mView).clearInfoMessage();
+        ((RegisterView) mView).displayErrorMessage(message);
     }
 }

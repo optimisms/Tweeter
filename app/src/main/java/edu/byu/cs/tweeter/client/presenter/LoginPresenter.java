@@ -5,7 +5,7 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class LoginPresenter extends Presenter implements UserService.LoginObserver {
-    public interface LoginView extends View {
+    public interface LoginView extends Presenter.View {
         void displayInfoMessage(String message);
         void clearInfoMessage();
         void displayErrorMessage(String message);
@@ -13,18 +13,16 @@ public class LoginPresenter extends Presenter implements UserService.LoginObserv
         void navigateToUser(User user);
     }
 
-    private LoginView mView;
-
-    public LoginPresenter(LoginView inView) { super(inView); mView = inView; }
+    public LoginPresenter(LoginView inView) { super(inView); }
 
     public void initiateLogin(String username, String password) {
         String message = validateLogin(username, password);
         if (message != null) { //Login invalid
-            mView.clearInfoMessage();
-            mView.displayErrorMessage(message);
+            ((LoginView) mView).clearInfoMessage();
+            ((LoginView) mView).displayErrorMessage(message);
         } else { //Login valid
-            mView.clearErrorMessage();
-            mView.displayInfoMessage("Logging in...");
+            ((LoginView) mView).clearErrorMessage();
+            ((LoginView) mView).displayInfoMessage("Logging in...");
             new UserService().login(username, password, this);
         }
     }
@@ -38,14 +36,14 @@ public class LoginPresenter extends Presenter implements UserService.LoginObserv
 
     @Override
     public void loginSuccess(User user, AuthToken authToken) {
-        mView.displayInfoMessage("Hello " + user.getFirstName());
-        mView.clearErrorMessage();
-        mView.navigateToUser(user);
+        ((LoginView) mView).displayInfoMessage("Hello " + user.getFirstName());
+        ((LoginView) mView).clearErrorMessage();
+        ((LoginView) mView).navigateToUser(user);
     }
 
     @Override
     public void taskFailed(String message) {
-        mView.clearInfoMessage();
-        mView.displayErrorMessage(message);
+        ((LoginView) mView).clearInfoMessage();
+        ((LoginView) mView).displayErrorMessage(message);
     }
 }

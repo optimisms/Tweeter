@@ -19,21 +19,20 @@ public abstract class PagedPresenter<T> extends Presenter {
 
     protected static final int PAGE_SIZE = 10;
 
-    protected PagedView<T> mView;
     protected T lastItem;
     protected boolean hasMorePages;
     protected boolean isLoading = false;
 
     protected PagedTaskData<T> data;
 
-    public PagedPresenter(PagedView<T> inView) { super(inView); mView = inView; }
+    public PagedPresenter(PagedView<T> inView) { super(inView); }
 
     public boolean isLoading() { return isLoading; }
     public boolean hasMorePages() { return hasMorePages; }
 
     public void loadMoreItems(User user) {
         isLoading = true;
-        mView.setLoadingFooter();
+        ((PagedView<T>) mView).setLoadingFooter();
 
         data = new PagedTaskData<>(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastItem, new PagedObserver());
         callServiceMethod();
@@ -49,34 +48,34 @@ public abstract class PagedPresenter<T> extends Presenter {
         @Override
         public void pagedTaskSuccess(List<T> items, boolean morePages) {
             isLoading = false;
-            mView.setLoadingFooter();
+            ((PagedView<T>) mView).setLoadingFooter();
 
             lastItem = (items.size() > 0) ? items.get(items.size() - 1) : null;
             hasMorePages = morePages;
-            mView.addItems(items);
+            ((PagedView<T>) mView).addItems(items);
         }
 
         @Override
         public void taskFailed(String message) {
             isLoading = false;
-            mView.setLoadingFooter();
+            ((PagedView<T>) mView).setLoadingFooter();
 
-            mView.clearMessage();
-            mView.displayMessage(message);
+            ((PagedView<T>) mView).clearMessage();
+            ((PagedView<T>) mView).displayMessage(message);
         }
     }
 
     public class GetUserObserver implements UserService.GetUserObserver {
         @Override
         public void getUserSuccess(User user) {
-            mView.displayMessage("Getting user's profile...");
-            mView.startUserActivity(user);
+            ((PagedView<T>) mView).displayMessage("Getting user's profile...");
+            ((PagedView<T>) mView).startUserActivity(user);
         }
 
         @Override
         public void taskFailed(String message) {
-            mView.clearMessage();
-            mView.displayMessage(message);
+            ((PagedView<T>) mView).clearMessage();
+            ((PagedView<T>) mView).displayMessage(message);
         }
     }
 }
