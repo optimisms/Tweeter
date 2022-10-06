@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.client.model.service;
 import android.os.Bundle;
 
 import edu.byu.cs.tweeter.client.backgroundTask.PostStatusTask;
+import edu.byu.cs.tweeter.client.model.service.handlers.BackgroundTaskHandler;
 import edu.byu.cs.tweeter.client.presenter.MainPresenter.PostStatusObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;

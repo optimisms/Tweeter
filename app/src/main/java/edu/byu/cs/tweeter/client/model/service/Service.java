@@ -16,6 +16,10 @@ public class Service {
         void pagedTaskSuccess(List<T> items, boolean morePages);
     }
 
+    public interface GetCountObserver extends Observer {
+        void getCountSuccess(int count);
+    }
+
     public interface NoDataReturnedObserver extends Observer {
         void taskSuccess();
     }

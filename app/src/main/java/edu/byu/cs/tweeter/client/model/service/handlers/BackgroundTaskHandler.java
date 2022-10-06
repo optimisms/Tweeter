@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.model.service;
+package edu.byu.cs.tweeter.client.model.service.handlers;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +8,7 @@ import android.os.Message;
 import androidx.annotation.NonNull;
 
 import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTask;
+import edu.byu.cs.tweeter.client.model.service.Service;
 
 public abstract class BackgroundTaskHandler<T extends Service.Observer> extends Handler {
     private final T observer;

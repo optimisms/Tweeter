@@ -17,9 +17,15 @@ import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PagedTaskData;
 import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
+import edu.byu.cs.tweeter.client.model.service.handlers.BackgroundTaskHandler;
+import edu.byu.cs.tweeter.client.model.service.handlers.FollowButtonHandler;
+import edu.byu.cs.tweeter.client.model.service.handlers.GetCountHandler;
+import edu.byu.cs.tweeter.client.model.service.handlers.PagedTaskHandler;
 import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
 import edu.byu.cs.tweeter.client.presenter.FollowingPresenter;
 import edu.byu.cs.tweeter.client.presenter.MainPresenter.FollowObserver;
+import edu.byu.cs.tweeter.client.presenter.MainPresenter.GetFollowersCountObserver;
+import edu.byu.cs.tweeter.client.presenter.MainPresenter.GetFollowingCountObserver;
 import edu.byu.cs.tweeter.client.presenter.MainPresenter.UnfollowObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -27,12 +33,6 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class FollowService extends Service {
     public interface IsFollowerObserver extends Observer {
         void isFollowerSuccess(boolean isFollower);
-    }
-    public interface GetFollowingCountObserver extends Observer {
-        void getFollowingCountSuccess(int count);
-    }
-    public interface GetFollowersCountObserver extends Observer {
-        void getFollowersCountSuccess(int count);
     }
 
     public void loadMoreFollowing(PagedTaskData<User> data) {
@@ -53,11 +53,11 @@ public class FollowService extends Service {
         executeTasks(executor, taskList);
     }
     public void follow(AuthToken authToken, User user, FollowObserver observer) {
-        FollowTask followTask = new FollowTask(authToken, user, new FollowButtonHandler(observer));
+        FollowTask followTask = new FollowTask(authToken, user, new FollowHandler(observer));
         executeTask(followTask);
     }
     public void unfollow(AuthToken authToken, User user, UnfollowObserver observer) {
-        UnfollowTask unfollowTask = new UnfollowTask(authToken, user, new FollowButtonHandler(observer));
+        UnfollowTask unfollowTask = new UnfollowTask(authToken, user, new UnfollowHandler(observer));
         executeTask(unfollowTask);
     }
     public void isFollower(AuthToken authToken, User user, User selectedUser, IsFollowerObserver observer) {
@@ -65,17 +65,23 @@ public class FollowService extends Service {
         executeTask(isFollowerTask);
     }
 
-    private class FollowButtonHandler extends BackgroundTaskHandler<FollowButtonObserver> {
-        public FollowButtonHandler(FollowObserver inObs) { super(inObs, "follow"); }
-        public FollowButtonHandler(UnfollowObserver inObs) { super(inObs, "unfollow"); }
-
-        @Override
-        protected void handleSuccessMessage(FollowButtonObserver observer, Bundle data) {
-            observer.taskSuccess();
-            observer.enableButton();
-        }
+    /**
+     * Message handler (i.e., observer) for FollowTask.
+     */
+    private class FollowHandler extends FollowButtonHandler {
+        public FollowHandler(FollowObserver inObs) { super(inObs, "follow"); }
     }
 
+    /**
+     * Message handler (i.e., observer) for UnfollowTask.
+     */
+    private class UnfollowHandler extends FollowButtonHandler {
+        public UnfollowHandler(UnfollowObserver inObs) { super(inObs, "unfollow"); }
+    }
+
+    /**
+     * Message handler (i.e., observer) for IsFollowerTask.
+     */
     private class IsFollowerHandler extends BackgroundTaskHandler<IsFollowerObserver> {
         public IsFollowerHandler(IsFollowerObserver inObs) { super(inObs, "determine following relationship"); }
 
@@ -103,27 +109,15 @@ public class FollowService extends Service {
     /**
      * Message handler (i.e., observer) for GetFollowingCountTask
      */
-    private class GetFollowingCountHandler extends BackgroundTaskHandler<GetFollowingCountObserver> {
+    private class GetFollowingCountHandler extends GetCountHandler {
         public GetFollowingCountHandler(GetFollowingCountObserver inObs) { super(inObs, "get following count"); }
-
-        @Override
-        protected void handleSuccessMessage(GetFollowingCountObserver observer, Bundle data) {
-            int count = data.getInt(GetFollowingCountTask.COUNT_KEY);
-            observer.getFollowingCountSuccess(count);
-        }
     }
 
     /**
      * Message handler (i.e., observer) for GetFollowingCountTask
      */
-    private class GetFollowersCountHandler extends BackgroundTaskHandler<GetFollowersCountObserver> {
+    private class GetFollowersCountHandler extends GetCountHandler {
         public GetFollowersCountHandler(GetFollowersCountObserver inObs) { super(inObs, "get followers count:"); }
-
-        @Override
-        protected void handleSuccessMessage(GetFollowersCountObserver observer, Bundle data) {
-            int count = data.getInt(GetFollowersCountTask.COUNT_KEY);
-            observer.getFollowersCountSuccess(count);
-        }
     }
 
 

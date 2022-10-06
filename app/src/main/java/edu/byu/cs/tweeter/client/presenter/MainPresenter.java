@@ -190,16 +190,16 @@ public class MainPresenter extends Presenter {
             ((MainView) mView).displayErrorMessage(message);
         }
     }
-    private class GetFollowingCountObserver implements FollowService.GetFollowingCountObserver {
+    public class GetFollowingCountObserver implements Service.GetCountObserver {
         @Override
-        public void getFollowingCountSuccess(int count) { ((MainView) mView).updateFolloweeCount(count); }
+        public void getCountSuccess(int count) { ((MainView) mView).updateFolloweeCount(count); }
 
         @Override
         public void taskFailed(String message) { ((MainView) mView).displayErrorMessage(message); }
     }
-    private class GetFollowersCountObserver implements FollowService.GetFollowersCountObserver {
+    public class GetFollowersCountObserver implements Service.GetCountObserver {
         @Override
-        public void getFollowersCountSuccess(int count) { ((MainView) mView).updateFollowerCount(count); }
+        public void getCountSuccess(int count) { ((MainView) mView).updateFollowerCount(count); }
 
         @Override
         public void taskFailed(String message) { ((MainView) mView).displayErrorMessage(message); }
