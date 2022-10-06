@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.client.presenter;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.model.service.Service;
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class PagedPresenter<T> extends Presenter {
@@ -52,4 +53,17 @@ public class PagedPresenter<T> extends Presenter {
         }
     }
 
+    public class GetUserObserver implements UserService.GetUserObserver {
+        @Override
+        public void getUserSuccess(User user) {
+            mView.displayMessage("Getting user's profile...");
+            mView.startUserActivity(user);
+        }
+
+        @Override
+        public void taskFailed(String message) {
+            mView.clearMessage();
+            mView.displayMessage(message);
+        }
+    }
 }

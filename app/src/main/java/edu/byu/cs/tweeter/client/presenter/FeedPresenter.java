@@ -17,18 +17,4 @@ public class FeedPresenter extends PagedPresenter<Status> {
     public void initiateGetUser(String username) {
         new UserService().getUser(Cache.getInstance().getCurrUserAuthToken(), username, new GetUserObserver());
     }
-
-    private class GetUserObserver implements UserService.GetUserObserver {
-        @Override
-        public void getUserSuccess(User user) {
-            mView.displayMessage("Getting user's profile...");
-            mView.startUserActivity(user);
-        }
-
-        @Override
-        public void taskFailed(String message) {
-            mView.clearMessage();
-            mView.displayMessage(message);
-        }
-    }
 }
