@@ -8,12 +8,10 @@ import edu.byu.cs.tweeter.client.model.service.Service;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class FollowingPresenter {
-    public interface View {
+public class FollowingPresenter extends PagedPresenter {
+    public interface View extends PagedView<User> {
         void displayMessage(String message);
         void clearMessage();
-        void setLoadingFooter();
-        void addFollowees(List<User> followees);
         void startUserActivity(User user);
     }
 
@@ -47,7 +45,7 @@ public class FollowingPresenter {
 
             lastFollowee = (followees.size() > 0) ? followees.get(followees.size() - 1) : null;
             hasMorePages = morePages;
-            mView.addFollowees(followees);
+            mView.addItems(followees);
         }
 
         @Override
