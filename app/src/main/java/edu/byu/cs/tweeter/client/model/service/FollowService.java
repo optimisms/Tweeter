@@ -53,11 +53,11 @@ public class FollowService extends Service {
         executeTasks(executor, taskList);
     }
     public void follow(AuthToken authToken, User user, FollowObserver observer) {
-        FollowTask followTask = new FollowTask(authToken, user, new FollowHandler(observer));
+        FollowTask followTask = new FollowTask(authToken, user, new FollowButtonHandler(observer));
         executeTask(followTask);
     }
     public void unfollow(AuthToken authToken, User user, UnfollowObserver observer) {
-        UnfollowTask unfollowTask = new UnfollowTask(authToken, user, new UnfollowHandler(observer));
+        UnfollowTask unfollowTask = new UnfollowTask(authToken, user, new FollowButtonHandler(observer));
         executeTask(unfollowTask);
     }
     public void isFollower(AuthToken authToken, User user, User selectedUser, IsFollowerObserver observer) {
@@ -65,25 +65,12 @@ public class FollowService extends Service {
         executeTask(isFollowerTask);
     }
 
-    private class FollowHandler extends BackgroundTaskHandler<FollowObserver> {
-        public FollowHandler(FollowObserver inObs) { super(inObs, "follow"); }
-
-        //TODO: explore creating a super class with a template method to call enableButton()
-        // Alternatively, could create an abstract super class for the two, and then an if statement
-        // for if(T extends __abstract super__) { enableButtons() }
+    private class FollowButtonHandler extends BackgroundTaskHandler<FollowButtonObserver> {
+        public FollowButtonHandler(FollowObserver inObs) { super(inObs, "follow"); }
+        public FollowButtonHandler(UnfollowObserver inObs) { super(inObs, "unfollow"); }
 
         @Override
-        protected void handleSuccessMessage(FollowObserver observer, Bundle data) {
-            observer.taskSuccess();
-            observer.enableButton();
-        }
-    }
-
-    private class UnfollowHandler extends BackgroundTaskHandler<UnfollowObserver> {
-        public UnfollowHandler(UnfollowObserver inObs) { super(inObs, "unfollow"); }
-
-        @Override
-        protected void handleSuccessMessage(UnfollowObserver observer, Bundle data) {
+        protected void handleSuccessMessage(FollowButtonObserver observer, Bundle data) {
             observer.taskSuccess();
             observer.enableButton();
         }
