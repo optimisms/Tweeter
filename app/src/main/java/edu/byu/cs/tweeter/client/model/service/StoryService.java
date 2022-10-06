@@ -1,9 +1,5 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import android.os.Bundle;
-
-import java.util.List;
-
 import edu.byu.cs.tweeter.client.backgroundTask.GetStoryTask;
 import edu.byu.cs.tweeter.client.presenter.StoryPresenter.GetStoryObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -16,19 +12,11 @@ public class StoryService extends Service {
         executeTask(getStoryTask);
     }
 
-
     /**
      * Message handler (i.e., observer) for GetStoryTask.
      */
-    private class GetStoryHandler extends BackgroundTaskHandler<GetStoryObserver> {
+    private class GetStoryHandler extends PagedTaskHandler<GetStoryObserver, Status> {
         public GetStoryHandler(GetStoryObserver inObs) { super(inObs); }
-
-        @Override
-        protected void handleSuccessMessage(GetStoryObserver observer, Bundle data) {
-            List<Status> statuses = (List<Status>) data.getSerializable(GetStoryTask.ITEMS_KEY);
-            boolean hasMorePages = data.getBoolean(GetStoryTask.MORE_PAGES_KEY);
-            observer.pagedTaskSuccess(statuses, hasMorePages);
-        }
 
         @Override
         protected void handleFailureMessage(GetStoryObserver observer, String message) {

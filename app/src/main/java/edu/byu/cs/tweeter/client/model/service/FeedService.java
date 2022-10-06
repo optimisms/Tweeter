@@ -1,9 +1,5 @@
 package edu.byu.cs.tweeter.client.model.service;
 
-import android.os.Bundle;
-
-import java.util.List;
-
 import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.presenter.FeedPresenter.GetFeedObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -19,15 +15,8 @@ public class FeedService extends Service {
     /**
      * Message handler (i.e., observer) for GetFeedTask.
      */
-    private class GetFeedHandler extends BackgroundTaskHandler<GetFeedObserver> {
+    private class GetFeedHandler extends PagedTaskHandler<GetFeedObserver, Status> {
         public GetFeedHandler(GetFeedObserver inObs) { super(inObs); }
-
-        @Override
-        protected void handleSuccessMessage(GetFeedObserver observer, Bundle data) {
-            List<Status> statuses = (List<Status>) data.getSerializable(GetFeedTask.ITEMS_KEY);
-            boolean hasMorePages = data.getBoolean(GetFeedTask.MORE_PAGES_KEY);
-            observer.pagedTaskSuccess(statuses, hasMorePages);
-        }
 
         @Override
         protected void handleFailureMessage(GetFeedObserver observer, String message) {

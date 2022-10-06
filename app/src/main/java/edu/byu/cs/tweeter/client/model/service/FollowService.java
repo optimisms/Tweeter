@@ -139,15 +139,8 @@ public class FollowService extends Service {
     /**
      * Message handler (i.e., observer) for GetFollowingTask.
      */
-    private class GetFollowingHandler extends BackgroundTaskHandler<GetFollowingObserver> {
+    private class GetFollowingHandler extends PagedTaskHandler<GetFollowingObserver, User> {
         public GetFollowingHandler(GetFollowingObserver inObs) { super(inObs); }
-
-        @Override
-        protected void handleSuccessMessage(GetFollowingObserver observer, Bundle data) {
-            List<User> followees = (List<User>) data.getSerializable(GetFollowingTask.ITEMS_KEY);
-            boolean hasMorePages = data.getBoolean(GetFollowingTask.MORE_PAGES_KEY);
-            observer.pagedTaskSuccess(followees, hasMorePages);
-        }
 
         @Override
         protected void handleFailureMessage(GetFollowingObserver observer, String message) {
@@ -157,6 +150,22 @@ public class FollowService extends Service {
         @Override
         protected void handleExceptionMessage(GetFollowingObserver observer, String message) {
             observer.taskFailed("Failed to get following because of exception: " + message);
+        }
+    }
+
+    /**
+     * Message handler (i.e., observer) for GetFollowersTask.
+     */
+    private class GetFollowersHandler extends PagedTaskHandler<GetFollowersObserver, User> {
+        public GetFollowersHandler(GetFollowersObserver inObs) { super(inObs); }
+        @Override
+        protected void handleFailureMessage(GetFollowersObserver observer, String message) {
+            observer.taskFailed("Failed to get followers: " + message);
+        }
+
+        @Override
+        protected void handleExceptionMessage(GetFollowersObserver observer, String message) {
+            observer.taskFailed("Failed to get followers because of exception: " + message);
         }
     }
 
@@ -180,30 +189,6 @@ public class FollowService extends Service {
         @Override
         protected void handleExceptionMessage(GetFollowingCountObserver observer, String message) {
             observer.taskFailed("Failed to get following count because of exception: " + message);
-        }
-    }
-
-    /**
-     * Message handler (i.e., observer) for GetFollowersTask.
-     */
-    private class GetFollowersHandler extends BackgroundTaskHandler<GetFollowersObserver> {
-        public GetFollowersHandler(GetFollowersObserver inObs) { super(inObs); }
-
-        @Override
-        protected void handleSuccessMessage(GetFollowersObserver observer, Bundle data) {
-            List<User> followers = (List<User>) data.getSerializable(GetFollowersTask.ITEMS_KEY);
-            boolean hasMorePages = data.getBoolean(GetFollowersTask.MORE_PAGES_KEY);
-            observer.pagedTaskSuccess(followers, hasMorePages);
-        }
-
-        @Override
-        protected void handleFailureMessage(GetFollowersObserver observer, String message) {
-            observer.taskFailed("Failed to get followers: " + message);
-        }
-
-        @Override
-        protected void handleExceptionMessage(GetFollowersObserver observer, String message) {
-            observer.taskFailed("Failed to get followers because of exception: " + message);
         }
     }
 
