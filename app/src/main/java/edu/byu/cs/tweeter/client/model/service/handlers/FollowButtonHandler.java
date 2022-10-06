@@ -1,16 +1,14 @@
 package edu.byu.cs.tweeter.client.model.service.handlers;
 
 
-import android.os.Bundle;
-
 import edu.byu.cs.tweeter.client.model.service.Service;
+import edu.byu.cs.tweeter.client.model.service.Service.FollowButtonObserver;
 
-public class FollowButtonHandler extends BackgroundTaskHandler<Service.FollowButtonObserver> {
-    public FollowButtonHandler(Service.FollowButtonObserver observer, String goal) {super(observer, goal);}
+public class FollowButtonHandler extends NoDataReturnedHandler {
+    public FollowButtonHandler(FollowButtonObserver observer, String goal) {super(observer, goal);}
 
     @Override
-    protected void handleSuccessMessage(Service.FollowButtonObserver observer, Bundle data) {
-        observer.taskSuccess();
-        observer.enableButton();
+    protected void afterSuccessDo(Service.NoDataReturnedObserver observer) {
+        ((FollowButtonObserver) observer).enableButton();
     }
 }

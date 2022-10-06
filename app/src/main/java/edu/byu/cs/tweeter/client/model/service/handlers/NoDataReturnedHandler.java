@@ -11,5 +11,8 @@ public class NoDataReturnedHandler extends BackgroundTaskHandler<NoDataReturnedO
     @Override
     protected void handleSuccessMessage(NoDataReturnedObserver observer, Bundle data) {
         observer.taskSuccess();
+        afterSuccessDo(observer);
     }
+
+    protected void afterSuccessDo(NoDataReturnedObserver observer) {}
 }
