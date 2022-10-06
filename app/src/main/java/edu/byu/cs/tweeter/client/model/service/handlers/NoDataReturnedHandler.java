@@ -5,7 +5,7 @@ import android.os.Bundle;
 import edu.byu.cs.tweeter.client.model.service.Service.NoDataReturnedObserver;
 
 
-public class NoDataReturnedHandler extends BackgroundTaskHandler<NoDataReturnedObserver> {
+public abstract class NoDataReturnedHandler extends BackgroundTaskHandler<NoDataReturnedObserver> {
     public NoDataReturnedHandler(NoDataReturnedObserver observer, String goal) { super(observer, goal); }
 
     @Override

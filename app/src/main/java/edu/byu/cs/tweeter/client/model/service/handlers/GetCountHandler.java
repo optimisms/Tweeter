@@ -5,7 +5,7 @@ import android.os.Bundle;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.model.service.Service;
 
-public class GetCountHandler extends BackgroundTaskHandler<Service.GetCountObserver> {
+public abstract class GetCountHandler extends BackgroundTaskHandler<Service.GetCountObserver> {
     public GetCountHandler(Service.GetCountObserver observer, String goal) { super(observer, goal); }
 
     @Override

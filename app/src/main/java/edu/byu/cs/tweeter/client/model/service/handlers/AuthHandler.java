@@ -8,7 +8,7 @@ import edu.byu.cs.tweeter.client.model.service.Service;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class AuthHandler extends BackgroundTaskHandler<Service.AuthObserver> {
+public abstract class AuthHandler extends BackgroundTaskHandler<Service.AuthObserver> {
     public AuthHandler(Service.AuthObserver observer, String goal) { super(observer, goal); }
 
     @Override
