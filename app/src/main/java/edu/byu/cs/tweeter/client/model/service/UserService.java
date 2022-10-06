@@ -12,23 +12,18 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class UserService extends Service {
-    public interface LoginObserver extends Observer {
-        void loginSuccess(User user, AuthToken authToken);
-    }
-    public interface RegisterObserver extends Observer {
-        void registerSuccess(User user, AuthToken authToken);
-    }
+    //TODO: remove LogoutObserver
     public interface LogoutObserver extends NoDataReturnedObserver {}
     public interface GetUserObserver extends Observer {
         void getUserSuccess(User user);
     }
 
-    public void login(String username, String password, LoginObserver observer) {
+    public void login(String username, String password, Service.AuthObserver observer) {
         // Send the login request.
         LoginTask loginTask = new LoginTask(username, password, new LoginHandler(observer));
         executeTask(loginTask);
     }
-    public void register(String firstName, String lastName, String username, String password, String imageBytes, RegisterObserver observer) {
+    public void register(String firstName, String lastName, String username, String password, String imageBytes, AuthObserver observer) {
         // Send the register request.
         RegisterTask registerTask = new RegisterTask(firstName, lastName, username, password, imageBytes, new RegisterHandler(observer));
         executeTask(registerTask);
@@ -43,41 +38,43 @@ public class UserService extends Service {
         executeTask(getUserTask);
     }
 
+
+    //TODO: Combine AuthHandlers
     /**
      * Message handler (i.e., observer) for LoginTask
      */
-    private class LoginHandler extends BackgroundTaskHandler<LoginObserver> {
-        public LoginHandler(LoginObserver observer) {
+    private class LoginHandler extends BackgroundTaskHandler<Service.AuthObserver> {
+        public LoginHandler(Service.AuthObserver observer) {
             super(observer, "login");
         }
 
         @Override
-        protected void handleSuccessMessage(LoginObserver observer, Bundle data) {
+        protected void handleSuccessMessage(Service.AuthObserver observer, Bundle data) {
             User loggedInUser = (User) data.getSerializable(LoginTask.USER_KEY);
             AuthToken authToken = (AuthToken) data.getSerializable(LoginTask.AUTH_TOKEN_KEY);
 
             Cache.getInstance().setCurrUser(loggedInUser);
             Cache.getInstance().setCurrUserAuthToken(authToken);
 
-            observer.loginSuccess(loggedInUser, authToken);
+            observer.authSuccess(loggedInUser, authToken);
         }
     }
 
     /**
      * Message handler (i.e., observer) for RegisterTask
      */
-    private class RegisterHandler extends BackgroundTaskHandler<RegisterObserver>{
-        public RegisterHandler(RegisterObserver inObs) { super(inObs, "register"); }
+    private class RegisterHandler extends BackgroundTaskHandler<AuthObserver>{
+        public RegisterHandler(AuthObserver inObs) { super(inObs, "register"); }
 
         @Override
-        protected void handleSuccessMessage(RegisterObserver observer, Bundle data) {
+        protected void handleSuccessMessage(AuthObserver observer, Bundle data) {
             User registeredUser = (User) data.getSerializable(RegisterTask.USER_KEY);
             AuthToken authToken = (AuthToken) data.getSerializable(RegisterTask.AUTH_TOKEN_KEY);
 
             Cache.getInstance().setCurrUser(registeredUser);
             Cache.getInstance().setCurrUserAuthToken(authToken);
 
-            observer.registerSuccess(registeredUser, authToken);
+            observer.authSuccess(registeredUser, authToken);
         }
     }
 

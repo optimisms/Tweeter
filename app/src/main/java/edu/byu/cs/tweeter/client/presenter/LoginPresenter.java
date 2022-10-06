@@ -1,33 +1,14 @@
 package edu.byu.cs.tweeter.client.presenter;
 
+import android.graphics.Bitmap;
+
 import edu.byu.cs.tweeter.client.model.service.UserService;
-import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.User;
 
-public class LoginPresenter extends Presenter implements UserService.LoginObserver {
-    public interface LoginView extends Presenter.View {
-        void displayInfoMessage(String message);
-        void clearInfoMessage();
-        void displayErrorMessage(String message);
-        void clearErrorMessage();
-        void navigateToUser(User user);
-    }
+public class LoginPresenter extends AuthPresenter {
+    public LoginPresenter(AuthView inView) { super(inView); }
 
-    public LoginPresenter(LoginView inView) { super(inView); }
-
-    public void initiateLogin(String username, String password) {
-        String message = validateLogin(username, password);
-        if (message != null) { //Login invalid
-            ((LoginView) mView).clearInfoMessage();
-            ((LoginView) mView).displayErrorMessage(message);
-        } else { //Login valid
-            ((LoginView) mView).clearErrorMessage();
-            ((LoginView) mView).displayInfoMessage("Logging in...");
-            new UserService().login(username, password, this);
-        }
-    }
-
-    public String validateLogin(String username, String password) {
+    @Override
+    protected String validateInputs(String firstName, String lastName, String username, String password, Bitmap image) {
         if (username.charAt(0) != '@') { return "Username must begin with @."; }
         if (username.length() < 2) { return "Alias must contain 1 or more characters after the @."; }
         if (password.length() == 0) { return "Password cannot be empty."; }
@@ -35,15 +16,10 @@ public class LoginPresenter extends Presenter implements UserService.LoginObserv
     }
 
     @Override
-    public void loginSuccess(User user, AuthToken authToken) {
-        ((LoginView) mView).displayInfoMessage("Hello " + user.getFirstName());
-        ((LoginView) mView).clearErrorMessage();
-        ((LoginView) mView).navigateToUser(user);
+    protected void callServiceMethod(String firstName, String lastName, String username, String password, Bitmap image) {
+        new UserService().login(username, password, this);
     }
 
     @Override
-    public void taskFailed(String message) {
-        ((LoginView) mView).clearInfoMessage();
-        ((LoginView) mView).displayErrorMessage(message);
-    }
+    protected String getValidateSuccessMessage() { return "Logging in..."; }
 }
