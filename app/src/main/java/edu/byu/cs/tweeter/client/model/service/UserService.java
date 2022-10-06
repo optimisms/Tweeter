@@ -12,13 +12,11 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class UserService extends Service {
-    //TODO: remove LogoutObserver
-    public interface LogoutObserver extends NoDataReturnedObserver {}
     public interface GetUserObserver extends Observer {
         void getUserSuccess(User user);
     }
 
-    public void login(String username, String password, Service.AuthObserver observer) {
+    public void login(String username, String password, AuthObserver observer) {
         // Send the login request.
         LoginTask loginTask = new LoginTask(username, password, new LoginHandler(observer));
         executeTask(loginTask);
@@ -28,7 +26,7 @@ public class UserService extends Service {
         RegisterTask registerTask = new RegisterTask(firstName, lastName, username, password, imageBytes, new RegisterHandler(observer));
         executeTask(registerTask);
     }
-    public void logout(AuthToken authToken, LogoutObserver observer) {
+    public void logout(AuthToken authToken, NoDataReturnedObserver observer) {
         // Send the logout request.
         LogoutTask logoutTask = new LogoutTask(authToken, new LogoutHandler(observer));
         executeTask(logoutTask);
@@ -38,18 +36,17 @@ public class UserService extends Service {
         executeTask(getUserTask);
     }
 
-
     //TODO: Combine AuthHandlers
     /**
      * Message handler (i.e., observer) for LoginTask
      */
-    private class LoginHandler extends BackgroundTaskHandler<Service.AuthObserver> {
-        public LoginHandler(Service.AuthObserver observer) {
+    private class LoginHandler extends BackgroundTaskHandler<AuthObserver> {
+        public LoginHandler(AuthObserver observer) {
             super(observer, "login");
         }
 
         @Override
-        protected void handleSuccessMessage(Service.AuthObserver observer, Bundle data) {
+        protected void handleSuccessMessage(AuthObserver observer, Bundle data) {
             User loggedInUser = (User) data.getSerializable(LoginTask.USER_KEY);
             AuthToken authToken = (AuthToken) data.getSerializable(LoginTask.AUTH_TOKEN_KEY);
 
@@ -81,11 +78,11 @@ public class UserService extends Service {
     /**
      * Message handler (i.e., observer) for LogoutTask
      */
-    private class LogoutHandler extends BackgroundTaskHandler<LogoutObserver> {
-        public LogoutHandler(LogoutObserver inObs) { super(inObs, "logout"); }
+    private class LogoutHandler extends BackgroundTaskHandler<NoDataReturnedObserver> {
+        public LogoutHandler(NoDataReturnedObserver inObs) { super(inObs, "logout"); }
 
         @Override
-        protected void handleSuccessMessage(LogoutObserver observer, Bundle data) {
+        protected void handleSuccessMessage(NoDataReturnedObserver observer, Bundle data) {
             observer.taskSuccess();
         }
     }

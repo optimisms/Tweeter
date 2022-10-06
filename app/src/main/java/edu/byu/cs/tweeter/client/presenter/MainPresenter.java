@@ -122,7 +122,7 @@ public class MainPresenter extends Presenter {
         new FollowService().isFollower(Cache.getInstance().getCurrUserAuthToken(), Cache.getInstance().getCurrUser(), user, new IsFollowerObserver());
     }
 
-    private class LogoutObserver implements UserService.LogoutObserver {
+    private class LogoutObserver implements Service.NoDataReturnedObserver {
         @Override
         public void taskSuccess() {
             //Clear user data (cached data).
