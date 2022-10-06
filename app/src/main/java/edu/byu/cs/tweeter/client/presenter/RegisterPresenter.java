@@ -6,6 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.Base64;
 
 import edu.byu.cs.tweeter.client.model.service.UserService;
+import edu.byu.cs.tweeter.client.presenter.AbstractPresenters.AuthPresenter;
 
 public class RegisterPresenter extends AuthPresenter {
     public RegisterPresenter(AuthView inView) { super(inView); }

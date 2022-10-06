@@ -1,6 +1,6 @@
 package edu.byu.cs.tweeter.client.backgroundTask;
 
-import edu.byu.cs.tweeter.client.presenter.PagedPresenter;
+import edu.byu.cs.tweeter.client.presenter.AbstractPresenters.PagedPresenter;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 

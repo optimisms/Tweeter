@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.presenter;
+package edu.byu.cs.tweeter.client.presenter.AbstractPresenters;
 
 public abstract class Presenter {
     public interface View {}
