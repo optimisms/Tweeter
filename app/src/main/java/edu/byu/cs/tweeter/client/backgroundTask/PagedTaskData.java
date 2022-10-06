@@ -1,4 +1,4 @@
-package edu.byu.cs.tweeter.client.model.service;
+package edu.byu.cs.tweeter.client.backgroundTask;
 
 import edu.byu.cs.tweeter.client.presenter.PagedPresenter;
 import edu.byu.cs.tweeter.model.domain.AuthToken;

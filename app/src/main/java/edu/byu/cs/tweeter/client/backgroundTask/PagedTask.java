@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
-import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.util.Pair;
 
@@ -44,11 +43,11 @@ public abstract class PagedTask<T> extends AuthenticatedTask {
      */
     private boolean hasMorePages;
 
-    protected PagedTask(AuthToken authToken, User targetUser, int limit, T lastItem, Handler messageHandler) {
-        super(authToken, messageHandler);
-        this.targetUser = targetUser;
-        this.limit = limit;
-        this.lastItem = lastItem;
+    protected PagedTask(PagedTaskData<T> data, Handler messageHandler) {
+        super(data.getToken(), messageHandler);
+        this.targetUser = data.getUser();
+        this.limit = data.getPageSize();
+        this.lastItem = data.getLastItem();
     }
 
     protected User getTargetUser() {
