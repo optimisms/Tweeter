@@ -2,13 +2,11 @@ package edu.byu.cs.tweeter.client.model.service;
 
 import edu.byu.cs.tweeter.client.backgroundTask.GetStoryTask;
 import edu.byu.cs.tweeter.client.presenter.StoryPresenter;
-import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
-import edu.byu.cs.tweeter.model.domain.User;
 
 public class StoryService extends Service {
-    public void getStory(AuthToken authToken, User user, int pageSize, Status lastStatus, StoryPresenter.PagedObserver observer) {
-        GetStoryTask getStoryTask = new GetStoryTask(authToken, user, pageSize, lastStatus, new GetStoryHandler(observer));
+    public void getStory(PagedTaskData<Status> data) {
+        GetStoryTask getStoryTask = new GetStoryTask(data.getToken(), data.getUser(), data.getPageSize(), data.getLastItem(), new GetStoryHandler(data.getObserver()));
         executeTask(getStoryTask);
     }
 

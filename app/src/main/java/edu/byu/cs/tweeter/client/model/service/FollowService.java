@@ -38,12 +38,12 @@ public class FollowService extends Service {
         void getFollowersCountSuccess(int count);
     }
 
-    public void loadMoreFollowing(AuthToken authToken, User user, int pageSize, User lastFollowee, FollowingPresenter.PagedObserver observer) {
-        GetFollowingTask getFollowingTask = new GetFollowingTask(authToken, user, pageSize, lastFollowee, new GetFollowingHandler(observer));
+    public void loadMoreFollowing(PagedTaskData<User> data) {
+        GetFollowingTask getFollowingTask = new GetFollowingTask(data.getToken(), data.getUser(), data.getPageSize(), data.getLastItem(), new GetFollowingHandler(data.getObserver()));
         executeTask(getFollowingTask);
     }
-    public void loadMoreFollowers(AuthToken authToken, User user, int pageSize, User lastFollower, FollowersPresenter.PagedObserver observer) {
-        GetFollowersTask getFollowersTask = new GetFollowersTask(authToken, user, pageSize, lastFollower, new GetFollowersHandler(observer));
+    public void loadMoreFollowers(PagedTaskData<User> data) {
+        GetFollowersTask getFollowersTask = new GetFollowersTask(data.getToken(), data.getUser(), data.getPageSize(), data.getLastItem(), new GetFollowersHandler(data.getObserver()));
         executeTask(getFollowersTask);
     }
     public void getCounts(AuthToken authToken, User user, GetFollowersCountObserver followersObserver, GetFollowingCountObserver followingObserver) {

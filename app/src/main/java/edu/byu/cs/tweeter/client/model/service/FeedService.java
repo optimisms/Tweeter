@@ -2,13 +2,11 @@ package edu.byu.cs.tweeter.client.model.service;
 
 import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
 import edu.byu.cs.tweeter.client.presenter.FeedPresenter;
-import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
-import edu.byu.cs.tweeter.model.domain.User;
 
 public class FeedService extends Service {
-    public void getFeed(AuthToken authToken, User user, int pageSize, Status lastStatus, FeedPresenter.PagedObserver observer) {
-        GetFeedTask getFeedTask = new GetFeedTask(authToken, user, pageSize, lastStatus, new GetFeedHandler(observer));
+    public void getFeed(PagedTaskData<Status> data) {
+        GetFeedTask getFeedTask = new GetFeedTask(data.getToken(), data.getUser(), data.getPageSize(), data.getLastItem(), new GetFeedHandler(data.getObserver()));
         executeTask(getFeedTask);
     }
 

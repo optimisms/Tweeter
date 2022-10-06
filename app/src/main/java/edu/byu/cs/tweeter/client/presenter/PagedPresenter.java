@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.client.presenter;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.service.PagedTaskData;
 import edu.byu.cs.tweeter.client.model.service.Service;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -23,14 +24,17 @@ public class PagedPresenter<T> extends Presenter {
     protected boolean hasMorePages;
     protected boolean isLoading = false;
 
+    protected PagedTaskData<T> data;
+
     public PagedPresenter(PagedView<T> inView) { mView = inView; }
 
     public boolean isLoading() { return isLoading; }
     public boolean hasMorePages() { return hasMorePages; }
 
-    public void loadMoreItems() {
+    public void loadMoreItems(User user) {
         isLoading = true;
         mView.setLoadingFooter();
+        data = new PagedTaskData<>(Cache.getInstance().getCurrUserAuthToken(), user, PAGE_SIZE, lastItem, new PagedObserver());
     }
 
     public void initiateGetUser(String username) {
