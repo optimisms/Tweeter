@@ -16,6 +16,8 @@ import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingCountTask;
 import edu.byu.cs.tweeter.client.backgroundTask.GetFollowingTask;
 import edu.byu.cs.tweeter.client.backgroundTask.IsFollowerTask;
 import edu.byu.cs.tweeter.client.backgroundTask.UnfollowTask;
+import edu.byu.cs.tweeter.client.presenter.FollowersPresenter.GetFollowersObserver;
+import edu.byu.cs.tweeter.client.presenter.FollowingPresenter.GetFollowingObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -29,14 +31,8 @@ public class FollowService extends Service {
     public interface IsFollowerObserver extends Observer {
         void isFollowerSuccess(boolean isFollower);
     }
-    public interface GetFollowingObserver extends Observer {
-        void getFollowingSuccess(List<User> followings, boolean morePages);
-    }
     public interface GetFollowingCountObserver extends Observer {
         void getFollowingCountSuccess(int count);
-    }
-    public interface GetFollowersObserver extends Observer {
-        void getFollowersSuccess(List<User> followers, boolean morePages);
     }
     public interface GetFollowersCountObserver extends Observer {
         void getFollowersCountSuccess(int count);
@@ -150,7 +146,7 @@ public class FollowService extends Service {
         protected void handleSuccessMessage(GetFollowingObserver observer, Bundle data) {
             List<User> followees = (List<User>) data.getSerializable(GetFollowingTask.ITEMS_KEY);
             boolean hasMorePages = data.getBoolean(GetFollowingTask.MORE_PAGES_KEY);
-            observer.getFollowingSuccess(followees, hasMorePages);
+            observer.pagedTaskSuccess(followees, hasMorePages);
         }
 
         @Override
@@ -197,7 +193,7 @@ public class FollowService extends Service {
         protected void handleSuccessMessage(GetFollowersObserver observer, Bundle data) {
             List<User> followers = (List<User>) data.getSerializable(GetFollowersTask.ITEMS_KEY);
             boolean hasMorePages = data.getBoolean(GetFollowersTask.MORE_PAGES_KEY);
-            observer.getFollowersSuccess(followers, hasMorePages);
+            observer.pagedTaskSuccess(followers, hasMorePages);
         }
 
         @Override

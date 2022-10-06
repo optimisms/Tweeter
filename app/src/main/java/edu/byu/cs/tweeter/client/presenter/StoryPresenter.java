@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.client.presenter;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.cache.Cache;
+import edu.byu.cs.tweeter.client.model.service.Service;
 import edu.byu.cs.tweeter.client.model.service.StoryService;
 import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -39,15 +40,15 @@ public class StoryPresenter {
         new UserService().getUser(Cache.getInstance().getCurrUserAuthToken(), username, new GetUserObserver());
     }
 
-    private class GetStoryObserver implements StoryService.GetStoryObserver {
+    public class GetStoryObserver implements Service.PagedObserver<Status> {
         @Override
-        public void getStorySuccess(List<Status> statuses, boolean morePages) {
+        public void pagedTaskSuccess(List<Status> items, boolean morePages) {
             isLoading = false;
             mView.setLoadingFooter();
 
-            lastStatus = (statuses.size() > 0) ? statuses.get(statuses.size() - 1) : null;
+            lastStatus = (items.size() > 0) ? items.get(items.size() - 1) : null;
             hasMorePages = morePages;
-            mView.addStatuses(statuses);
+            mView.addStatuses(items);
         }
 
         @Override

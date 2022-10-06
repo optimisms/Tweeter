@@ -6,6 +6,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Service {
+    //TODO: try to refactor execute into a template method where the Service class decides what Task is returned
+
     public interface Observer {
         void taskFailed(String message);
     }
@@ -13,6 +15,12 @@ public class Service {
     public interface FollowButtonObserver extends Observer {
         void enableButton();
     }
+
+    public interface PagedObserver<T> extends Observer {
+        void pagedTaskSuccess(List<T> items, boolean hasMorePages);
+    }
+    //TODO: ask about having a middle interface below PagedObserver (like with PagedTask)
+    // that just defines the T as a Status or a User because there's two of each...?
 
     public <T extends Runnable> void executeTask(T task) {
         List<T> list = new ArrayList<>(List.of(task));

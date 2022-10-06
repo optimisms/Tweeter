@@ -5,15 +5,12 @@ import android.os.Bundle;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.backgroundTask.GetFeedTask;
+import edu.byu.cs.tweeter.client.presenter.FeedPresenter.GetFeedObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FeedService extends Service {
-    public interface GetFeedObserver extends Observer {
-        void getFeedSuccess(List<Status> statuses, boolean morePages);
-    }
-
     public void getFeed(AuthToken authToken, User user, int pageSize, Status lastStatus, GetFeedObserver observer) {
         GetFeedTask getFeedTask = new GetFeedTask(authToken, user, pageSize, lastStatus, new GetFeedHandler(observer));
         executeTask(getFeedTask);
@@ -29,7 +26,7 @@ public class FeedService extends Service {
         protected void handleSuccessMessage(GetFeedObserver observer, Bundle data) {
             List<Status> statuses = (List<Status>) data.getSerializable(GetFeedTask.ITEMS_KEY);
             boolean hasMorePages = data.getBoolean(GetFeedTask.MORE_PAGES_KEY);
-            observer.getFeedSuccess(statuses, hasMorePages);
+            observer.pagedTaskSuccess(statuses, hasMorePages);
         }
 
         @Override

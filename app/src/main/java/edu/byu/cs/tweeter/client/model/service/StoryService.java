@@ -5,15 +5,12 @@ import android.os.Bundle;
 import java.util.List;
 
 import edu.byu.cs.tweeter.client.backgroundTask.GetStoryTask;
+import edu.byu.cs.tweeter.client.presenter.StoryPresenter.GetStoryObserver;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class StoryService extends Service {
-    public interface GetStoryObserver extends Observer  {
-        void getStorySuccess(List<Status> statuses, boolean morePages);
-    }
-
     public void getStory(AuthToken authToken, User user, int pageSize, Status lastStatus, GetStoryObserver observer) {
         GetStoryTask getStoryTask = new GetStoryTask(authToken, user, pageSize, lastStatus, new GetStoryHandler(observer));
         executeTask(getStoryTask);
@@ -30,7 +27,7 @@ public class StoryService extends Service {
         protected void handleSuccessMessage(GetStoryObserver observer, Bundle data) {
             List<Status> statuses = (List<Status>) data.getSerializable(GetStoryTask.ITEMS_KEY);
             boolean hasMorePages = data.getBoolean(GetStoryTask.MORE_PAGES_KEY);
-            observer.getStorySuccess(statuses, hasMorePages);
+            observer.pagedTaskSuccess(statuses, hasMorePages);
         }
 
         @Override
