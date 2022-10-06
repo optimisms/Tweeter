@@ -49,7 +49,7 @@ public class UserService extends Service {
      */
     private class LoginHandler extends BackgroundTaskHandler<LoginObserver> {
         public LoginHandler(LoginObserver observer) {
-            super(observer);
+            super(observer, "login");
         }
 
         @Override
@@ -62,23 +62,13 @@ public class UserService extends Service {
 
             observer.loginSuccess(loggedInUser, authToken);
         }
-
-        @Override
-        protected void handleFailureMessage(LoginObserver observer, String message) {
-            observer.taskFailed("Failed to login: " + message);
-        }
-
-        @Override
-        protected void handleExceptionMessage(LoginObserver observer, String message) {
-            observer.taskFailed("Failed to login because of exception: " + message);
-        }
     }
 
     /**
      * Message handler (i.e., observer) for RegisterTask
      */
     private class RegisterHandler extends BackgroundTaskHandler<RegisterObserver>{
-        public RegisterHandler(RegisterObserver inObs) { super(inObs); }
+        public RegisterHandler(RegisterObserver inObs) { super(inObs, "register"); }
 
         @Override
         protected void handleSuccessMessage(RegisterObserver observer, Bundle data) {
@@ -90,37 +80,17 @@ public class UserService extends Service {
 
             observer.registerSuccess(registeredUser, authToken);
         }
-
-        @Override
-        protected void handleFailureMessage(RegisterObserver observer, String message) {
-            observer.taskFailed("Failed to register: " + message);
-        }
-
-        @Override
-        protected void handleExceptionMessage(RegisterObserver observer, String message) {
-            observer.taskFailed("Failed to register because of exception: " + message);
-        }
     }
 
     /**
      * Message handler (i.e., observer) for LogoutTask
      */
     private class LogoutHandler extends BackgroundTaskHandler<LogoutObserver> {
-        public LogoutHandler(LogoutObserver inObs) { super(inObs); }
+        public LogoutHandler(LogoutObserver inObs) { super(inObs, "logout"); }
 
         @Override
         protected void handleSuccessMessage(LogoutObserver observer, Bundle data) {
             observer.logoutSuccess();
-        }
-
-        @Override
-        protected void handleFailureMessage(LogoutObserver observer, String message) {
-            observer.taskFailed("Failed to logout: " + message);
-        }
-
-        @Override
-        protected void handleExceptionMessage(LogoutObserver observer, String message) {
-            observer.taskFailed("Failed to logout because of exception: " + message);
         }
     }
 
@@ -128,22 +98,12 @@ public class UserService extends Service {
      * Message handler (i.e., observer) for GetUserTask.
      */
     private class GetUserHandler extends BackgroundTaskHandler<GetUserObserver> {
-        public GetUserHandler(GetUserObserver inObs) { super(inObs); }
+        public GetUserHandler(GetUserObserver inObs) { super(inObs, "get user's profile"); }
 
         @Override
         protected void handleSuccessMessage(GetUserObserver observer, Bundle data) {
             User user = (User) data.getSerializable(GetUserTask.USER_KEY);
             observer.getUserSuccess(user);
-        }
-
-        @Override
-        protected void handleFailureMessage(GetUserObserver observer, String message) {
-            observer.taskFailed("Failed to get user's profile: " + message);
-        }
-
-        @Override
-        protected void handleExceptionMessage(GetUserObserver observer, String message) {
-            observer.taskFailed("Failed to get user's profile because of exception: " + message);
         }
     }
 }

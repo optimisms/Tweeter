@@ -8,7 +8,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.PagedTask;
 
 public abstract class PagedTaskHandler<S extends Service.PagedObserver<T>, T> extends BackgroundTaskHandler<S> {
 
-    public PagedTaskHandler(S observer) { super(observer); }
+    public PagedTaskHandler(S observer, String goal) { super(observer, goal); }
 
     protected void handleSuccessMessage(S observer, Bundle data) {
         List<T> items = (List<T>) data.getSerializable(PagedTask.ITEMS_KEY);

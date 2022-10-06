@@ -14,16 +14,6 @@ public class StoryService extends Service {
      * Message handler (i.e., observer) for GetStoryTask.
      */
     private class GetStoryHandler extends PagedTaskHandler<StoryPresenter.PagedObserver, Status> {
-        public GetStoryHandler(StoryPresenter.PagedObserver inObs) { super(inObs); }
-
-        @Override
-        protected void handleFailureMessage(StoryPresenter.PagedObserver observer, String message) {
-            observer.taskFailed("Failed to get story: " + message);
-        }
-
-        @Override
-        protected void handleExceptionMessage(StoryPresenter.PagedObserver observer, String message) {
-            observer.taskFailed("Failed to get story because of exception: " + message);
-        }
+        public GetStoryHandler(StoryPresenter.PagedObserver inObs) { super(inObs, "get story"); }
     }
 }

@@ -14,16 +14,6 @@ public class FeedService extends Service {
      * Message handler (i.e., observer) for GetFeedTask.
      */
     private class GetFeedHandler extends PagedTaskHandler<FeedPresenter.PagedObserver, Status> {
-        public GetFeedHandler(FeedPresenter.PagedObserver inObs) { super(inObs); }
-
-        @Override
-        protected void handleFailureMessage(FeedPresenter.PagedObserver observer, String message) {
-            observer.taskFailed("Failed to get feed: " + message);
-        }
-
-        @Override
-        protected void handleExceptionMessage(FeedPresenter.PagedObserver observer, String message) {
-            observer.taskFailed("Failed to get feed because of exception: " + message);
-        }
+        public GetFeedHandler(FeedPresenter.PagedObserver inObs) { super(inObs, "get feed"); }
     }
 }

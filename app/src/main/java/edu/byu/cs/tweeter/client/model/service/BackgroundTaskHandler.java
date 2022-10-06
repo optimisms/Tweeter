@@ -11,10 +11,12 @@ import edu.byu.cs.tweeter.client.backgroundTask.BackgroundTask;
 
 public abstract class BackgroundTaskHandler<T extends Service.Observer> extends Handler {
     private final T observer;
+    private final String goal;
 
-    public BackgroundTaskHandler(T observer) {
+    public BackgroundTaskHandler(T observer, String goal) {
         super(Looper.getMainLooper());
         this.observer = observer;
+        this.goal = goal;
     }
 
     @Override
@@ -24,19 +26,12 @@ public abstract class BackgroundTaskHandler<T extends Service.Observer> extends 
             handleSuccessMessage(observer, msg.getData());
         } else if (msg.getData().containsKey(BackgroundTask.MESSAGE_KEY)) {
             String message = msg.getData().getString(BackgroundTask.MESSAGE_KEY);
-            handleFailureMessage(observer, message);
-           // observer.handleFailure(message);
+            observer.taskFailed("Failed to " + goal + ": " + message);
         } else if (msg.getData().containsKey(BackgroundTask.EXCEPTION_KEY)) {
             Exception ex = (Exception) msg.getData().getSerializable(BackgroundTask.EXCEPTION_KEY);
-            handleExceptionMessage(observer, ex.getMessage());
-           // observer.handleException(ex);
+            observer.taskFailed("Failed to " + goal + " because of exception: " + ex.getMessage());
         }
     }
 
     protected abstract void handleSuccessMessage(T observer, Bundle data);
-    protected abstract void handleFailureMessage(T observer, String message);
-    protected abstract void handleExceptionMessage(T observer, String message);
-
-//    protected abstract void handleSuccessMessage(Bundle data);
-//    protected abstract void handleFailureMessage(String message);
 }

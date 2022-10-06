@@ -17,21 +17,11 @@ public class StatusService extends Service {
     }
 
     private class PostStatusHandler extends BackgroundTaskHandler<PostStatusObserver> {
-        public PostStatusHandler(PostStatusObserver inObs) { super(inObs); }
+        public PostStatusHandler(PostStatusObserver inObs) { super(inObs, "post status"); }
 
         @Override
         protected void handleSuccessMessage(PostStatusObserver observer, Bundle data) {
             observer.postStatusSuccess();
-        }
-
-        @Override
-        protected void handleFailureMessage(PostStatusObserver observer, String message) {
-            observer.taskFailed( "Failed to post status: " + message);
-        }
-
-        @Override
-        protected void handleExceptionMessage(PostStatusObserver observer, String message) {
-            observer.taskFailed("Failed to post status because of exception: " + message);
         }
     }
 }
