@@ -8,6 +8,7 @@ import edu.byu.cs.tweeter.client.backgroundTask.LogoutTask;
 import edu.byu.cs.tweeter.client.backgroundTask.RegisterTask;
 import edu.byu.cs.tweeter.client.model.service.handlers.AuthHandler;
 import edu.byu.cs.tweeter.client.model.service.handlers.BackgroundTaskHandler;
+import edu.byu.cs.tweeter.client.model.service.handlers.NoDataReturnedHandler;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
@@ -53,13 +54,8 @@ public class UserService extends Service {
     /**
      * Message handler (i.e., observer) for LogoutTask
      */
-    private class LogoutHandler extends BackgroundTaskHandler<NoDataReturnedObserver> {
+    private class LogoutHandler extends NoDataReturnedHandler {
         public LogoutHandler(NoDataReturnedObserver inObs) { super(inObs, "logout"); }
-
-        @Override
-        protected void handleSuccessMessage(NoDataReturnedObserver observer, Bundle data) {
-            observer.taskSuccess();
-        }
     }
 
     /**
