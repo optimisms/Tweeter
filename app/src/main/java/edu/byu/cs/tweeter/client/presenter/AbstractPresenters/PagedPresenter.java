@@ -12,8 +12,6 @@ public abstract class PagedPresenter<T> extends Presenter {
     public interface PagedView<T> extends View {
         void setLoadingFooter();
         void addItems(List<T> items);
-        void displayMessage(String message);
-        void clearMessage();
         void startUserActivity(User user);
     }
 
@@ -60,22 +58,22 @@ public abstract class PagedPresenter<T> extends Presenter {
             isLoading = false;
             ((PagedView<T>) mView).setLoadingFooter();
 
-            ((PagedView<T>) mView).clearMessage();
-            ((PagedView<T>) mView).displayMessage(message);
+            mView.clearMessage();
+            mView.displayMessage(message);
         }
     }
 
     public class GetUserObserver implements UserService.GetUserObserver {
         @Override
         public void getUserSuccess(User user) {
-            ((PagedView<T>) mView).displayMessage("Getting user's profile...");
+            mView.displayMessage("Getting user's profile...");
             ((PagedView<T>) mView).startUserActivity(user);
         }
 
         @Override
         public void taskFailed(String message) {
-            ((PagedView<T>) mView).clearMessage();
-            ((PagedView<T>) mView).displayMessage(message);
+            mView.clearMessage();
+            mView.displayMessage(message);
         }
     }
 }

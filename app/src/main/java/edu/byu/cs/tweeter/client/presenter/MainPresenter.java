@@ -20,23 +20,15 @@ import edu.byu.cs.tweeter.model.domain.User;
 
 public class MainPresenter extends Presenter {
     //TODO: try to refactor some of the observers implementations out
-    //TODO: refactor the views but not implementations
     public interface MainView extends View {
         void logoutUser();
-        void displayLogoutMessage();
-        void clearLogoutMessage();
-        void displayLogoutErrorMessage(String message);
-        void displayPostingMessage();
-        void clearPostingMessage();
-        void displayPostingErrorMessage(String message);
+        void updateCounts();
         void updateFolloweeCount(int count);
         void updateFollowerCount(int count);
-        void displayErrorMessage(String message);
         void enableFollowButton();
-        void updateCounts();
         void updateFollowButtonState(boolean state);
-        void displayFollowMessage();
-        void displayUnfollowMessage();
+        String getFollowMessage();
+        String getUnfollowMessage();
     }
 
     //TODO: get with a TA to ask how to remove mView from child class without ruining everything
@@ -52,7 +44,7 @@ public class MainPresenter extends Presenter {
             new StatusService().postStatus(Cache.getInstance().getCurrUserAuthToken(), newStatus, new PostStatusObserver());
         } catch (ParseException ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
-            ((MainView) mView).displayPostingErrorMessage("Failed to post the status because of exception: " + ex.getMessage());
+            ((MainView) mView).displayMessage("Failed to post the status because of exception: " + ex.getMessage());
         }
     }
 
@@ -130,28 +122,28 @@ public class MainPresenter extends Presenter {
         public void taskSuccess() {
             //Clear user data (cached data).
             Cache.getInstance().clearCache();
-            ((MainView) mView).clearLogoutMessage();
-            ((MainView) mView).displayLogoutMessage();
+            ((MainView) mView).clearMessage();
+            mView.displayMessage("Logging Out...");
             ((MainView) mView).logoutUser();
         }
 
         @Override
         public void taskFailed(String message) {
-            ((MainView) mView).clearLogoutMessage();
-            ((MainView) mView).displayLogoutErrorMessage(message);
+            mView.clearMessage();
+            mView.displayMessage(message);
         }
     }
     public class PostStatusObserver implements Service.NoDataReturnedObserver {
         @Override
         public void taskSuccess() {
-            ((MainView) mView).clearPostingMessage();
-            ((MainView) mView).displayPostingMessage();
+            mView.clearMessage();
+            mView.displayMessage("Posting Status...");
         }
 
         @Override
         public void taskFailed(String message) {
-            ((MainView) mView).clearPostingMessage();
-            ((MainView) mView).displayLogoutErrorMessage(message);
+            mView.clearMessage();
+            mView.displayMessage(message);
         }
     }
     public class FollowObserver implements Service.FollowButtonObserver {
@@ -159,11 +151,11 @@ public class MainPresenter extends Presenter {
         public void taskSuccess() {
             ((MainView) mView).updateCounts();
             ((MainView) mView).updateFollowButtonState(true);
-            ((MainView) mView).displayFollowMessage();
+            mView.displayMessage(((MainView) mView).getFollowMessage());
         }
 
         @Override
-        public void taskFailed(String message) { ((MainView) mView).displayErrorMessage(message); }
+        public void taskFailed(String message) { mView.displayMessage(message); }
 
         @Override
         public void enableButton() { ((MainView) mView).enableFollowButton(); }
@@ -173,11 +165,11 @@ public class MainPresenter extends Presenter {
         public void taskSuccess() {
             ((MainView) mView).updateCounts();
             ((MainView) mView).updateFollowButtonState(false);
-            ((MainView) mView).displayUnfollowMessage();
+            mView.displayMessage(((MainView) mView).getUnfollowMessage());
         }
 
         @Override
-        public void taskFailed(String message) { ((MainView) mView).displayErrorMessage(message); }
+        public void taskFailed(String message) { mView.displayMessage(message); }
 
         @Override
         public void enableButton() { ((MainView) mView).enableFollowButton(); }
@@ -190,7 +182,7 @@ public class MainPresenter extends Presenter {
 
         @Override
         public void taskFailed(String message) {
-            ((MainView) mView).displayErrorMessage(message);
+            mView.displayMessage(message);
         }
     }
     public class GetFollowingCountObserver implements Service.GetCountObserver {
@@ -198,14 +190,14 @@ public class MainPresenter extends Presenter {
         public void getCountSuccess(int count) { ((MainView) mView).updateFolloweeCount(count); }
 
         @Override
-        public void taskFailed(String message) { ((MainView) mView).displayErrorMessage(message); }
+        public void taskFailed(String message) { mView.displayMessage(message); }
     }
     public class GetFollowersCountObserver implements Service.GetCountObserver {
         @Override
         public void getCountSuccess(int count) { ((MainView) mView).updateFollowerCount(count); }
 
         @Override
-        public void taskFailed(String message) { ((MainView) mView).displayErrorMessage(message); }
+        public void taskFailed(String message) { mView.displayMessage(message); }
     }
 
 }

@@ -57,14 +57,14 @@ public class LoginFragment extends Fragment implements LoginPresenter.AuthView {
     }
 
     @Override
-    public void displayInfoMessage(String message) {
-        clearInfoMessage();
+    public void displayMessage(String message) {
+        clearMessage();
         infoToast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
         infoToast.show();
     }
 
     @Override
-    public void clearInfoMessage() {
+    public void clearMessage() {
         if (infoToast != null) {
             infoToast.cancel();
             infoToast = null;

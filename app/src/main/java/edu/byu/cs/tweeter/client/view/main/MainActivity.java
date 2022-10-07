@@ -31,8 +31,7 @@ import edu.byu.cs.tweeter.model.domain.User;
 public class MainActivity extends AppCompatActivity implements StatusDialogFragment.Observer, MainPresenter.MainView {
     public static final String CURRENT_USER_KEY = "CurrentUser";
 
-    private Toast logOutToast;
-    private Toast postingToast;
+    private Toast infoToast;
     private User selectedUser;
     private TextView followeeCount;
     private TextView followerCount;
@@ -145,43 +144,17 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     }
 
     @Override
-    public void displayLogoutMessage() {
-        logOutToast = Toast.makeText(this, "Logging Out...", Toast.LENGTH_LONG);
-        logOutToast.show();
+    public void displayMessage(String message) {
+        infoToast = Toast.makeText(this, message, Toast.LENGTH_LONG);
+        infoToast.show();
     }
 
     @Override
-    public void clearLogoutMessage() {
-        if (logOutToast != null) {
-            logOutToast.cancel();
-            logOutToast = null;
+    public void clearMessage() {
+        if (infoToast != null) {
+            infoToast.cancel();
+            infoToast = null;
         }
-    }
-
-    @Override
-    public void displayLogoutErrorMessage(String message) {
-        logOutToast = Toast.makeText(this, message, Toast.LENGTH_LONG);
-        logOutToast.show();
-    }
-
-    @Override
-    public void displayPostingMessage() {
-        postingToast = Toast.makeText(this, "Posting Status...", Toast.LENGTH_LONG);
-        postingToast.show();
-    }
-
-    @Override
-    public void clearPostingMessage() {
-        if (postingToast != null) {
-            postingToast.cancel();
-            postingToast = null;
-        }
-    }
-
-    @Override
-    public void displayPostingErrorMessage(String message) {
-        postingToast = Toast.makeText(this, message, Toast.LENGTH_LONG);
-        postingToast.show();
     }
 
     @Override
@@ -189,9 +162,6 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
 
     @Override
     public void updateFollowerCount(int count) { followerCount.setText(getString(R.string.followerCount, String.valueOf(count))); }
-
-    @Override
-    public void displayErrorMessage(String message) { Toast.makeText(this, message, Toast.LENGTH_LONG).show(); }
 
     @Override
     public void enableFollowButton() { followButton.setEnabled(true); }
@@ -203,9 +173,9 @@ public class MainActivity extends AppCompatActivity implements StatusDialogFragm
     public void updateFollowButtonState(boolean state) { updateFollowButton(state); }
 
     @Override
-    public void displayFollowMessage() { Toast.makeText(MainActivity.this, "Adding " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show(); }
+    public String getFollowMessage() { return "Adding " + selectedUser.getName() + "..."; }
 
     @Override
-    public void displayUnfollowMessage() { Toast.makeText(MainActivity.this, "Removing " + selectedUser.getName() + "...", Toast.LENGTH_LONG).show(); }
+    public String getUnfollowMessage() { return "Removing " + selectedUser.getName() + "..."; }
 
 }
