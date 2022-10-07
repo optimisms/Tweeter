@@ -8,7 +8,5 @@ public class StoryPresenter extends PagedPresenter<Status> {
     public StoryPresenter(PagedView<Status> inView) { super(inView); }
 
     @Override
-    public void callServiceMethod() {
-        new StoryService().getStory(data);
-    }
+    public void callServiceMethod() { new StoryService().getStory(data); }
 }

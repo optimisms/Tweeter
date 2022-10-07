@@ -8,7 +8,5 @@ public class FeedPresenter extends PagedPresenter<Status> {
     public FeedPresenter(PagedView<Status> inView) { super(inView); }
 
     @Override
-    public void callServiceMethod() {
-        new FeedService().getFeed(data);
-    }
+    public void callServiceMethod() { new FeedService().getFeed(data); }
 }

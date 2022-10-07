@@ -8,7 +8,5 @@ public class FollowersPresenter extends PagedPresenter<User> {
     public FollowersPresenter(PagedView<User> inView) { super(inView); }
 
     @Override
-    public void callServiceMethod() {
-        new FollowService().loadMoreFollowers(data);
-    }
+    public void callServiceMethod() { new FollowService().loadMoreFollowers(data); }
 }
