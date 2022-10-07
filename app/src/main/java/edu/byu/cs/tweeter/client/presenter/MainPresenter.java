@@ -42,7 +42,7 @@ public class MainPresenter extends Presenter {
             new StatusService().postStatus(Cache.getInstance().getCurrUserAuthToken(), newStatus, new PostStatusObserver());
         } catch (ParseException ex) {
             Log.e(LOG_TAG, ex.getMessage(), ex);
-            ((MainView) mView).displayMessage("Failed to post the status because of exception: " + ex.getMessage());
+            mView.displayMessage("Failed to post the status because of exception: " + ex.getMessage());
         }
     }
 
@@ -120,7 +120,7 @@ public class MainPresenter extends Presenter {
         public void taskSuccess() {
             //Clear user data (cached data).
             Cache.getInstance().clearCache();
-            ((MainView) mView).clearMessage();
+            mView.clearMessage();
             mView.displayMessage("Logging Out...");
             ((MainView) mView).logoutUser();
         }
@@ -179,9 +179,7 @@ public class MainPresenter extends Presenter {
         }
 
         @Override
-        public void taskFailed(String message) {
-            mView.displayMessage(message);
-        }
+        public void taskFailed(String message) { mView.displayMessage(message); }
     }
     public class GetFollowingCountObserver implements Service.GetCountObserver {
         @Override

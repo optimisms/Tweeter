@@ -36,27 +36,5 @@ public class RegisterPresenter extends AuthPresenter {
     }
 
     @Override
-    protected String getValidateSuccessMessage() {
-        return "Registering...";
-    }
-
-//    public void initiateRegister(String firstName, String lastName, String username, String password, Bitmap image) {
-//        String message = validateRegistration(firstName, lastName, username, password, image);
-//        if (message != null) { //Register invalid
-//            ((AuthView) mView).clearInfoMessage();
-//            ((AuthView) mView).displayErrorMessage(message);
-//        } else { //Register valid
-//            // Convert image to byte array.
-//            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//            image.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-//            byte[] imageBytes = bos.toByteArray();
-//
-//            // Intentionally, Use the java Base64 encoder so it is compatible with M4.
-//            String imageBytesBase64 = Base64.getEncoder().encodeToString(imageBytes);
-//
-//            ((AuthView) mView).clearErrorMessage();
-//            ((AuthView) mView).displayInfoMessage("Registering...");
-//            new UserService().register(firstName, lastName, username, password, imageBytesBase64, this);
-//        }
-//    }
+    protected String getValidateSuccessMessage() { return "Registering..."; }
 }
