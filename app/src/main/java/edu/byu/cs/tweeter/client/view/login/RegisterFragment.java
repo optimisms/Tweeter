@@ -40,7 +40,7 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.Auth
     private ImageView imageToUpload;
     private TextView errorView;
     private Toast infoToast;
-    private AuthPresenter presenter = new RegisterPresenter(this);
+    private final AuthPresenter presenter = new RegisterPresenter(this);
 
     /**
      * Creates an instance of the fragment and places the user and auth token in an arguments
@@ -126,7 +126,7 @@ public class RegisterFragment extends Fragment implements RegisterPresenter.Auth
 
     @Override
     public void navigateToUser(User user) {
-        Intent intent = new Intent(getContext(), MainActivity.class);;
+        Intent intent = new Intent(getContext(), MainActivity.class);
         intent.putExtra(MainActivity.CURRENT_USER_KEY, user);
 
         try {

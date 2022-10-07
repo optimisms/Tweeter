@@ -29,7 +29,6 @@ public abstract class AuthPresenter extends Presenter implements Service.AuthObs
             ((AuthView) mView).clearErrorMessage();
             mView.displayMessage(getValidateSuccessMessage());
             callServiceMethod(firstName, lastName, username, password, image);
-
         }
     }
 

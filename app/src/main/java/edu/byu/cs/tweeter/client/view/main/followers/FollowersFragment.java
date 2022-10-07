@@ -110,9 +110,7 @@ public class FollowersFragment extends Fragment implements PagedPresenter.PagedV
             userAlias = itemView.findViewById(R.id.userAlias);
             userName = itemView.findViewById(R.id.userName);
 
-            itemView.setOnClickListener(view -> {
-                presenter.initiateGetUser(userAlias.getText().toString());
-            });
+            itemView.setOnClickListener(view -> presenter.initiateGetUser(userAlias.getText().toString()));
         }
 
         /**
@@ -297,9 +295,7 @@ public class FollowersFragment extends Fragment implements PagedPresenter.PagedV
                         totalItemCount && firstVisibleItemPosition >= 0) {
                     // Run this code later on the UI thread
                     final Handler handler = new Handler(Looper.getMainLooper());
-                    handler.postDelayed(() -> {
-                        followersRecyclerViewAdapter.loadMoreItems();
-                    }, 0);
+                    handler.postDelayed(() -> followersRecyclerViewAdapter.loadMoreItems(), 0);
                 }
             }
         }

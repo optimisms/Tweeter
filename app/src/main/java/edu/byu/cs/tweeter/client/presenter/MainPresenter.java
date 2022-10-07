@@ -31,8 +31,6 @@ public class MainPresenter extends Presenter {
         String getUnfollowMessage();
     }
 
-    //TODO: get with a TA to ask how to remove mView from child class without ruining everything
-
     private static final String LOG_TAG = "MainActivity";
 
     public MainPresenter(MainView inView) { super(inView); }
