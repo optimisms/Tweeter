@@ -45,8 +45,7 @@ public abstract class PagedPresenter<T> extends Presenter {
     public class PagedObserver implements Service.PagedObserver<T> {
         @Override
         public void pagedTaskSuccess(List<T> items, boolean morePages) {
-            isLoading = false;
-            ((PagedView<T>) mView).setLoadingFooter();
+            stopLoading();
 
             lastItem = (items.size() > 0) ? items.get(items.size() - 1) : null;
             hasMorePages = morePages;
@@ -55,11 +54,15 @@ public abstract class PagedPresenter<T> extends Presenter {
 
         @Override
         public void taskFailed(String message) {
-            isLoading = false;
-            ((PagedView<T>) mView).setLoadingFooter();
+            stopLoading();
 
             mView.clearMessage();
             mView.displayMessage(message);
+        }
+
+        private void stopLoading() {
+            isLoading = false;
+            ((PagedView<T>) mView).setLoadingFooter();
         }
     }
 
