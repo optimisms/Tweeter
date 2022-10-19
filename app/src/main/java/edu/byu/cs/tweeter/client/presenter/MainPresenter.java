@@ -38,6 +38,7 @@ public class MainPresenter extends Presenter {
     public void initiateLogout() { new UserService().logout(Cache.getInstance().getCurrUserAuthToken(), new LogoutObserver()); }
     public void initiatePostStatus(String post) {
         try {
+            mView.displayMessage("Posting Status...");
             Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
             new StatusService().postStatus(Cache.getInstance().getCurrUserAuthToken(), newStatus, new PostStatusObserver());
         } catch (ParseException ex) {
@@ -135,7 +136,7 @@ public class MainPresenter extends Presenter {
         @Override
         public void taskSuccess() {
             mView.clearMessage();
-            mView.displayMessage("Posting Status...");
+            mView.displayMessage("Successfully Posted!");
         }
 
         @Override
