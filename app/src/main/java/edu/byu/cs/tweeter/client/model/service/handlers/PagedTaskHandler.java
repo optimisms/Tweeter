@@ -11,6 +11,7 @@ public abstract class PagedTaskHandler<S extends Service.PagedObserver<T>, T> ex
 
     public PagedTaskHandler(S observer, String goal) { super(observer, goal); }
 
+    @Override
     protected void handleSuccessMessage(S observer, Bundle data) {
         List<T> items = (List<T>) data.getSerializable(PagedTask.ITEMS_KEY);
         boolean hasMorePages = data.getBoolean(PagedTask.MORE_PAGES_KEY);
