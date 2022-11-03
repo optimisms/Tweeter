@@ -32,25 +32,41 @@ public class MainPresenter extends Presenter {
     }
 
     private static final String LOG_TAG = "MainActivity";
+    private StatusService statusService;
 
     public MainPresenter(MainView inView) { super(inView); }
 
+    public StatusService getStatusService() {
+        if (statusService == null) {
+            statusService = new StatusService();
+        }
+        return statusService;
+    }
+    public Status getNewStatus(String post) {
+        if (getFormattedDateTime() == null) return null;
+        return new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
+    }
+
     public void initiateLogout() { new UserService().logout(Cache.getInstance().getCurrUserAuthToken(), new LogoutObserver()); }
     public void initiatePostStatus(String post) {
-        try {
-            Status newStatus = new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
-            new StatusService().postStatus(Cache.getInstance().getCurrUserAuthToken(), newStatus, new PostStatusObserver());
-        } catch (ParseException ex) {
-            Log.e(LOG_TAG, ex.getMessage(), ex);
-            mView.displayMessage("Failed to post the status because of exception: " + ex.getMessage());
+        mView.displayMessage("Posting Status...");
+        Status newStatus = getNewStatus(post);//new Status(post, Cache.getInstance().getCurrUser(), getFormattedDateTime(), parseURLs(post), parseMentions(post));
+        if (newStatus != null) {
+            getStatusService().postStatus(Cache.getInstance().getCurrUserAuthToken(), newStatus, new PostStatusObserver());
         }
     }
 
-    public String getFormattedDateTime() throws ParseException {
+    public String getFormattedDateTime() {
         SimpleDateFormat userFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         SimpleDateFormat statusFormat = new SimpleDateFormat("MMM d yyyy h:mm aaa");
 
-        return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
+        try {
+            return statusFormat.format(userFormat.parse(LocalDate.now().toString() + " " + LocalTime.now().toString().substring(0, 8)));
+        } catch (ParseException ex) {
+            Log.e(LOG_TAG, ex.getMessage(), ex);
+            mView.displayMessage("Failed to post the status because of exception: " + ex.getMessage());
+            return null;
+        }
     }
     public List<String> parseURLs(String post) {
         List<String> containedUrls = new ArrayList<>();
@@ -135,7 +151,7 @@ public class MainPresenter extends Presenter {
         @Override
         public void taskSuccess() {
             mView.clearMessage();
-            mView.displayMessage("Posting Status...");
+            mView.displayMessage("Successfully Posted!");
         }
 
         @Override

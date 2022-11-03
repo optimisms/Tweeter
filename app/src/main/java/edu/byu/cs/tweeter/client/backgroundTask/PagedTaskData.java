@@ -5,11 +5,11 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class PagedTaskData<T> {
-    AuthToken token;
-    User user;
-    int pageSize;
-    T lastItem;
-    PagedPresenter<T>.PagedObserver observer;
+    private AuthToken token;
+    private User user;
+    private int pageSize;
+    private T lastItem;
+    private PagedPresenter<T>.PagedObserver observer;
 
     public PagedTaskData(AuthToken token, User user, int pageSize, T lastItem, PagedPresenter<T>.PagedObserver observer) {
         this.token = token;
