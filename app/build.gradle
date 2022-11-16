@@ -6,6 +6,7 @@ plugins {
 android {
     compileSdk 30
     defaultConfig {
+
         applicationId "edu.byu.cs.tweeter"
         minSdkVersion 30
         targetSdkVersion 30
@@ -60,7 +61,6 @@ dependencies {
     // implementation 'androidx.test:core:1.4.0'
 
     // Jupiter API & Test Runner for instrumented tests
-    // Must be a test runtime only because it brings in JUnit 4 which could cause accidental imports
     androidTestRuntimeOnly "androidx.test:runner:1.4.0"
     androidTestImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"
 
