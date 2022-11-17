@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Objects;
 
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 
 /**
- * A paged response for a {@link FollowingRequest}.
+ * A paged response for a {@link GetFollowingRequest}.
  */
 public class GetFollowingResponse extends PagedResponse {
 

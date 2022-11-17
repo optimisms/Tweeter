@@ -9,13 +9,13 @@ import java.util.Arrays;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.server.dao.FollowDAO;
 
 public class FollowServiceTest {
 
-    private FollowingRequest request;
+    private GetFollowingRequest request;
     private GetFollowingResponse expectedResponse;
     private FollowDAO mockFollowDAO;
     private FollowService followServiceSpy;
@@ -34,7 +34,7 @@ public class FollowServiceTest {
                 "https://faculty.cs.byu.edu/~jwilkerson/cs340/tweeter/images/daisy_duck.png");
 
         // Setup a request object to use in the tests
-        request = new FollowingRequest(authToken, currentUser.getAlias(), 3, null);
+        request = new GetFollowingRequest(authToken, currentUser.getAlias(), 3, null);
 
         // Setup a mock FollowDAO that will return known responses
         expectedResponse = new GetFollowingResponse(Arrays.asList(resultUser1, resultUser2, resultUser3), false);
@@ -46,7 +46,7 @@ public class FollowServiceTest {
     }
 
     /**
-     * Verify that the {@link FollowService#getFollowees(FollowingRequest)}
+     * Verify that the {@link FollowService#getFollowees(GetFollowingRequest)}
      * method returns the same result as the {@link FollowDAO} class.
      */
     @Test

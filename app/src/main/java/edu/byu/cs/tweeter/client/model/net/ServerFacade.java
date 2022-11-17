@@ -3,7 +3,7 @@ package edu.byu.cs.tweeter.client.model.net;
 import java.io.IOException;
 
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
-import edu.byu.cs.tweeter.model.net.request.FollowingRequest;
+import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.LoginResponse;
@@ -38,7 +38,7 @@ public class ServerFacade {
      *                other information required to satisfy the request.
      * @return the followees.
      */
-    public GetFollowingResponse getFollowees(FollowingRequest request, String urlPath)
+    public GetFollowingResponse getFollowees(GetFollowingRequest request, String urlPath)
             throws IOException, TweeterRemoteException {
         return clientCommunicator.doPost(urlPath, request, null, GetFollowingResponse.class);
     }
