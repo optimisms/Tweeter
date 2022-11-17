@@ -2,14 +2,20 @@ package edu.byu.cs.tweeter.client.backgroundTask;
 
 import android.os.Handler;
 
+import java.io.IOException;
+
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.net.request.LoginRequest;
+import edu.byu.cs.tweeter.model.net.response.LoginResponse;
 import edu.byu.cs.tweeter.util.Pair;
 
 /**
  * Background task that creates a new user account and logs in the new user (i.e., starts a session).
  */
 public class RegisterTask extends AuthenticateTask {
+    private static final String LOG_TAG = "RegisterTask";
 
     /**
      * The user's first name.
@@ -32,6 +38,17 @@ public class RegisterTask extends AuthenticateTask {
         this.firstName = firstName;
         this.lastName = lastName;
         this.image = image;
+    }
+
+    //TODO: implement this method
+    @Override
+    protected LoginResponse getAuthResponse(LoginRequest request) throws IOException, TweeterRemoteException {
+        return null;
+    }
+
+    @Override
+    protected String getLogTag() {
+        return LOG_TAG;
     }
 
     @Override
