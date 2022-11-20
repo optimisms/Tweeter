@@ -31,6 +31,14 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowService extends Service {
+    public static final String FOLLOW_URL_PATH = "follow/";
+    public static final String UNFOLLOW_URL_PATH = "follow/unfollow/";
+    public static final String IS_FOLLOWER_URL_PATH = "follow/is_follower/";
+    public static final String GET_FOLLOWERS_URL_PATH = "get/followers/";
+    public static final String GET_FOLLOWERS_COUNT_URL_PATH = "get/followers/count/";
+    public static final String GET_FOLLOWING_URL_PATH = "get/following/";
+    public static final String GET_FOLLOWING_COUNT_URL_PATH = "get/following/count/";
+
     public interface IsFollowerObserver extends Observer {
         void isFollowerSuccess(boolean isFollower);
     }

@@ -13,10 +13,10 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class UserService extends Service {
-    public static final String LOGIN_URL_PATH = "auth/login";
-    public static final String REGISTER_URL_PATH = "auth/register";
-    public static final String LOGOUT_URL_PATH = "logout";
-    public static final String GET_USER_URL_PATH = "get/user";
+    public static final String LOGIN_URL_PATH = "auth/login/";
+    public static final String REGISTER_URL_PATH = "auth/register/";
+    public static final String LOGOUT_URL_PATH = "logout/";
+    public static final String GET_USER_URL_PATH = "get/user/";
 
 
     public interface GetUserObserver extends Observer {

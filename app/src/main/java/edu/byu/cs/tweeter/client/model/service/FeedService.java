@@ -7,6 +7,8 @@ import edu.byu.cs.tweeter.client.presenter.FeedPresenter;
 import edu.byu.cs.tweeter.model.domain.Status;
 
 public class FeedService extends Service {
+    public static final String GET_FEED_URL_PATH = "get/feed/";
+
     public void getFeed(PagedTaskData<Status> data) {
         GetFeedTask getFeedTask = new GetFeedTask(data, new GetFeedHandler(data.getObserver()));
         executeTask(getFeedTask);
