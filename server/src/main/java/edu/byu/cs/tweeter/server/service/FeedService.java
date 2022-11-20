@@ -4,8 +4,8 @@ import edu.byu.cs.tweeter.model.net.request.GetFeedRequest;
 import edu.byu.cs.tweeter.model.net.response.GetFeedResponse;
 
 public class FeedService {
-    //TODO: implement method
-    public GetFeedResponse getFeed(GetFeedRequest getFeedRequest) {
+    //TODO: implement methods
+    public GetFeedResponse getFeed(GetFeedRequest request) {
         return null;
     }
 }
