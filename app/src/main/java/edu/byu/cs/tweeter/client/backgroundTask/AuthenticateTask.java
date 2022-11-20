@@ -12,7 +12,6 @@ import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.net.request.Request;
 import edu.byu.cs.tweeter.model.net.response.AuthResponse;
-import edu.byu.cs.tweeter.util.Pair;
 
 public  abstract class AuthenticateTask<Req extends Request, Res extends AuthResponse> extends BackgroundTask {
 
@@ -67,8 +66,6 @@ public  abstract class AuthenticateTask<Req extends Request, Res extends AuthRes
     protected abstract Res getAuthResponse(Req request) throws IOException, TweeterRemoteException;
 
     protected abstract String getLogTag();
-
-    protected abstract Pair<User, AuthToken> runAuthenticationTask();
 
     @Override
     protected void loadSuccessBundle(Bundle msgBundle) {

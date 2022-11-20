@@ -4,7 +4,6 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 //TODO: update this class to be about both login and register
-//TODO: add RegisterResponse if necessary
 /**
  * A response for a {@link //AuthRequest}.
  */
