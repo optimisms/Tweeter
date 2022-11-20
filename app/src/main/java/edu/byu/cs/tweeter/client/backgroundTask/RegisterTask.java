@@ -4,17 +4,18 @@ import android.os.Handler;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.model.service.UserService;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
-import edu.byu.cs.tweeter.model.net.request.LoginRequest;
-import edu.byu.cs.tweeter.model.net.response.LoginResponse;
+import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
+import edu.byu.cs.tweeter.model.net.response.AuthResponse;
 import edu.byu.cs.tweeter.util.Pair;
 
 /**
  * Background task that creates a new user account and logs in the new user (i.e., starts a session).
  */
-public class RegisterTask extends AuthenticateTask {
+public class RegisterTask extends AuthenticateTask<RegisterRequest, AuthResponse> {
     private static final String LOG_TAG = "RegisterTask";
 
     /**
@@ -40,10 +41,14 @@ public class RegisterTask extends AuthenticateTask {
         this.image = image;
     }
 
-    //TODO: implement this method
     @Override
-    protected LoginResponse getAuthResponse(LoginRequest request) throws IOException, TweeterRemoteException {
-        return null;
+    protected RegisterRequest getAuthRequest() {
+        return new RegisterRequest(firstName, lastName, username, password, image);
+    }
+
+    @Override
+    protected AuthResponse getAuthResponse(RegisterRequest request) throws IOException, TweeterRemoteException {
+        return getServerFacade().register(request, UserService.REGISTER_URL_PATH);
     }
 
     @Override

@@ -10,11 +10,11 @@ import edu.byu.cs.tweeter.client.model.net.ServerFacade;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
-import edu.byu.cs.tweeter.model.net.request.LoginRequest;
-import edu.byu.cs.tweeter.model.net.response.LoginResponse;
+import edu.byu.cs.tweeter.model.net.request.Request;
+import edu.byu.cs.tweeter.model.net.response.AuthResponse;
 import edu.byu.cs.tweeter.util.Pair;
 
-public abstract class AuthenticateTask extends BackgroundTask {
+public  abstract class AuthenticateTask<Req extends Request, Res extends AuthResponse> extends BackgroundTask {
 
     public static final String USER_KEY = "user";
     public static final String AUTH_TOKEN_KEY = "auth-token";
@@ -41,12 +41,11 @@ public abstract class AuthenticateTask extends BackgroundTask {
         this.password = password;
     }
 
-
     @Override
-    protected final void runTask()  throws IOException {
+    protected final void runTask() throws IOException {
         try {
-            LoginRequest request = new LoginRequest(username, password);
-            LoginResponse response = getAuthResponse(request);
+            Req request = getAuthRequest();
+            Res response = getAuthResponse(request);
 
             if (response.isSuccess()) {
                 this.authenticatedUser = response.getUser();
@@ -61,11 +60,11 @@ public abstract class AuthenticateTask extends BackgroundTask {
             Log.e(getLogTag(), "Failed to get followees", ex);
             sendExceptionMessage(ex);
         }
-        // or call sendFailedMessage if not successful
-        // sendFailedMessage()
     }
 
-    protected abstract LoginResponse getAuthResponse(LoginRequest request) throws IOException, TweeterRemoteException;
+    protected abstract Req getAuthRequest();
+
+    protected abstract Res getAuthResponse(Req request) throws IOException, TweeterRemoteException;
 
     protected abstract String getLogTag();
 
