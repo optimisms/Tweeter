@@ -8,7 +8,6 @@ import edu.byu.cs.tweeter.model.domain.User;
  * A response for a {@link //AuthRequest}.
  */
 public class AuthResponse extends Response {
-
     private User user;
     private AuthToken authToken;
 

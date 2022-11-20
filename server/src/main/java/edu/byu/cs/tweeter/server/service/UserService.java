@@ -8,7 +8,6 @@ import edu.byu.cs.tweeter.model.net.response.AuthResponse;
 import edu.byu.cs.tweeter.util.FakeData;
 
 public class UserService {
-
     public AuthResponse login(LoginRequest request) {
         if(request.getUsername() == null){
             throw new RuntimeException("[Bad Request] Missing a username");
