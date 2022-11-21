@@ -39,6 +39,17 @@ public class FollowService {
         return getFollowingDAO().getFollowees(request);
     }
 
+    public IsFollowerResponse isFollower(IsFollowerRequest request) {
+        if (request.getFollower() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a follower");
+        } else if (request.getFollowee() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a followee");
+        }
+
+        //TODO: Use DAOs instead
+        return new IsFollowerResponse(true);
+    }
+
     /**
      * Returns an instance of {@link FollowDAO}. Allows mocking of the FollowDAO class
      * for testing purposes. All usages of FollowDAO should get their FollowDAO
@@ -64,10 +75,6 @@ public class FollowService {
     }
 
     public GetFollowingCountResponse getFollowingCount(GetFollowingCountRequest request) {
-        return null;
-    }
-
-    public IsFollowerResponse isFollower(IsFollowerRequest request) {
         return null;
     }
 
