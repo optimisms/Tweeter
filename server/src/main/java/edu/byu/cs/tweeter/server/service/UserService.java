@@ -50,8 +50,16 @@ public class UserService {
         }
 
         //TODO: remove authToken from DB
-
         return new LogoutResponse();
+    }
+
+    public GetUserResponse getUser(GetUserRequest request) {
+        if (request.getAlias() == null) {
+            throw new RuntimeException("[Bad Request] Missing the user alias");
+        }
+
+        //TODO: implement DAO
+        return new GetUserResponse(getFakeData().findUserByAlias(request.getAlias()));
     }
 
     /**
@@ -82,10 +90,5 @@ public class UserService {
      */
     FakeData getFakeData() {
         return FakeData.getInstance();
-    }
-
-    //TODO: implement methods
-    public GetUserResponse getUser(GetUserRequest request) {
-        return null;
     }
 }
