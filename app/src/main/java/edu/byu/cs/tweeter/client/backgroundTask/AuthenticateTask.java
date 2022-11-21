@@ -6,7 +6,6 @@ import android.util.Log;
 
 import java.io.IOException;
 
-import edu.byu.cs.tweeter.client.model.net.ServerFacade;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
@@ -21,8 +20,6 @@ public  abstract class AuthenticateTask<Req extends Request, Res extends AuthRes
     private User authenticatedUser;
 
     private AuthToken authToken;
-
-    private ServerFacade serverFacade;
 
     /**
      * The user's username (or "alias" or "handle"). E.g., "@susan".
@@ -56,7 +53,7 @@ public  abstract class AuthenticateTask<Req extends Request, Res extends AuthRes
             }
         }
         catch( IOException | TweeterRemoteException ex) {
-            Log.e(getLogTag(), "Failed to get followees", ex);
+            Log.e(getLogTag(), "Failed to authenticate session", ex);
             sendExceptionMessage(ex);
         }
     }
@@ -71,13 +68,5 @@ public  abstract class AuthenticateTask<Req extends Request, Res extends AuthRes
     protected void loadSuccessBundle(Bundle msgBundle) {
         msgBundle.putSerializable(USER_KEY, authenticatedUser);
         msgBundle.putSerializable(AUTH_TOKEN_KEY, authToken);
-    }
-
-    ServerFacade getServerFacade() {
-        if(serverFacade == null) {
-            serverFacade = new ServerFacade();
-        }
-
-        return serverFacade;
     }
 }

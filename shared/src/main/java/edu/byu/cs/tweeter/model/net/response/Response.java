@@ -6,7 +6,6 @@ import java.io.Serializable;
  * A base class for server responses.
  */
 class Response implements Serializable {
-
     private final boolean success;
     private final String message;
 

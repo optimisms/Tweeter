@@ -44,6 +44,16 @@ public class UserService {
         return new AuthResponse(user, authToken);
     }
 
+    public LogoutResponse logout(LogoutRequest request) {
+        if (request.getToken() == null) {
+            throw new RuntimeException("[Bad Request] Missing the token to destroy");
+        }
+
+        //TODO: remove authToken from DB
+
+        return new LogoutResponse();
+    }
+
     /**
      * Returns the dummy user to be returned by the login operation.
      * This is written as a separate method to allow mocking of the dummy user.
@@ -76,10 +86,6 @@ public class UserService {
 
     //TODO: implement methods
     public GetUserResponse getUser(GetUserRequest request) {
-        return null;
-    }
-
-    public LogoutResponse logout(LogoutRequest request) {
         return null;
     }
 }
