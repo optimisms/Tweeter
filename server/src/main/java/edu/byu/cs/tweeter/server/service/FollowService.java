@@ -1,16 +1,14 @@
 package edu.byu.cs.tweeter.server.service;
 
+import edu.byu.cs.tweeter.model.net.request.CountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
-import edu.byu.cs.tweeter.model.net.request.GetFollowersCountRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
-import edu.byu.cs.tweeter.model.net.request.GetFollowingCountRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.IsFollowerRequest;
 import edu.byu.cs.tweeter.model.net.request.UnfollowRequest;
+import edu.byu.cs.tweeter.model.net.response.CountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowResponse;
-import edu.byu.cs.tweeter.model.net.response.GetFollowersCountResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
-import edu.byu.cs.tweeter.model.net.response.GetFollowingCountResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
@@ -72,6 +70,22 @@ public class FollowService {
         return new UnfollowResponse();
     }
 
+    public CountResponse getFollowersCount(CountRequest request) {
+        if (request.getTargetUser() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a target user");
+        }
+
+        return new CountResponse(20);
+    }
+
+    public CountResponse getFollowingCount(CountRequest request) {
+        if (request.getTargetUser() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a target user");
+        }
+
+        return new CountResponse(20);
+    }
+
     /**
      * Returns an instance of {@link FollowDAO}. Allows mocking of the FollowDAO class
      * for testing purposes. All usages of FollowDAO should get their FollowDAO
@@ -84,16 +98,7 @@ public class FollowService {
     }
 
     //TODO: implement methods
-
-    public GetFollowersCountResponse getFollowersCount(GetFollowersCountRequest request) {
-        return null;
-    }
-
     public GetFollowersResponse getFollowers(GetFollowersRequest request) {
-        return null;
-    }
-
-    public GetFollowingCountResponse getFollowingCount(GetFollowingCountRequest request) {
         return null;
     }
 }

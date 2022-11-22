@@ -2,12 +2,12 @@ package edu.byu.cs.tweeter.model.net.request;
 
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class GetFollowingCountRequest extends Request {
+public class CountRequest extends Request{
     User targetUser;
 
-    private GetFollowingCountRequest() {}
+    private CountRequest() {}
 
-    public GetFollowingCountRequest(User targetUser) {
+    public CountRequest(User targetUser) {
         this.targetUser = targetUser;
     }
 
