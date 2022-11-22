@@ -8,7 +8,8 @@ import java.io.Serializable;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.User;
-import edu.byu.cs.tweeter.util.Pair;
+import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.net.response.PagedResponse;
 
 public abstract class PagedTask<T> extends AuthenticatedTask {
 
@@ -64,20 +65,23 @@ public abstract class PagedTask<T> extends AuthenticatedTask {
 
     @Override
     protected final void runTask() throws IOException {
-        Pair<List<T>, Boolean> pageOfItems = getItems();
+        try {
+            PagedResponse<T> resp = getResponse();
 
-        items = pageOfItems.getFirst();
-        hasMorePages = pageOfItems.getSecond();
-
-        // Call sendSuccessMessage if successful
-        sendSuccessMessage();
-        // or call sendFailedMessage if not successful
-        // sendFailedMessage()
+            if (resp.isSuccess()) {
+                items = resp.getItems();
+                hasMorePages = resp.getHasMorePages();
+                sendSuccessMessage();
+            } else {
+                sendFailedMessage(resp.getMessage());
+            }
+        } catch (IOException | TweeterRemoteException ex) {
+            ex.printStackTrace();
+            sendExceptionMessage(ex);
+        }
     }
 
-    protected abstract Pair<List<T>, Boolean> getItems();
-
-    protected abstract List<User> getUsersForItems(List<T> items);
+    protected abstract PagedResponse<T> getResponse() throws IOException, TweeterRemoteException;
 
     @Override
     protected final void loadSuccessBundle(Bundle msgBundle) {

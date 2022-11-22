@@ -37,6 +37,15 @@ public class FollowService {
         return getFollowingDAO().getFollowees(request);
     }
 
+    public GetFollowersResponse getFollowers(GetFollowersRequest request) {
+        if(request.getFolloweeAlias() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a followee alias");
+        } else if(request.getLimit() <= 0) {
+            throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
+        }
+        return getFollowingDAO().getFollowers(request);
+    }
+
     public IsFollowerResponse isFollower(IsFollowerRequest request) {
         if (request.getFollower() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a follower");
@@ -95,10 +104,5 @@ public class FollowService {
      */
     FollowDAO getFollowingDAO() {
         return new FollowDAO();
-    }
-
-    //TODO: implement methods
-    public GetFollowersResponse getFollowers(GetFollowersRequest request) {
-        return null;
     }
 }

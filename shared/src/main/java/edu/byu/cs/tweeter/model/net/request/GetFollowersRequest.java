@@ -4,9 +4,9 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 
 /**
  * Contains all the information needed to make a request to have the server return the next page of
- * followers for a specified follower.
+ * followees for a specified follower.
  */
-public class GetFollowersRequest {
+public class GetFollowersRequest extends PagedRequest {
 
     private AuthToken authToken;
     private String followeeAlias;
@@ -21,10 +21,10 @@ public class GetFollowersRequest {
     /**
      * Creates an instance.
      *
-     * @param followeeAlias the alias of the user whose followees are to be returned.
-     * @param limit the maximum number of followees to return.
-     * @param lastFollowerAlias the alias of the last followee that was returned in the previous request (null if
-     *                     there was no previous request or if no followees were returned in the
+     * @param followeeAlias the alias of the user whose followers are to be returned.
+     * @param limit the maximum number of followers to return.
+     * @param lastFollowerAlias the alias of the last follower that was returned in the previous request (null if
+     *                     there was no previous request or if no followers were returned in the
      *                     previous request).
      */
     public GetFollowersRequest(AuthToken authToken, String followeeAlias, int limit, String lastFollowerAlias) {
@@ -53,9 +53,9 @@ public class GetFollowersRequest {
     }
 
     /**
-     * Returns the followee whose followers are to be returned by this request.
+     * Returns the follower whose followees are to be returned by this request.
      *
-     * @return the followee.
+     * @return the follower.
      */
     public String getFolloweeAlias() {
         return followeeAlias;
@@ -71,7 +71,7 @@ public class GetFollowersRequest {
     }
 
     /**
-     * Returns the number representing the maximum number of followers to be returned by this request.
+     * Returns the number representing the maximum number of followees to be returned by this request.
      *
      * @return the limit.
      */
@@ -89,8 +89,8 @@ public class GetFollowersRequest {
     }
 
     /**
-     * Returns the last follower that was returned in the previous request or null if there was no
-     * previous request or if no followers were returned in the previous request.
+     * Returns the last followee that was returned in the previous request or null if there was no
+     * previous request or if no followees were returned in the previous request.
      *
      * @return the last followee.
      */
@@ -99,9 +99,9 @@ public class GetFollowersRequest {
     }
 
     /**
-     * Sets the last follower.
+     * Sets the last followee.
      *
-     * @param lastFollowerAlias the last follower.
+     * @param lastFollowerAlias the last followee.
      */
     public void setLastFollowerAlias(String lastFollowerAlias) {
         this.lastFollowerAlias = lastFollowerAlias;
