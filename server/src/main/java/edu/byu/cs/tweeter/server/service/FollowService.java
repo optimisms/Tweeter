@@ -57,6 +57,7 @@ public class FollowService {
             throw new RuntimeException("[Bad Request] Request needs to have a followee");
         }
 
+        //TODO use DAOs
         return new FollowResponse();
     }
 
@@ -67,6 +68,7 @@ public class FollowService {
             throw new RuntimeException("[Bad Request] Request needs to have a unfollowee");
         }
 
+        //TODO use DAOs
         return new UnfollowResponse();
     }
 
