@@ -2,17 +2,17 @@ package edu.byu.cs.tweeter.client.model.net;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
 import edu.byu.cs.tweeter.model.net.request.CountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
 import edu.byu.cs.tweeter.model.net.request.GetFeedRequest;
-import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
-import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.GetStoryRequest;
 import edu.byu.cs.tweeter.model.net.request.GetUserRequest;
 import edu.byu.cs.tweeter.model.net.request.IsFollowerRequest;
 import edu.byu.cs.tweeter.model.net.request.LoginRequest;
 import edu.byu.cs.tweeter.model.net.request.LogoutRequest;
+import edu.byu.cs.tweeter.model.net.request.PagedRequest;
 import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.request.UnfollowRequest;
@@ -92,7 +92,7 @@ public class ServerFacade {
         return clientCommunicator.doPost(urlPath, request, null, CountResponse.class);
     }
 
-    public GetFollowersResponse getFollowers(GetFollowersRequest request, String urlPath) throws IOException, TweeterRemoteException {
+    public GetFollowersResponse getFollowers(PagedRequest<User> request, String urlPath) throws IOException, TweeterRemoteException {
         return clientCommunicator.doPost(urlPath, request, null, GetFollowersResponse.class);
     }
 
@@ -106,7 +106,7 @@ public class ServerFacade {
      *                other information required to satisfy the request.
      * @return the followees.
      */
-    public GetFollowingResponse getFollowees(GetFollowingRequest request, String urlPath)
+    public GetFollowingResponse getFollowees(PagedRequest<User> request, String urlPath)
             throws IOException, TweeterRemoteException {
         return clientCommunicator.doPost(urlPath, request, null, GetFollowingResponse.class);
     }

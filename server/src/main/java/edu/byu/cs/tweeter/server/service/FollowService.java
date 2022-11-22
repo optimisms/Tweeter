@@ -1,10 +1,10 @@
 package edu.byu.cs.tweeter.server.service;
 
+import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.CountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
-import edu.byu.cs.tweeter.model.net.request.GetFollowersRequest;
-import edu.byu.cs.tweeter.model.net.request.GetFollowingRequest;
 import edu.byu.cs.tweeter.model.net.request.IsFollowerRequest;
+import edu.byu.cs.tweeter.model.net.request.PagedRequest;
 import edu.byu.cs.tweeter.model.net.request.UnfollowRequest;
 import edu.byu.cs.tweeter.model.net.response.CountResponse;
 import edu.byu.cs.tweeter.model.net.response.FollowResponse;
@@ -28,8 +28,8 @@ public class FollowService {
      * @param request contains the data required to fulfill the request.
      * @return the followees.
      */
-    public GetFollowingResponse getFollowees(GetFollowingRequest request) {
-        if(request.getFollowerAlias() == null) {
+    public GetFollowingResponse getFollowees(PagedRequest<User> request) {
+        if(request.getTargetUserAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
         } else if(request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
@@ -37,8 +37,8 @@ public class FollowService {
         return getFollowingDAO().getFollowees(request);
     }
 
-    public GetFollowersResponse getFollowers(GetFollowersRequest request) {
-        if(request.getFolloweeAlias() == null) {
+    public GetFollowersResponse getFollowers(PagedRequest<User> request) {
+        if(request.getTargetUserAlias() == null) {
             throw new RuntimeException("[Bad Request] Request needs to have a followee alias");
         } else if(request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
