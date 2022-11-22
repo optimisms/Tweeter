@@ -50,6 +50,26 @@ public class FollowService {
         return new IsFollowerResponse(true);
     }
 
+    public FollowResponse follow(FollowRequest request) {
+        if (request.getFollower() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a follower");
+        } else if (request.getFollowee() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a followee");
+        }
+
+        return new FollowResponse();
+    }
+
+    public UnfollowResponse unfollow(UnfollowRequest request) {
+        if (request.getUnfollower() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a unfollower");
+        } else if (request.getUnfollowee() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a unfollowee");
+        }
+
+        return new UnfollowResponse();
+    }
+
     /**
      * Returns an instance of {@link FollowDAO}. Allows mocking of the FollowDAO class
      * for testing purposes. All usages of FollowDAO should get their FollowDAO
@@ -62,9 +82,6 @@ public class FollowService {
     }
 
     //TODO: implement methods
-    public FollowResponse follow(FollowRequest request) {
-        return null;
-    }
 
     public GetFollowersCountResponse getFollowersCount(GetFollowersCountRequest request) {
         return null;
@@ -75,10 +92,6 @@ public class FollowService {
     }
 
     public GetFollowingCountResponse getFollowingCount(GetFollowingCountRequest request) {
-        return null;
-    }
-
-    public UnfollowResponse unfollow(UnfollowRequest request) {
         return null;
     }
 }
