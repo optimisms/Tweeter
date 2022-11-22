@@ -2,7 +2,7 @@ package edu.byu.cs.tweeter.model.net.request;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 
-public class LogoutRequest {
+public class LogoutRequest extends Request {
     private AuthToken token;
 
     private LogoutRequest() {}

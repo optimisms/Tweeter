@@ -2,7 +2,7 @@ package edu.byu.cs.tweeter.model.net.request;
 
 import edu.byu.cs.tweeter.model.domain.User;
 
-public class IsFollowerRequest {
+public class IsFollowerRequest extends Request {
     private User follower;
     private User followee;
 
