@@ -1,14 +1,11 @@
 package edu.byu.cs.tweeter.model.net.response;
 
 public class IsFollowerResponse extends Response {
-    //TODO: find out where the name of this variable is coming from and
-    // why it didn't work until I changed it from isFollower to follower
-    // (see Lambda Response JSON)
-    private boolean follower;
+    private boolean isFollower;
 
-    public IsFollowerResponse(boolean follower) {
+    public IsFollowerResponse(boolean isFollower) {
         super(true);
-        this.follower = follower;
+        this.isFollower = isFollower;
     }
 
     public IsFollowerResponse(String message) {
@@ -16,6 +13,6 @@ public class IsFollowerResponse extends Response {
     }
 
     public boolean isFollower() {
-        return follower;
+        return isFollower;
     }
 }
