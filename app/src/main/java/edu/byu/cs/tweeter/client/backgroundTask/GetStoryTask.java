@@ -4,8 +4,10 @@ import android.os.Handler;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.model.service.StoryService;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
+import edu.byu.cs.tweeter.model.net.request.PagedRequest;
 import edu.byu.cs.tweeter.model.net.response.PagedResponse;
 
 /**
@@ -16,7 +18,9 @@ public class GetStoryTask extends PagedStatusTask {
 
     @Override
     protected PagedResponse<Status> getResponse() throws IOException, TweeterRemoteException {
-        return null;
+        String targetUserAlias = getTargetUser() == null ? null : getTargetUser().getAlias();
+        PagedRequest<Status> req = new PagedRequest<>(getAuthToken(), targetUserAlias, getLimit(), getLastItem());
+        return getServerFacade().getStory(req, StoryService.GET_STORY_URL_PATH);
     }
 
 //    @Override
