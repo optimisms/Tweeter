@@ -34,7 +34,7 @@ public class FollowService {
         } else if(request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
-        return getFollowingDAO().getFollowees(request);
+        return getFollowDAO().getFollowees(request);
     }
 
     public GetFollowersResponse getFollowers(PagedRequest<User> request) {
@@ -43,7 +43,7 @@ public class FollowService {
         } else if(request.getLimit() <= 0) {
             throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
         }
-        return getFollowingDAO().getFollowers(request);
+        return getFollowDAO().getFollowers(request);
     }
 
     public IsFollowerResponse isFollower(IsFollowerRequest request) {
@@ -84,7 +84,7 @@ public class FollowService {
             throw new RuntimeException("[Bad Request] Request needs to have a target user");
         }
 
-        return new CountResponse(20);
+        return new CountResponse(getFollowDAO().getFollowerCount(request.getTargetUser()));
     }
 
     public CountResponse getFollowingCount(CountRequest request) {
@@ -92,7 +92,7 @@ public class FollowService {
             throw new RuntimeException("[Bad Request] Request needs to have a target user");
         }
 
-        return new CountResponse(20);
+        return new CountResponse(getFollowDAO().getFolloweeCount(request.getTargetUser()));
     }
 
     /**
@@ -102,7 +102,7 @@ public class FollowService {
      *
      * @return the instance.
      */
-    FollowDAO getFollowingDAO() {
+    FollowDAO getFollowDAO() {
         return new FollowDAO();
     }
 }

@@ -24,13 +24,13 @@ public class FollowDAO {
     public Integer getFolloweeCount(User follower) {
         // TODO: uses the dummy data.  Replace with a real implementation.
         assert follower != null;
-        return getDummyFollowees().size();
+        return getDummyFollowees().size() - 1;
     }
 
     public Integer getFollowerCount(User followee) {
         // TODO: uses the dummy data.  Replace with a real implementation.
         assert followee != null;
-        return getDummyFollowers().size();
+        return getDummyFollowers().size() - 1;
     }
 
     /**
