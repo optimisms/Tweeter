@@ -22,9 +22,4 @@ public class GetStoryTask extends PagedStatusTask {
         PagedRequest<Status> req = new PagedRequest<>(getAuthToken(), targetUserAlias, getLimit(), getLastItem());
         return getServerFacade().getStory(req, StoryService.GET_STORY_URL_PATH);
     }
-
-//    @Override
-//    protected Pair<List<Status>, Boolean> getItems() {
-//        return getFakeData().getPageOfStatus(getLastItem(), getLimit());
-//    }
 }
