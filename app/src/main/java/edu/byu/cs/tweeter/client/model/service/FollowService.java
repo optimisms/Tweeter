@@ -44,11 +44,11 @@ public class FollowService extends Service {
     }
 
     public void loadMoreFollowing(PagedTaskData<User> data) {
-        GetFollowingTask getFollowingTask = new GetFollowingTask(data, new GetFollowingHandler(data.getObserver()));
+        GetFollowingTask getFollowingTask = new GetFollowingTask(data, new GetFollowingHandler((FollowingPresenter.PagedObserver) data.getObserver()));
         executeTask(getFollowingTask);
     }
     public void loadMoreFollowers(PagedTaskData<User> data) {
-        GetFollowersTask getFollowersTask = new GetFollowersTask(data, new GetFollowersHandler(data.getObserver()));
+        GetFollowersTask getFollowersTask = new GetFollowersTask(data, new GetFollowersHandler((FollowersPresenter.PagedObserver) data.getObserver()));
         executeTask(getFollowersTask);
     }
     public void getCounts(AuthToken authToken, User user, GetFollowersCountObserver followersObserver, GetFollowingCountObserver followingObserver) {
@@ -103,15 +103,15 @@ public class FollowService extends Service {
     /**
      * Message handler (i.e., observer) for GetFollowingTask.
      */
-    private class GetFollowingHandler extends PagedTaskHandler<FollowingPresenter.PagedObserver, User> {
-        public GetFollowingHandler(FollowingPresenter.PagedObserver inObs) { super(inObs, "get following"); }
+    private class GetFollowingHandler extends PagedTaskHandler<Service.PagedObserver<User>, User> {
+        public GetFollowingHandler(Service.PagedObserver<User> inObs) { super(inObs, "get following"); }
     }
 
     /**
      * Message handler (i.e., observer) for GetFollowersTask.
      */
-    private class GetFollowersHandler extends PagedTaskHandler<FollowersPresenter.PagedObserver, User> {
-        public GetFollowersHandler(FollowersPresenter.PagedObserver inObs) { super(inObs, "get followers"); }
+    private class GetFollowersHandler extends PagedTaskHandler<Service.PagedObserver<User>, User> {
+        public GetFollowersHandler(Service.PagedObserver<User> inObs) { super(inObs, "get followers"); }
     }
 
     /**

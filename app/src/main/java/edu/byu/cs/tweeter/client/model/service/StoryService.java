@@ -10,14 +10,14 @@ public class StoryService extends Service {
     public static final String GET_STORY_URL_PATH = "get/story/";
 
     public void getStory(PagedTaskData<Status> data) {
-        GetStoryTask getStoryTask = new GetStoryTask(data, new GetStoryHandler(data.getObserver()));
+        GetStoryTask getStoryTask = new GetStoryTask(data, new GetStoryHandler((StoryPresenter.PagedObserver) data.getObserver()));
         executeTask(getStoryTask);
     }
 
     /**
      * Message handler (i.e., observer) for GetStoryTask.
      */
-    private class GetStoryHandler extends PagedTaskHandler<StoryPresenter.PagedObserver, Status> {
-        public GetStoryHandler(StoryPresenter.PagedObserver inObs) { super(inObs, "get story"); }
+    private class GetStoryHandler extends PagedTaskHandler<Service.PagedObserver<Status>, Status> {
+        public GetStoryHandler(Service.PagedObserver<Status> inObs) { super(inObs, "get story"); }
     }
 }
