@@ -14,6 +14,8 @@ import edu.byu.cs.tweeter.model.net.response.PagedResponse;
  * Background task that retrieves a page of statuses from a user's story.
  */
 public class GetStoryTask extends PagedStatusTask {
+    private static final String LOG_TAG = "GetStoryTask";
+
     public GetStoryTask(PagedTaskData<Status> data, Handler messageHandler) { super(data, messageHandler); }
 
     @Override
@@ -21,5 +23,10 @@ public class GetStoryTask extends PagedStatusTask {
         String targetUserAlias = getTargetUser() == null ? null : getTargetUser().getAlias();
         PagedRequest<Status> req = new PagedRequest<>(getAuthToken(), targetUserAlias, getLimit(), getLastItem());
         return getServerFacade().getStory(req, StoryService.GET_STORY_URL_PATH);
+    }
+
+    @Override
+    protected String getLogTag() {
+        return LOG_TAG;
     }
 }

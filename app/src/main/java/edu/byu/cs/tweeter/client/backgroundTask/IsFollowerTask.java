@@ -52,14 +52,9 @@ public class IsFollowerTask extends AuthenticatedTask {
             }
         } catch (IOException | TweeterRemoteException ex) {
             Log.e(LOG_TAG, "Failed to get follower status", ex);
+            ex.printStackTrace();
             sendExceptionMessage(ex);
         }
-//        isFollower = new Random().nextInt() > 0;
-//
-//        // Call sendSuccessMessage if successful
-//        sendSuccessMessage();
-        // or call sendFailedMessage if not successful
-        // sendFailedMessage()
     }
 
     @Override

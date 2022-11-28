@@ -14,6 +14,8 @@ import edu.byu.cs.tweeter.model.net.response.PagedResponse;
  * Background task that retrieves a page of followers.
  */
 public class GetFollowersTask extends PagedUserTask {
+    private static final String LOG_TAG = "GetFollowersTask";
+
     public GetFollowersTask(PagedTaskData<User> data, Handler messageHandler) { super(data, messageHandler); }
 
     @Override
@@ -21,5 +23,10 @@ public class GetFollowersTask extends PagedUserTask {
         String targetUserAlias = getTargetUser() == null ? null : getTargetUser().getAlias();
         PagedRequest<User> req = new PagedRequest<>(getAuthToken(), targetUserAlias, getLimit(), getLastItem());
         return getServerFacade().getFollowers(req, FollowService.GET_FOLLOWERS_URL_PATH);
+    }
+
+    @Override
+    protected String getLogTag() {
+        return LOG_TAG;
     }
 }

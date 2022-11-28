@@ -35,6 +35,7 @@ public class LogoutTask extends AuthenticatedTask {
             }
         } catch (IOException | TweeterRemoteException ex) {
             Log.e(LOG_TAG, "Failed to logout of session", ex);
+            ex.printStackTrace();
             sendExceptionMessage(ex);
         }
     }

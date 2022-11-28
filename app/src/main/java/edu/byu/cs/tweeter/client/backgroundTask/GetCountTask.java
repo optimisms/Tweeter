@@ -47,6 +47,7 @@ public abstract class GetCountTask extends AuthenticatedTask {
             }
         } catch (IOException | TweeterRemoteException ex) {
             Log.e(getLogTag(), "Failed to authenticate session", ex);
+            ex.printStackTrace();
             sendExceptionMessage(ex);
         }
     }
@@ -57,7 +58,6 @@ public abstract class GetCountTask extends AuthenticatedTask {
     protected void loadSuccessBundle(Bundle msgBundle) {
         msgBundle.putInt(COUNT_KEY, count);
     }
-
 
     protected abstract String getLogTag();
 }

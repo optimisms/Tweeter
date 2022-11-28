@@ -41,6 +41,7 @@ public class FollowTask extends AuthenticatedTask {
             }
         } catch (IOException | TweeterRemoteException ex) {
             Log.e(LOG_TAG, "Failed to follow user", ex);
+            ex.printStackTrace();
             sendExceptionMessage(ex);
         }
     }

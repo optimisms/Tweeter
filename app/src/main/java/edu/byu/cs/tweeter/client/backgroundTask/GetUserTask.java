@@ -46,6 +46,7 @@ public class GetUserTask extends AuthenticatedTask {
             }
         } catch (IOException | TweeterRemoteException ex) {
             Log.e(LOG_TAG, "Failed to get user", ex);
+            ex.printStackTrace();
             sendExceptionMessage(ex);
         }
     }

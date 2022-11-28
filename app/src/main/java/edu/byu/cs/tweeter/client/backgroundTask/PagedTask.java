@@ -88,4 +88,6 @@ public abstract class PagedTask<T> extends AuthenticatedTask {
         msgBundle.putSerializable(ITEMS_KEY, (Serializable) items);
         msgBundle.putBoolean(MORE_PAGES_KEY, hasMorePages);
     }
+
+    protected abstract String getLogTag();
 }

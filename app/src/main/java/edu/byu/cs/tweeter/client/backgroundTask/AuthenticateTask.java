@@ -54,6 +54,7 @@ public  abstract class AuthenticateTask<Req extends Request, Res extends AuthRes
         }
         catch( IOException | TweeterRemoteException ex) {
             Log.e(getLogTag(), "Failed to authenticate session", ex);
+            ex.printStackTrace();
             sendExceptionMessage(ex);
         }
     }
