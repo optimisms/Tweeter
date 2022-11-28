@@ -9,9 +9,12 @@ import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 import edu.byu.cs.tweeter.server.dao.StatusDAO;
 
 public class StatusService {
-    //TODO: implement method
     public PostStatusResponse postStatus(PostStatusRequest request) {
-        return null;
+        if(request.getStatus() == null) {
+            throw new RuntimeException("[Bad Request] Request needs to have a status to post");
+        }
+
+        return new PostStatusResponse();
     }
 
     public GetFeedResponse getFeed(PagedRequest<Status> request) {
