@@ -14,9 +14,9 @@ import edu.byu.cs.tweeter.util.FakeData;
 public class UserService {
     public AuthResponse login(LoginRequest request) {
         if(request.getUsername() == null){
-            throw new RuntimeException("[Bad Request] Missing a username");
+            throw new RuntimeException("[BadRequest] Missing a username");
         } else if(request.getPassword() == null) {
-            throw new RuntimeException("[Bad Request] Missing a password");
+            throw new RuntimeException("[BadRequest] Missing a password");
         }
 
         // TODO: Generates dummy data. Replace with a real implementation.
@@ -27,15 +27,15 @@ public class UserService {
 
     public AuthResponse register(RegisterRequest request) {
         if(request.getUsername() == null){
-            throw new RuntimeException("[Bad Request] Missing a username");
+            throw new RuntimeException("[BadRequest] Missing a username");
         } else if(request.getPassword() == null) {
-            throw new RuntimeException("[Bad Request] Missing a password");
+            throw new RuntimeException("[BadRequest] Missing a password");
         } else if(request.getFirstName() == null) {
-            throw new RuntimeException("[Bad Request] Missing a first name");
+            throw new RuntimeException("[BadRequest] Missing a first name");
         } else if(request.getLastName() == null) {
-            throw new RuntimeException("[Bad Request] Missing a last name");
+            throw new RuntimeException("[BadRequest] Missing a last name");
         } else if(request.getImage() == null) {
-            throw new RuntimeException("[Bad Request] Missing an image");
+            throw new RuntimeException("[BadRequest] Missing an image");
         }
 
         // TODO: Generates dummy data. Replace with a real implementation.
@@ -46,7 +46,7 @@ public class UserService {
 
     public LogoutResponse logout(LogoutRequest request) {
         if (request.getToken() == null) {
-            throw new RuntimeException("[Bad Request] Missing the token to destroy");
+            throw new RuntimeException("[BadRequest] Missing the token to destroy");
         }
 
         //TODO: remove authToken from DB
@@ -55,7 +55,7 @@ public class UserService {
 
     public GetUserResponse getUser(GetUserRequest request) {
         if (request.getAlias() == null) {
-            throw new RuntimeException("[Bad Request] Missing the user alias");
+            throw new RuntimeException("[BadRequest] Missing the user alias");
         }
 
         //TODO: implement DAO

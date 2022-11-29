@@ -30,27 +30,29 @@ public class FollowService {
      */
     public GetFollowingResponse getFollowees(PagedRequest<User> request) {
         if(request.getTargetUserAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+//            return new GetFollowingResponse("[BadRequest] Request needs to have a follower alias");
+            throw new RuntimeException("[BadRequest] Request needs to have a follower alias");
         } else if(request.getLimit() <= 0) {
-            throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
+//            return new GetFollowingResponse("[BadRequest] Request needs to have a positive limit");
+            throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
         }
         return getFollowDAO().getFollowees(request);
     }
 
     public GetFollowersResponse getFollowers(PagedRequest<User> request) {
         if(request.getTargetUserAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a followee alias");
+            throw new RuntimeException("[BadRequest] Request needs to have a followee alias");
         } else if(request.getLimit() <= 0) {
-            throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
+            throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
         }
         return getFollowDAO().getFollowers(request);
     }
 
     public IsFollowerResponse isFollower(IsFollowerRequest request) {
         if (request.getFollower() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a follower");
+            throw new RuntimeException("[BadRequest] Request needs to have a follower");
         } else if (request.getFollowee() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a followee");
+            throw new RuntimeException("[BadRequest] Request needs to have a followee");
         }
 
         //TODO: Use DAOs instead
@@ -59,9 +61,9 @@ public class FollowService {
 
     public FollowResponse follow(FollowRequest request) {
         if (request.getFollower() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a follower");
+            throw new RuntimeException("[BadRequest] Request needs to have a follower");
         } else if (request.getFollowee() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a followee");
+            throw new RuntimeException("[BadRequest] Request needs to have a followee");
         }
 
         //TODO use DAOs
@@ -70,9 +72,9 @@ public class FollowService {
 
     public UnfollowResponse unfollow(UnfollowRequest request) {
         if (request.getUnfollower() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a unfollower");
+            throw new RuntimeException("[BadRequest] Request needs to have a unfollower");
         } else if (request.getUnfollowee() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a unfollowee");
+            throw new RuntimeException("[BadRequest] Request needs to have a unfollowee");
         }
 
         //TODO use DAOs
@@ -81,7 +83,7 @@ public class FollowService {
 
     public CountResponse getFollowersCount(CountRequest request) {
         if (request.getTargetUser() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a target user");
+            throw new RuntimeException("[BadRequest] Request needs to have a target user");
         }
 
         return new CountResponse(getFollowDAO().getFollowerCount(request.getTargetUser()));
@@ -89,7 +91,7 @@ public class FollowService {
 
     public CountResponse getFollowingCount(CountRequest request) {
         if (request.getTargetUser() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a target user");
+            throw new RuntimeException("[BadRequest] Request needs to have a target user");
         }
 
         return new CountResponse(getFollowDAO().getFolloweeCount(request.getTargetUser()));

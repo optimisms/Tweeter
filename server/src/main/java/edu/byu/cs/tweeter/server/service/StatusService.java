@@ -11,7 +11,7 @@ import edu.byu.cs.tweeter.server.dao.StatusDAO;
 public class StatusService {
     public PostStatusResponse postStatus(PostStatusRequest request) {
         if(request.getStatus() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a status to post");
+            throw new RuntimeException("[BadRequest] Request needs to have a status to post");
         }
 
         return new PostStatusResponse();
@@ -19,18 +19,18 @@ public class StatusService {
 
     public GetFeedResponse getFeed(PagedRequest<Status> request) {
         if(request.getTargetUserAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a follower alias");
+            throw new RuntimeException("[BadRequest] Request needs to have a follower alias");
         } else if(request.getLimit() <= 0) {
-            throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
+            throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
         }
         return getStatusDAO().getFeed(request);
     }
 
     public GetStoryResponse getStory(PagedRequest<Status> request) {
         if(request.getTargetUserAlias() == null) {
-            throw new RuntimeException("[Bad Request] Request needs to have a followee alias");
+            throw new RuntimeException("[BadRequest] Request needs to have a followee alias");
         } else if(request.getLimit() <= 0) {
-            throw new RuntimeException("[Bad Request] Request needs to have a positive limit");
+            throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
         }
         return getStatusDAO().getStory(request);
     }
