@@ -21,8 +21,6 @@ import edu.byu.cs.tweeter.client.model.service.handlers.BackgroundTaskHandler;
 import edu.byu.cs.tweeter.client.model.service.handlers.FollowButtonHandler;
 import edu.byu.cs.tweeter.client.model.service.handlers.GetCountHandler;
 import edu.byu.cs.tweeter.client.model.service.handlers.PagedTaskHandler;
-import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
-import edu.byu.cs.tweeter.client.presenter.FollowingPresenter;
 import edu.byu.cs.tweeter.client.presenter.MainPresenter.FollowObserver;
 import edu.byu.cs.tweeter.client.presenter.MainPresenter.GetFollowersCountObserver;
 import edu.byu.cs.tweeter.client.presenter.MainPresenter.GetFollowingCountObserver;
@@ -44,11 +42,11 @@ public class FollowService extends Service {
     }
 
     public void loadMoreFollowing(PagedTaskData<User> data) {
-        GetFollowingTask getFollowingTask = new GetFollowingTask(data, new GetFollowingHandler((FollowingPresenter.PagedObserver) data.getObserver()));
+        GetFollowingTask getFollowingTask = new GetFollowingTask(data, new GetFollowingHandler(data.getObserver()));
         executeTask(getFollowingTask);
     }
     public void loadMoreFollowers(PagedTaskData<User> data) {
-        GetFollowersTask getFollowersTask = new GetFollowersTask(data, new GetFollowersHandler((FollowersPresenter.PagedObserver) data.getObserver()));
+        GetFollowersTask getFollowersTask = new GetFollowersTask(data, new GetFollowersHandler(data.getObserver()));
         executeTask(getFollowersTask);
     }
     public void getCounts(AuthToken authToken, User user, GetFollowersCountObserver followersObserver, GetFollowingCountObserver followingObserver) {

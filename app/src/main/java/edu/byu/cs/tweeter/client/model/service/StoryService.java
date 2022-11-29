@@ -3,14 +3,13 @@ package edu.byu.cs.tweeter.client.model.service;
 import edu.byu.cs.tweeter.client.backgroundTask.GetStoryTask;
 import edu.byu.cs.tweeter.client.backgroundTask.PagedTaskData;
 import edu.byu.cs.tweeter.client.model.service.handlers.PagedTaskHandler;
-import edu.byu.cs.tweeter.client.presenter.StoryPresenter;
 import edu.byu.cs.tweeter.model.domain.Status;
 
 public class StoryService extends Service {
     public static final String GET_STORY_URL_PATH = "get/story/";
 
     public void getStory(PagedTaskData<Status> data) {
-        GetStoryTask getStoryTask = new GetStoryTask(data, new GetStoryHandler((StoryPresenter.PagedObserver) data.getObserver()));
+        GetStoryTask getStoryTask = new GetStoryTask(data, new GetStoryHandler(data.getObserver()));
         executeTask(getStoryTask);
     }
 
