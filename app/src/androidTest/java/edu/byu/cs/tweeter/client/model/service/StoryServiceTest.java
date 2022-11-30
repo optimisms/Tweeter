@@ -20,7 +20,7 @@ public class StoryServiceTest {
     private AuthToken currentAuthToken;
 
     private StoryService storyServiceSpy;
-    private StoryServiceObserver observer;
+    private StoryServiceObserver observerSpy;
 
     private CountDownLatch countDownLatch;
 
@@ -36,7 +36,7 @@ public class StoryServiceTest {
         storyServiceSpy = Mockito.spy(new StoryService());
 
         // Setup an observer for the FollowService
-        observer = new StoryServiceObserver();
+        observerSpy = Mockito.spy(new StoryServiceObserver());
 
         // Prepare the countdown latch
         resetCountDownLatch();
@@ -107,16 +107,17 @@ public class StoryServiceTest {
      */
     @Test
     public void testGetFollowees_validRequest_correctResponse() throws InterruptedException {
-        PagedTaskData<Status> data = new PagedTaskData<>(currentAuthToken, currentUser, 3, null, observer);
+        PagedTaskData<Status> data = new PagedTaskData<>(currentAuthToken, currentUser, 3, null, observerSpy);
         storyServiceSpy.getStory(data);
         awaitCountDownLatch();
 
-        //TODO: ask someone why the timestamps are changing??? by the most arbitrary differences too???
         List<Status> expectedStatuses = FakeData.getInstance().getFakeStatuses().subList(0, 3);
-        Assertions.assertTrue(observer.isSuccess());
-        Assertions.assertNull(observer.getMessage());
-        Assertions.assertEquals(expectedStatuses, observer.getStatuses());
-        Assertions.assertTrue(observer.getHasMorePages());
+        Assertions.assertTrue(observerSpy.isSuccess());
+        Assertions.assertNull(observerSpy.getMessage());
+        Assertions.assertEquals(expectedStatuses, observerSpy.getStatuses());
+        Assertions.assertTrue(observerSpy.getHasMorePages());
+        Mockito.verify(storyServiceSpy).getStory(data);
+        Mockito.verify(observerSpy).pagedTaskSuccess(observerSpy.getStatuses(), observerSpy.getHasMorePages());
     }
 
 //    /**
