@@ -3,6 +3,7 @@ package edu.byu.cs.tweeter.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -120,9 +121,9 @@ public class FakeData {
             for (int j = 0; j < fakeUsers.size(); ++j) {
                 User sender = fakeUsers.get(j);
                 User mention = ((j < fakeUsers.size() - 1) ? fakeUsers.get(j + 1) : fakeUsers.get(0));
-                List<String> mentions = Arrays.asList(mention.getAlias());
+                List<String> mentions = Collections.singletonList(mention.getAlias());
                 String url = "https://byu.edu";
-                List<String> urls = Arrays.asList(url);
+                List<String> urls = Collections.singletonList(url);
                 String post = "Post " + i + " " + j +
                         "\nMy friend " + mention.getAlias() + " likes this website" +
                         "\n" + url;
@@ -168,7 +169,7 @@ public class FakeData {
      */
     public Pair<List<User>, Boolean> getPageOfUsers(User lastUser, int limit, User omit) {
 
-        Pair<List<User>, Boolean> result = new Pair<>(new ArrayList<User>(), false);
+        Pair<List<User>, Boolean> result = new Pair<>(new ArrayList<>(), false);
 
         int index = 0;
         List<User> fakeUsers = getFakeUsers();
@@ -205,7 +206,7 @@ public class FakeData {
      */
     public Pair<List<Status>, Boolean> getPageOfStatus(Status lastStatus, int limit) {
 
-        Pair<List<Status>, Boolean> result = new Pair<>(new ArrayList<Status>(), false);
+        Pair<List<Status>, Boolean> result = new Pair<>(new ArrayList<>(), false);
 
         int index = 0;
         List<Status> fakeStatuses = getFakeStatuses();
@@ -240,5 +241,4 @@ public class FakeData {
     public List<Status> getFakeStatuses() {
         return allStatuses;
     }
-
 }

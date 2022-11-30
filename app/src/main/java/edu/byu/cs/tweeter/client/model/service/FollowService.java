@@ -21,8 +21,6 @@ import edu.byu.cs.tweeter.client.model.service.handlers.BackgroundTaskHandler;
 import edu.byu.cs.tweeter.client.model.service.handlers.FollowButtonHandler;
 import edu.byu.cs.tweeter.client.model.service.handlers.GetCountHandler;
 import edu.byu.cs.tweeter.client.model.service.handlers.PagedTaskHandler;
-import edu.byu.cs.tweeter.client.presenter.FollowersPresenter;
-import edu.byu.cs.tweeter.client.presenter.FollowingPresenter;
 import edu.byu.cs.tweeter.client.presenter.MainPresenter.FollowObserver;
 import edu.byu.cs.tweeter.client.presenter.MainPresenter.GetFollowersCountObserver;
 import edu.byu.cs.tweeter.client.presenter.MainPresenter.GetFollowingCountObserver;
@@ -31,6 +29,14 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 
 public class FollowService extends Service {
+    public static final String FOLLOW_URL_PATH = "follow/";
+    public static final String UNFOLLOW_URL_PATH = "follow/unfollow/";
+    public static final String IS_FOLLOWER_URL_PATH = "follow/is_follower/";
+    public static final String GET_FOLLOWERS_URL_PATH = "get/followers/";
+    public static final String GET_FOLLOWERS_COUNT_URL_PATH = "get/followers/count/";
+    public static final String GET_FOLLOWING_URL_PATH = "get/following/";
+    public static final String GET_FOLLOWING_COUNT_URL_PATH = "get/following/count/";
+
     public interface IsFollowerObserver extends Observer {
         void isFollowerSuccess(boolean isFollower);
     }
@@ -95,15 +101,15 @@ public class FollowService extends Service {
     /**
      * Message handler (i.e., observer) for GetFollowingTask.
      */
-    private class GetFollowingHandler extends PagedTaskHandler<FollowingPresenter.PagedObserver, User> {
-        public GetFollowingHandler(FollowingPresenter.PagedObserver inObs) { super(inObs, "get following"); }
+    private class GetFollowingHandler extends PagedTaskHandler<Service.PagedObserver<User>, User> {
+        public GetFollowingHandler(Service.PagedObserver<User> inObs) { super(inObs, "get following"); }
     }
 
     /**
      * Message handler (i.e., observer) for GetFollowersTask.
      */
-    private class GetFollowersHandler extends PagedTaskHandler<FollowersPresenter.PagedObserver, User> {
-        public GetFollowersHandler(FollowersPresenter.PagedObserver inObs) { super(inObs, "get followers"); }
+    private class GetFollowersHandler extends PagedTaskHandler<Service.PagedObserver<User>, User> {
+        public GetFollowersHandler(Service.PagedObserver<User> inObs) { super(inObs, "get followers"); }
     }
 
     /**
