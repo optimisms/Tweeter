@@ -104,8 +104,8 @@ public class NewFollowDAO implements Database<Follow> {
         DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));
 
         FollowBean newFollow = new FollowBean();
-        newFollow.setFollower_handle(toAdd.getFollower().getAlias());
-        newFollow.setFollowee_handle(toAdd.getFollowee().getAlias());
+        newFollow.setFollower_alias(toAdd.getFollower().getAlias());
+        newFollow.setFollowee_alias(toAdd.getFollowee().getAlias());
         table.putItem(newFollow);
 
     }

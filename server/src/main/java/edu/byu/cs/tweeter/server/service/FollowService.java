@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.server.service;
 
+import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.CountRequest;
 import edu.byu.cs.tweeter.model.net.request.FollowRequest;
@@ -12,12 +13,39 @@ import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
+import edu.byu.cs.tweeter.server.dao.DataAccessException;
+import edu.byu.cs.tweeter.server.dao.Database;
 import edu.byu.cs.tweeter.server.dao.dynamo.FollowDAO;
+import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 
 /**
  * Contains the business logic for getting the users a user is following.
  */
 public class FollowService {
+    public IsFollowerResponse isFollower(IsFollowerRequest request) {
+        if (request.getFollower() == null) {
+            throw new RuntimeException("[BadRequest] Request needs to have a follower");
+        } else if (request.getFollowee() == null) {
+            throw new RuntimeException("[BadRequest] Request needs to have a followee");
+        }
+
+        try {
+            Follow relationship = getNewFollowDAO().get(request.getFollower().getAlias(), request.getFollowee().getAlias());
+
+            if (relationship != null) { return new IsFollowerResponse(true); }
+            else { return new IsFollowerResponse(false); }
+        } catch (DataAccessException e) {
+            //TODO: check if this error message is right
+            if (e.getMessage()
+                    .startsWith("Item not found at PrimaryKey (")) {
+                return new IsFollowerResponse(false);
+            }
+            e.printStackTrace();
+            throw new RuntimeException("[Internal Server Error] Get request failed");
+        }
+    }
+
+    //TODO: Migrate all below to DAOs
 
     /**
      * Returns the users that the user specified in the request is following. Uses information in
@@ -48,16 +76,6 @@ public class FollowService {
         return getFollowDAO().getFollowers(request);
     }
 
-    public IsFollowerResponse isFollower(IsFollowerRequest request) {
-        if (request.getFollower() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a follower");
-        } else if (request.getFollowee() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a followee");
-        }
-
-        //TODO: Use DAOs instead
-        return new IsFollowerResponse(true);
-    }
 
     public FollowResponse follow(FollowRequest request) {
         if (request.getFollower() == null) {
@@ -104,7 +122,7 @@ public class FollowService {
      *
      * @return the instance.
      */
-    FollowDAO getFollowDAO() {
-        return new FollowDAO();
-    }
+    Database<Follow> getNewFollowDAO() { return new DynamoDAOFactory().getFollowDAO(); }
+
+    FollowDAO getFollowDAO() { return new FollowDAO(); }
 }

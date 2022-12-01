@@ -9,30 +9,30 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortK
 
 @DynamoDbBean
 public class FollowBean {
-    public String follower_handle;
-    public String followee_handle;
+    public String follower_alias;
+    public String followee_alias;
 
 
     @DynamoDbPartitionKey
     @DynamoDbSecondarySortKey(indexNames= NewFollowDAO.INDEX_NAME)
-    public String getFollower_handle() {
-        return follower_handle;
+    public String getFollower_alias() {
+        return follower_alias;
     }
 
-    public void setFollower_handle(String follower_handle) {
-        this.follower_handle=follower_handle;
+    public void setFollower_alias(String follower_alias) {
+        this.follower_alias = follower_alias;
     }
 
     @DynamoDbSortKey
     @DynamoDbSecondaryPartitionKey(indexNames=NewFollowDAO.INDEX_NAME)
-    public String getFollowee_handle() {
-        return followee_handle;
+    public String getFollowee_alias() {
+        return followee_alias;
     }
 
-    public void setFollowee_handle(String followee_handle) {
-        this.followee_handle=followee_handle;
+    public void setFollowee_alias(String followee_alias) {
+        this.followee_alias = followee_alias;
     }
 
     @Override
-    public String toString() { return String.format("Relationship[%s, %s]", follower_handle, followee_handle); }
+    public String toString() { return String.format("Relationship[%s, %s]", follower_alias, followee_alias); }
 }
