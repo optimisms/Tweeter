@@ -17,7 +17,7 @@ import edu.byu.cs.tweeter.model.net.response.AuthResponse;
 import edu.byu.cs.tweeter.model.net.response.CountResponse;
 import edu.byu.cs.tweeter.model.net.response.GetFollowersResponse;
 
-public class UserServiceTest {
+public class BasicTests {
     private ServerFacade myFacade;
 
     @BeforeEach
