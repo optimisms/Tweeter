@@ -1,6 +1,7 @@
 package edu.byu.cs.tweeter.server.dao.dynamo;
 
 import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.server.dao.DataAccessException;
 import edu.byu.cs.tweeter.server.dao.Database;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 
@@ -13,7 +14,12 @@ public class FeedDAO implements Database<Status> {
 
     //TODO: implement
     @Override
-    public Status get() {
+    public Status get(String partition) {
+        return null;
+    }
+
+    @Override
+    public Status get(String partition, String sort) throws DataAccessException {
         return null;
     }
 

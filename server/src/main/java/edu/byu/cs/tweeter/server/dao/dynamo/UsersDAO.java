@@ -1,6 +1,7 @@
 package edu.byu.cs.tweeter.server.dao.dynamo;
 
 import edu.byu.cs.tweeter.model.domain.User;
+import edu.byu.cs.tweeter.server.dao.DataAccessException;
 import edu.byu.cs.tweeter.server.dao.Database;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 
@@ -13,7 +14,12 @@ public class UsersDAO implements Database<User> {
 
     //TODO: implement
     @Override
-    public User get() {
+    public User get(String partition) {
+        return null;
+    }
+
+    @Override
+    public User get(String partition, String sort) throws DataAccessException {
         return null;
     }
 
