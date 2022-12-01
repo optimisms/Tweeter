@@ -18,7 +18,7 @@ public class FollowDAO {
      * Gets the count of users from the database that the user specified is following. The
      * current implementation uses generated data and doesn't actually access a database.
      *
-     * @param follower the User whose count of how many following is desired.
+     * @param follower the UserBean whose count of how many following is desired.
      * @return said count.
      */
     public Integer getFolloweeCount(User follower) {

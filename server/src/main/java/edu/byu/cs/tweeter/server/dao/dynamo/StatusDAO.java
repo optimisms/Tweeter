@@ -11,12 +11,12 @@ import edu.byu.cs.tweeter.util.FakeData;
 
 public class StatusDAO {
 
-//    public Integer getStorySize(User poster) {
+//    public Integer getStorySize(UserBean poster) {
 //        // TODO: uses the dummy data.  Replace with a real implementation.
 //        assert poster != null;
 //        return getDummyStory().size();
 //    }
-//    public Integer getFeedSize(User viewer) {
+//    public Integer getFeedSize(UserBean viewer) {
 //        // TODO: uses the dummy data.  Replace with a real implementation.
 //        assert viewer != null;
 //        return getDummyFeed().size();
