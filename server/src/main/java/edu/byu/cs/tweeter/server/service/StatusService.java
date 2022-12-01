@@ -6,7 +6,7 @@ import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 import edu.byu.cs.tweeter.model.net.response.GetFeedResponse;
 import edu.byu.cs.tweeter.model.net.response.GetStoryResponse;
 import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
-import edu.byu.cs.tweeter.server.dao.StatusDAO;
+import edu.byu.cs.tweeter.server.dao.dynamo.StatusDAO;
 
 public class StatusService {
     public PostStatusResponse postStatus(PostStatusRequest request) {
