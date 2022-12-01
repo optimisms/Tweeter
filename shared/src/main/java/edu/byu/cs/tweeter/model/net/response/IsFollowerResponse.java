@@ -1,11 +1,11 @@
 package edu.byu.cs.tweeter.model.net.response;
 
 public class IsFollowerResponse extends Response {
-    private boolean isFollower;
+    private boolean follower;
 
-    public IsFollowerResponse(boolean isFollower) {
+    public IsFollowerResponse(boolean follower) {
         super(true);
-        this.isFollower = isFollower;
+        this.follower = follower;
     }
 
     public IsFollowerResponse(String message) {
@@ -13,6 +13,6 @@ public class IsFollowerResponse extends Response {
     }
 
     public boolean isFollower() {
-        return isFollower;
+        return follower;
     }
 }

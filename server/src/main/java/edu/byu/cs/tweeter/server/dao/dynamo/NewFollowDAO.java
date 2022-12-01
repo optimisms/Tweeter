@@ -106,8 +106,8 @@ public class NewFollowDAO implements Database<Follow> {
         FollowBean newFollow = new FollowBean();
         newFollow.setFollower_alias(toAdd.getFollower().getAlias());
         newFollow.setFollowee_alias(toAdd.getFollowee().getAlias());
+        //TODO: add check that item does not already exist in table and throw exception if true
         table.putItem(newFollow);
-
     }
 
     @Override

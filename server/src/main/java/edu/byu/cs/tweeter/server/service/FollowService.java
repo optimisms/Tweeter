@@ -35,7 +35,6 @@ public class FollowService {
             if (relationship != null) { return new IsFollowerResponse(true); }
             else { return new IsFollowerResponse(false); }
         } catch (DataAccessException e) {
-            //TODO: check if this error message is right
             if (e.getMessage()
                     .startsWith("Item not found at PrimaryKey (")) {
                 return new IsFollowerResponse(false);
@@ -43,6 +42,34 @@ public class FollowService {
             e.printStackTrace();
             throw new RuntimeException("[Internal Server Error] Get request failed");
         }
+    }
+
+    public FollowResponse follow(FollowRequest request) {
+        if (request.getFollower() == null) {
+            throw new RuntimeException("[BadRequest] Request needs to have a follower");
+        } else if (request.getFollowee() == null) {
+            throw new RuntimeException("[BadRequest] Request needs to have a followee");
+        }
+
+        Follow toAdd = new Follow(request.getFollower(), request.getFollowee());
+        getNewFollowDAO().add(toAdd);
+
+        //TODO: implement error checking
+        return new FollowResponse();
+    }
+
+    public UnfollowResponse unfollow(UnfollowRequest request) {
+        if (request.getUnfollower() == null) {
+            throw new RuntimeException("[BadRequest] Request needs to have a unfollower");
+        } else if (request.getUnfollowee() == null) {
+            throw new RuntimeException("[BadRequest] Request needs to have a unfollowee");
+        }
+
+        Follow toDelete = new Follow(request.getUnfollower(), request.getUnfollowee());
+        getNewFollowDAO().delete(toDelete);
+
+        //TODO: implement error checking
+        return new UnfollowResponse();
     }
 
     //TODO: Migrate all below to DAOs
@@ -74,29 +101,6 @@ public class FollowService {
             throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
         }
         return getFollowDAO().getFollowers(request);
-    }
-
-
-    public FollowResponse follow(FollowRequest request) {
-        if (request.getFollower() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a follower");
-        } else if (request.getFollowee() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a followee");
-        }
-
-        //TODO use DAOs
-        return new FollowResponse();
-    }
-
-    public UnfollowResponse unfollow(UnfollowRequest request) {
-        if (request.getUnfollower() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a unfollower");
-        } else if (request.getUnfollowee() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a unfollowee");
-        }
-
-        //TODO use DAOs
-        return new UnfollowResponse();
     }
 
     public CountResponse getFollowersCount(CountRequest request) {
