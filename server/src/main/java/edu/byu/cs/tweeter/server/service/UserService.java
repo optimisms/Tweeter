@@ -15,6 +15,8 @@ import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 import edu.byu.cs.tweeter.util.FakeData;
 
 public class UserService {
+    //TODO: Check right error handling for all methods
+
     public GetUserResponse getUser(GetUserRequest request) {
         if (request.getAlias() == null) {
             throw new RuntimeException("[BadRequest] Missing the user alias");
@@ -26,9 +28,42 @@ public class UserService {
             return new GetUserResponse(user);
         } catch (DataAccessException e) {
             e.printStackTrace();
-            //TODO: Check right error handling
             if (e.getMessage().startsWith("Item not found at PartitionKey (")) {
                 return new GetUserResponse(e.getMessage());
+            } else {
+                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+            }
+        }
+    }
+
+    public AuthResponse register(RegisterRequest request) {
+        if(request.getUsername() == null){
+            throw new RuntimeException("[BadRequest] Missing a username");
+        } else if(request.getPassword() == null) {
+            throw new RuntimeException("[BadRequest] Missing a password");
+        } else if(request.getFirstName() == null) {
+            throw new RuntimeException("[BadRequest] Missing a first name");
+        } else if(request.getLastName() == null) {
+            throw new RuntimeException("[BadRequest] Missing a last name");
+        } else if(request.getImage() == null) {
+            throw new RuntimeException("[BadRequest] Missing an image");
+        }
+
+        try {
+            String imageURL = S3.putImage(request.getUsername().substring(1), request.getImage());
+            User toAdd = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL);
+
+            getNewUserDAO().add(toAdd);
+
+            AuthToken token = generateNewAuthToken();
+
+            //TODO: implement error checking for authToken?
+
+            return new AuthResponse(toAdd, token);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            if (e.getMessage().startsWith("The username " + request.getUsername())) {
+                return new AuthResponse(e.getMessage());
             } else {
                 throw new RuntimeException("[Internal Server Error] " + e.getMessage());
             }
@@ -55,44 +90,8 @@ public class UserService {
         return new AuthResponse(user, authToken);
     }
 
-    public AuthResponse register(RegisterRequest request) {
-        if(request.getUsername() == null){
-            throw new RuntimeException("[BadRequest] Missing a username");
-        } else if(request.getPassword() == null) {
-            throw new RuntimeException("[BadRequest] Missing a password");
-        } else if(request.getFirstName() == null) {
-            throw new RuntimeException("[BadRequest] Missing a first name");
-        } else if(request.getLastName() == null) {
-            throw new RuntimeException("[BadRequest] Missing a last name");
-        } else if(request.getImage() == null) {
-            throw new RuntimeException("[BadRequest] Missing an image");
-        }
-
-        try {
-            String imageURL = S3.putImage(request.getUsername().substring(1), request.getImage());
-
-            User toAdd = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL);
-
-            getNewUserDAO().add(toAdd);
-
-            AuthToken token = generateNewAuthToken();
-
-            //TODO: implement error checking for authToken?
-
-            return new AuthResponse(toAdd, token);
-        } catch (DataAccessException e) {
-            e.printStackTrace();
-            if (e.getMessage().startsWith("The username " + request.getUsername())) {
-                return new AuthResponse(e.getMessage());
-            } else {
-                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
-            }
-        }
-    }
-
     private AuthToken generateNewAuthToken() {
-        //TODO: generate AuthToken
-        return null;
+        return new AuthToken();
     }
 
     public LogoutResponse logout(LogoutRequest request) {

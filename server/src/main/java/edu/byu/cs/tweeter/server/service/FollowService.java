@@ -22,6 +22,7 @@ import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
  * Contains the business logic for getting the users a user is following.
  */
 public class FollowService {
+    //TODO: Check right error handling for all methods
     public IsFollowerResponse isFollower(IsFollowerRequest request) {
         if (request.getFollower() == null) {
             throw new RuntimeException("[BadRequest] Request needs to have a follower");
@@ -36,7 +37,6 @@ public class FollowService {
             else { return new IsFollowerResponse(false); }
         } catch (DataAccessException e) {
             e.printStackTrace();
-            //TODO: Check this is the right error handling
             if (e.getMessage().startsWith("Item not found at PartitionKey (")) {
                 return new IsFollowerResponse(false);
             } else {
@@ -56,8 +56,9 @@ public class FollowService {
             Follow toAdd = new Follow(request.getFollower(), request.getFollowee());
 
             getNewFollowDAO().add(toAdd);
+
+            return new FollowResponse();
         } catch (DataAccessException e) {
-            //TODO: check right error handling
             e.printStackTrace();
             if (e.getMessage().startsWith("User " + request.getFollower().getAlias())) {
                 return new FollowResponse(e.getMessage());
@@ -65,9 +66,6 @@ public class FollowService {
                 throw new RuntimeException("[Internal Server Error] " + e.getMessage());
             }
         }
-
-        //TODO: implement error checking
-        return new FollowResponse();
     }
 
     public UnfollowResponse unfollow(UnfollowRequest request) {
