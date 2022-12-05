@@ -28,7 +28,7 @@ public class UserService {
         }
 
         try {
-            User user = getNewUserDAO().get(request.getAlias());
+            User user = getNewUserDAO().get(request.getAlias(), null);
 
             return new GetUserResponse(user);
         } catch (DataAccessException e) {

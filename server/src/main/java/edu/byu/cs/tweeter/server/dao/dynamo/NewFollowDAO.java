@@ -25,13 +25,6 @@ public class NewFollowDAO implements Database<Follow> {
         this.enhancedClient = enhancedClient;
     }
 
-    //TODO: implement
-
-    @Override
-    public Follow get(String partition) {
-        return null;
-    }
-
     @Override
     public Follow get(String follower_handle, String followee_handle) throws DataAccessException {
         DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));

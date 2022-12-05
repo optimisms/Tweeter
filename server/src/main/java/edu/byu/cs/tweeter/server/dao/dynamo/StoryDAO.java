@@ -13,12 +13,6 @@ public class StoryDAO implements Database<Status> {
     }
 
     //TODO: implement
-
-    @Override
-    public Status get(String partition) {
-        return null;
-    }
-
     @Override
     public Status get(String partition, String sort) throws DataAccessException {
         return null;

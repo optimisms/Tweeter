@@ -14,11 +14,6 @@ public class AuthTokenDAO implements Database<AuthToken> {
 
     //TODO: implement
     @Override
-    public AuthToken get(String partition) {
-        return null;
-    }
-
-    @Override
     public AuthToken get(String partition, String sort) throws DataAccessException {
         return null;
     }

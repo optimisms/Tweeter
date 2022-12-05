@@ -19,8 +19,11 @@ public class UsersDAO implements Database<User> {
         this.enhancedClient = enhancedClient;
     }
 
+    //TODO: implement
     @Override
-    public User get(String user_alias) throws DataAccessException {
+    public User get(String user_alias, String sort) throws DataAccessException {
+        //IGNORE sort
+
         DynamoDbTable<UserBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(UserBean.class));
         Key key = Key.builder().partitionValue(user_alias).build();
 
@@ -33,12 +36,6 @@ public class UsersDAO implements Database<User> {
         }
     }
 
-    //TODO: implement
-    @Override
-    public User get(String partition, String sort) throws DataAccessException {
-        return null;
-    }
-
     @Override
     public void add(User toAdd) throws DataAccessException {
         DynamoDbTable<UserBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(UserBean.class));
@@ -46,7 +43,7 @@ public class UsersDAO implements Database<User> {
         UserBean newUser = new UserBean();
         newUser.setUser_alias(toAdd.getAlias());
         try {
-            get(newUser.getUser_alias());
+            get(newUser.getUser_alias(), null);
         } catch (DataAccessException e) {
             //If item does not exist, add it
             newUser.setFirst_name(toAdd.getFirstName());
