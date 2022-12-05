@@ -4,6 +4,10 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.UUID;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
@@ -107,8 +111,10 @@ public class UserService {
     }
 
     private AuthToken generateNewAuthToken() {
-        //TODO: add datetime to generation
-        return new AuthToken(UUID.randomUUID().toString());
+        String token = UUID.randomUUID().toString();
+        Date now = Calendar.getInstance().getTime();
+        DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss.SSS");
+        return new AuthToken(token, df.format(now));
     }
 
     //TODO: migrate below to new Dynamo DAOs
