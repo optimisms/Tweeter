@@ -16,6 +16,7 @@ import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
+import edu.byu.cs.tweeter.server.dao.Database;
 import edu.byu.cs.tweeter.server.dao.FollowDatabase;
 import edu.byu.cs.tweeter.server.dao.dynamo.FollowDAO;
 import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
@@ -60,6 +61,14 @@ public class FollowService {
 
             getNewFollowDAO().add(toAdd);
 
+            User follower = getNewUserDAO().get(request.getFollower().getAlias(), null);
+            follower.setFollowingCount(follower.getFollowingCount() + 1);
+            getNewUserDAO().update(follower);
+
+            User followee = getNewUserDAO().get(request.getFollowee().getAlias(), null);
+            followee.setFollowerCount(followee.getFollowerCount() + 1);
+            getNewUserDAO().update(followee);
+
             return new FollowResponse();
         } catch (DataAccessException e) {
             e.printStackTrace();
@@ -82,6 +91,14 @@ public class FollowService {
             Follow toDelete = new Follow(request.getUnfollower(), request.getUnfollowee());
 
             getNewFollowDAO().delete(toDelete);
+
+            User unfollower = getNewUserDAO().get(request.getUnfollower().getAlias(), null);
+            unfollower.setFollowingCount(unfollower.getFollowingCount() - 1);
+            getNewUserDAO().update(unfollower);
+
+            User unfollowee = getNewUserDAO().get(request.getUnfollowee().getAlias(), null);
+            unfollowee.setFollowerCount(unfollowee.getFollowerCount() - 1);
+            getNewUserDAO().update(unfollowee);
 
             return new UnfollowResponse();
         } catch (DataAccessException e) {
@@ -165,6 +182,7 @@ public class FollowService {
      * @return the instance.
      */
     FollowDatabase getNewFollowDAO() { return DynamoDAOFactory.getInstance().getFollowDAO(); }
+    Database<User> getNewUserDAO() { return DynamoDAOFactory.getInstance().getUsersDAO(); }
 
     FollowDAO getFollowDAO() { return new FollowDAO(); }
 }

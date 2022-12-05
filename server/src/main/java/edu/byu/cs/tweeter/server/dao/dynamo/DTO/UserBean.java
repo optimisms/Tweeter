@@ -9,6 +9,8 @@ public class UserBean {
     private String last_name;
     private String user_alias;
     private String image_url;
+    private int follower_count;
+    private int following_count;
     private byte[] password;
     private byte[] salt;
 
@@ -43,6 +45,22 @@ public class UserBean {
 
     public void setImage_url(String image_url) {
         this.image_url = image_url;
+    }
+
+    public int getFollower_count() {
+        return follower_count;
+    }
+
+    public void setFollower_count(int follower_count) {
+        this.follower_count = follower_count;
+    }
+
+    public int getFollowing_count() {
+        return following_count;
+    }
+
+    public void setFollowing_count(int following_count) {
+        this.following_count = following_count;
     }
 
     public byte[] getPassword() {

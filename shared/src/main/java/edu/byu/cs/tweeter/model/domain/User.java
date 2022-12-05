@@ -12,6 +12,8 @@ public class User implements Comparable<User>, Serializable {
     private String lastName;
     private String alias;
     private String imageUrl;
+    private int followerCount;
+    private int followingCount;
     private byte[] hashedPassword;
     private byte[] hashSalt;
 
@@ -31,11 +33,31 @@ public class User implements Comparable<User>, Serializable {
         this.imageUrl = imageURL;
     }
 
+    public User(String firstName, String lastName, String alias, String imageUrl, int followerCount, int followingCount) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.alias = alias;
+        this.imageUrl = imageUrl;
+        this.followerCount = followerCount;
+        this.followingCount = followingCount;
+    }
+
     public User(String firstName, String lastName, String alias, String imageURL, byte[] hashedPassword, byte[] hashSalt) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.alias = alias;
         this.imageUrl = imageURL;
+        this.hashedPassword = hashedPassword;
+        this.hashSalt = hashSalt;
+    }
+
+    public User(String firstName, String lastName, String alias, String imageUrl, int followerCount, int followingCount, byte[] hashedPassword, byte[] hashSalt) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.alias = alias;
+        this.imageUrl = imageUrl;
+        this.followerCount = followerCount;
+        this.followingCount = followingCount;
         this.hashedPassword = hashedPassword;
         this.hashSalt = hashSalt;
     }
@@ -76,6 +98,22 @@ public class User implements Comparable<User>, Serializable {
         this.imageUrl = imageUrl;
     }
 
+    public int getFollowerCount() {
+        return followerCount;
+    }
+
+    public void setFollowerCount(int followerCount) {
+        this.followerCount = followerCount;
+    }
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
+    }
+
     public byte[] getHashedPassword() {
         return hashedPassword;
     }
@@ -112,6 +150,8 @@ public class User implements Comparable<User>, Serializable {
                 ", lastName='" + lastName + '\'' +
                 ", alias='" + alias + '\'' +
                 ", imageUrl='" + imageUrl + '\'' +
+                ", followerCount=" + followerCount +
+                ", followingCount=" + followingCount +
                 '}';
     }
 

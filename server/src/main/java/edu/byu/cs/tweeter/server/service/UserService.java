@@ -64,7 +64,7 @@ public class UserService {
 //            User toAdd = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL, hashResults[0], hashResults[1]);
 
 //            getNewUserDAO().add(toAdd);
-//            getNewUserDAO().add(new User("d", "a", "@isdf", "asdfasdf"));
+//            getNewUserDAO().add(new User("d", "a", "@issddf", "asdfasdf", 0, 0));
 
 //            AuthToken token = generateNewAuthToken();
 //            getNewAuthTokenDAO().add(token);

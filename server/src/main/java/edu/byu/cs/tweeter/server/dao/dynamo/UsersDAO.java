@@ -48,6 +48,8 @@ public class UsersDAO implements Database<User> {
             newUser.setFirst_name(toAdd.getFirstName());
             newUser.setLast_name(toAdd.getLastName());
             newUser.setImage_url(toAdd.getImageUrl());
+            newUser.setFollower_count(toAdd.getFollowerCount());
+            newUser.setFollowing_count(toAdd.getFollowingCount());
             newUser.setPassword(toAdd.getHashedPassword());
             newUser.setSalt(toAdd.getHashSalt());
 
@@ -59,8 +61,24 @@ public class UsersDAO implements Database<User> {
     }
 
     @Override
-    public void update(User toUpdate) {
+    public void update(User toUpdate) throws DataAccessException {
+        //TODO: implement so that counts can be updated
         //This would be necessary if we had a way to change password/pic/name
+
+        DynamoDbTable<UserBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(UserBean.class));
+        Key key = Key.builder().partitionValue(toUpdate.getAlias()).build();
+
+        UserBean user = table.getItem(key);
+        if (user == null) {
+            //If item does not exist, throw exception
+            throw new DataAccessException("Item not found at PartitionKey (" + USER_ALIAS_ATTR + ":" + toUpdate.getAlias() + ")");
+        }
+
+        //If item does exist, update it
+        user.setFollower_count(toUpdate.getFollowerCount());
+        user.setFollowing_count(toUpdate.getFollowingCount());
+
+        table.putItem(user);
     }
 
     @Override
