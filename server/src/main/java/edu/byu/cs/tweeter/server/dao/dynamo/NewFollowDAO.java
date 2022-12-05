@@ -40,7 +40,7 @@ public class NewFollowDAO implements Database<Follow> {
         FollowBean follow = table.getItem(key);
 
         if (follow == null) {
-            throw new DataAccessException("Item not found at PrimaryKey (" + FOLLOWER_HANDLE_ATTR + ":" + follower_handle + ") with SortKey (" + FOLLOWEE_HANDLE_ATTR + ":" + followee_handle + ")");
+            throw new DataAccessException("Item not found at PartitionKey (" + FOLLOWER_HANDLE_ATTR + ":" + follower_handle + ") with SortKey (" + FOLLOWEE_HANDLE_ATTR + ":" + followee_handle + ")");
         } else {
             //TODO: create follow object to return
             //getFollower (GetUser)

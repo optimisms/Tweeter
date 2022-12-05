@@ -9,9 +9,35 @@ import edu.byu.cs.tweeter.model.net.request.RegisterRequest;
 import edu.byu.cs.tweeter.model.net.response.AuthResponse;
 import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
+import edu.byu.cs.tweeter.server.dao.DataAccessException;
+import edu.byu.cs.tweeter.server.dao.Database;
+import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 import edu.byu.cs.tweeter.util.FakeData;
 
 public class UserService {
+    public GetUserResponse getUser(GetUserRequest request) {
+        if (request.getAlias() == null) {
+            throw new RuntimeException("[BadRequest] Missing the user alias");
+        }
+
+        try {
+            User user = getNewUserDAO().get(request.getAlias());
+
+            if (user != null) { return new GetUserResponse(user); }
+            else { return new GetUserResponse("Get user request failed. Reason unknown"); }
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            //TODO: Check this is the right error handling
+            if (e.getMessage().startsWith("Item not found at PartitionKey (")) {
+                throw new RuntimeException("[BadRequest] " + e.getMessage());
+            } else {
+                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+            }
+        }
+    }
+
+    //TODO: migrate below to new Dynamo DAOs
+
     public AuthResponse login(LoginRequest request) {
         if(request.getUsername() == null){
             throw new RuntimeException("[BadRequest] Missing a username");
@@ -20,6 +46,11 @@ public class UserService {
         }
 
         // TODO: Generates dummy data. Replace with a real implementation.
+//        List<User> users = getFakeData().getFakeUsers();
+//        for (User user : users) {
+//            getNewUserDAO().add(user);
+//        }
+
         User user = getDummyUser();
         AuthToken authToken = getDummyAuthToken();
         return new AuthResponse(user, authToken);
@@ -38,6 +69,8 @@ public class UserService {
             throw new RuntimeException("[BadRequest] Missing an image");
         }
 
+        
+
         // TODO: Generates dummy data. Replace with a real implementation.
         User user = getDummyUser();
         AuthToken authToken = getDummyAuthToken();
@@ -51,15 +84,6 @@ public class UserService {
 
         //TODO: remove authToken from DB
         return new LogoutResponse();
-    }
-
-    public GetUserResponse getUser(GetUserRequest request) {
-        if (request.getAlias() == null) {
-            throw new RuntimeException("[BadRequest] Missing the user alias");
-        }
-
-        //TODO: implement DAO
-        return new GetUserResponse(getFakeData().findUserByAlias(request.getAlias()));
     }
 
     /**
@@ -91,4 +115,6 @@ public class UserService {
     FakeData getFakeData() {
         return FakeData.getInstance();
     }
+
+    Database<User> getNewUserDAO() { return new DynamoDAOFactory().getUsersDAO(); }
 }
