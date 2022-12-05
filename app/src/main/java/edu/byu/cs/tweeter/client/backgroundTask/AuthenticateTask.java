@@ -6,6 +6,7 @@ import android.util.Log;
 
 import java.io.IOException;
 
+import edu.byu.cs.tweeter.client.cache.Cache;
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.TweeterRemoteException;
@@ -46,6 +47,8 @@ public  abstract class AuthenticateTask<Req extends Request, Res extends AuthRes
             if (response.isSuccess()) {
                 this.authenticatedUser = response.getUser();
                 this.authToken = response.getAuthToken();
+                Cache.getInstance().setCurrUser(authenticatedUser);
+                Cache.getInstance().setCurrUserAuthToken(authToken);
                 sendSuccessMessage();
             }
             else {
