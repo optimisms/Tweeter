@@ -167,6 +167,6 @@ public class UserService {
         return FakeData.getInstance();
     }
 
-    Database<User> getNewUserDAO() { return new DynamoDAOFactory().getUsersDAO(); }
-    Database<AuthToken> getNewAuthTokenDAO() { return new DynamoDAOFactory().getAuthTokenDAO(); }
+    Database<User> getNewUserDAO() { return DynamoDAOFactory.getInstance().getUsersDAO(); }
+    Database<AuthToken> getNewAuthTokenDAO() { return DynamoDAOFactory.getInstance().getAuthTokenDAO(); }
 }

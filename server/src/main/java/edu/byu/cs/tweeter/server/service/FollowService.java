@@ -145,7 +145,7 @@ public class FollowService {
      *
      * @return the instance.
      */
-    Database<Follow> getNewFollowDAO() { return new DynamoDAOFactory().getFollowDAO(); }
+    Database<Follow> getNewFollowDAO() { return DynamoDAOFactory.getInstance().getFollowDAO(); }
 
     FollowDAO getFollowDAO() { return new FollowDAO(); }
 }
