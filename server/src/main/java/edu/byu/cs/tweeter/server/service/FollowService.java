@@ -25,38 +25,38 @@ import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
  * Contains the business logic for getting the users a user is following.
  */
 public class FollowService {
-    //TODO: Check right error handling for all methods
-
+    //TODO: add AuthToken checking to each method
     public IsFollowerResponse isFollower(IsFollowerRequest request) {
-        if (request.getFollower() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a follower");
-        } else if (request.getFollowee() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a followee");
-        }
-
         try {
+            if (request.getFollower() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have a follower");
+            } else if (request.getFollowee() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have a followee");
+            }
             Follow relationship = getFollowDAO().get(request.getFollower().getAlias(), request.getFollowee().getAlias());
 
             if (relationship != null) { return new IsFollowerResponse(true); }
             else { return new IsFollowerResponse(false); }
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | RuntimeException e) {
             e.printStackTrace();
             if (e.getMessage().startsWith("Item not found at PartitionKey (")) {
                 return new IsFollowerResponse(false);
+            } else if (e.getMessage().startsWith("[BadRequest]")) {
+                return new IsFollowerResponse(e.getMessage());
             } else {
-                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+                return new IsFollowerResponse("[Internal Server Error] " + e.getMessage());
             }
         }
     }
 
     public FollowResponse follow(FollowRequest request) {
-        if (request.getFollower() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a follower");
-        } else if (request.getFollowee() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a followee");
-        }
-
         try {
+            if (request.getFollower() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have a follower");
+            } else if (request.getFollowee() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have a followee");
+            }
+
             Follow toAdd = new Follow(request.getFollower(), request.getFollowee());
 
             getFollowDAO().add(toAdd);
@@ -70,24 +70,25 @@ public class FollowService {
             getUserDAO().update(followee);
 
             return new FollowResponse();
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | RuntimeException e) {
             e.printStackTrace();
-            if (e.getMessage().startsWith("User " + request.getFollower().getAlias())) {
+
+            if (e.getMessage().startsWith("[BadRequest]")) {
                 return new FollowResponse(e.getMessage());
             } else {
-                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+                return new FollowResponse("[Internal Server Error] " + e.getMessage());
             }
         }
     }
 
     public UnfollowResponse unfollow(UnfollowRequest request) {
-        if (request.getUnfollower() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a unfollower");
-        } else if (request.getUnfollowee() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a unfollowee");
-        }
-
         try {
+            if (request.getUnfollower() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have a unfollower");
+            } else if (request.getUnfollowee() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have a unfollowee");
+            }
+
             Follow toDelete = new Follow(request.getUnfollower(), request.getUnfollowee());
 
             getFollowDAO().delete(toDelete);
@@ -101,86 +102,101 @@ public class FollowService {
             getUserDAO().update(unfollowee);
 
             return new UnfollowResponse();
-        } catch (DataAccessException e) {
-            if (e.getMessage().startsWith("User " + request.getUnfollower().getAlias())) {
+        } catch (DataAccessException | RuntimeException e) {
+            e.printStackTrace();
+
+            if (e.getMessage().startsWith("[BadRequest]")) {
                 return new UnfollowResponse(e.getMessage());
             } else {
-                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+                return new UnfollowResponse("[Internal Server Error] " + e.getMessage());
             }
         }
     }
 
     public GetFollowingResponse getFollowees(PagedRequest<User> request) {
-        if(request.getTargetUserAlias() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a follower alias");
-        } else if(request.getLimit() <= 0) {
-            throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
-        }
-
         try {
+            if(request.getTargetUserAlias() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have a follower alias");
+            } else if(request.getLimit() <= 0) {
+                throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
+            }
+
             String lastFolloweeAlias = request.getLastItem() == null ? null : request.getLastItem().getAlias();
             List<User> following = getFollowDAO().getFollowing(request.getTargetUserAlias(), request.getLimit(), lastFolloweeAlias);
 
             return new GetFollowingResponse(following, following.size() == request.getLimit());
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | RuntimeException e) {
             e.printStackTrace();
-            throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+
+            if (e.getMessage().startsWith("[BadRequest]")) {
+                return new GetFollowingResponse(e.getMessage());
+            } else {
+                return new GetFollowingResponse("[Internal Server Error] " + e.getMessage());
+            }
         }
     }
 
     public GetFollowersResponse getFollowers(PagedRequest<User> request) {
-        if(request.getTargetUserAlias() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a followee alias");
-        } else if(request.getLimit() <= 0) {
-            throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
-        }
-
         try {
+            if(request.getTargetUserAlias() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have a followee alias");
+            } else if(request.getLimit() <= 0) {
+                throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
+            }
+
             String lastFollowerAlias = request.getLastItem() == null ? null : request.getLastItem().getAlias();
             List<User> followers = getFollowDAO().getFollowers(request.getTargetUserAlias(), request.getLimit(), lastFollowerAlias);
 
             return new GetFollowersResponse(followers, followers.size() == request.getLimit());
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | RuntimeException e) {
             e.printStackTrace();
-            throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+            if (e.getMessage().startsWith("[BadRequest]")) {
+                return new GetFollowersResponse(e.getMessage());
+            } else {
+                return new GetFollowersResponse("[Internal Server Error] " + e.getMessage());
+            }
         }
+
     }
 
     public CountResponse getFollowersCount(CountRequest request) {
-        if (request.getTargetUser() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a target user");
-        }
-
         try {
+            if (request.getTargetUser() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have a target user");
+            }
+
             User user = getUserDAO().get(request.getTargetUser().getAlias(), null);
 
             return new CountResponse(user.getFollowerCount());
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | RuntimeException e) {
             e.printStackTrace();
-            if (e.getMessage().startsWith("Item not found at PartitionKey (")) {
+
+            if (e.getMessage().startsWith("[BadRequest]")) {
                 return new CountResponse(e.getMessage());
             } else {
-                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+                return new CountResponse("[Internal Server Error] " + e.getMessage());
             }
         }
     }
 
     public CountResponse getFollowingCount(CountRequest request) {
-        if (request.getTargetUser() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a target user");
-        }
-
         try {
+            if (request.getTargetUser() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have a target user");
+            }
+
             User user = getUserDAO().get(request.getTargetUser().getAlias(), null);
 
             return new CountResponse(user.getFollowingCount());
         } catch (DataAccessException e) {
             e.printStackTrace();
-            if (e.getMessage().startsWith("Item not found at PartitionKey (")) {
+
+            if (e.getMessage().startsWith("[BadRequest]")) {
                 return new CountResponse(e.getMessage());
             } else {
-                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+                return new CountResponse("[Internal Server Error] " + e.getMessage());
             }
+
         }
     }
 
