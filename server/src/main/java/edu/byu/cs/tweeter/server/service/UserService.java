@@ -72,10 +72,14 @@ public class UserService {
             AuthToken token = generateNewAuthToken();
             getNewAuthTokenDAO().add(token);
 
-            return new AuthResponse(toAdd, token);
-        } catch (DataAccessException | RuntimeException e) {
+            //Do not send the password or salt back, those should stay in the server
+            User toReturn = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL);
+
+            return new AuthResponse(toReturn, token);
+            //TODO: ask TAs if I should be catching any and all exceptions or just specific types
+        } catch (Exception e) {//DataAccessException | RuntimeException e) {
             e.printStackTrace();
-            if (e.getMessage().startsWith("[BadRequest")) {
+            if (e.getMessage().startsWith("[BadRequest]")) {
                 return new AuthResponse(e.getMessage());
             } else {
                 return new AuthResponse("[Internal Server Error] " + e.getMessage());
@@ -121,7 +125,7 @@ public class UserService {
     //TODO: Check right error handling for all methods
 
     public AuthResponse login(LoginRequest request) {
-        if(request.getUsername() == null){
+        if(request.getUsername() == null) {
             throw new RuntimeException("[BadRequest] Missing a username");
         } else if(request.getPassword() == null) {
             throw new RuntimeException("[BadRequest] Missing a password");
@@ -135,12 +139,21 @@ public class UserService {
     }
 
     public LogoutResponse logout(LogoutRequest request) {
-        if (request.getToken() == null) {
-            throw new RuntimeException("[BadRequest] Missing the token to destroy");
-        }
+        try {
+            if (request.getToken() == null) {
+                throw new RuntimeException("[BadRequest] Missing the token to destroy");
+            }
 
-        //TODO: remove authToken from DB
-        return new LogoutResponse();
+            getNewAuthTokenDAO().delete(request.getToken());
+            return new LogoutResponse();
+        } catch (DataAccessException | RuntimeException e) {
+            e.printStackTrace();
+            if (e.getMessage().startsWith("[BadRequest")) {
+                return new LogoutResponse(e.getMessage());
+            } else {
+                return new LogoutResponse("[Internal Server Error] " + e.getMessage());
+            }
+        }
     }
 
     /**
