@@ -12,7 +12,6 @@ public class FollowBean {
     public String follower_alias;
     public String followee_alias;
 
-
     @DynamoDbPartitionKey
     @DynamoDbSecondarySortKey(indexNames= NewFollowDAO.INDEX_NAME)
     public String getFollower_alias() {

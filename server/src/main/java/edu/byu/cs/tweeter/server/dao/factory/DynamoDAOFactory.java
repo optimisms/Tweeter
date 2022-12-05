@@ -17,6 +17,10 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 public class DynamoDAOFactory implements DAOFactory {
     private final DynamoDbEnhancedClient enhancedClient;
 
+    //TODO: don't forget to make sure that enhanced client hasn't been created before creating it
+    //Check everywhere!!! Do not create multiple!!!
+    //Maybe talk to TAs about how best to do this
+
     public DynamoDAOFactory() {
         DynamoDbClient dynamoDbClient = DynamoDbClient.builder().region(Region.US_WEST_2).build();
         enhancedClient = DynamoDbEnhancedClient.builder().dynamoDbClient(dynamoDbClient).build();

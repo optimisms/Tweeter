@@ -35,12 +35,13 @@ public class FollowService {
             if (relationship != null) { return new IsFollowerResponse(true); }
             else { return new IsFollowerResponse(false); }
         } catch (DataAccessException e) {
-            if (e.getMessage()
-                    .startsWith("Item not found at PrimaryKey (")) {
-                return new IsFollowerResponse(false);
-            }
             e.printStackTrace();
-            throw new RuntimeException("[Internal Server Error] Get request failed");
+            //TODO: Check this is the right error handling
+            if (e.getMessage().startsWith("Item not found at PartitionKey (")) {
+                return new IsFollowerResponse(false);
+            } else {
+                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+            }
         }
     }
 
