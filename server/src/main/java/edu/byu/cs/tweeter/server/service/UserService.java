@@ -67,17 +67,12 @@ public class UserService {
             getNewUserDAO().add(toAdd);
 
             AuthToken token = generateNewAuthToken();
-
-            //TODO: add token to AuthTokenDB
-
             getNewAuthTokenDAO().add(token);
-
-            //TODO: implement error checking for authToken?
 
             return new AuthResponse(toAdd, token);
         } catch (DataAccessException | NoSuchAlgorithmException e) {
             e.printStackTrace();
-            if (e.getMessage().startsWith("The username " + request.getUsername())) {
+            if (e.getMessage().startsWith("The username " + request.getUsername()) || e.getMessage().equals("This authToken already exists.")) {
                 return new AuthResponse(e.getMessage());
             } else if (e.getClass() == NoSuchAlgorithmException.class) {
                 throw new RuntimeException("[Internal Server Error] Password hashing failed. Please try again later.");

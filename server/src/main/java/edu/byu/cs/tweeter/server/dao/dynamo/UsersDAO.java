@@ -19,7 +19,6 @@ public class UsersDAO implements Database<User> {
         this.enhancedClient = enhancedClient;
     }
 
-    //TODO: implement
     @Override
     public User get(String user_alias, String sort) throws DataAccessException {
         //IGNORE sort
