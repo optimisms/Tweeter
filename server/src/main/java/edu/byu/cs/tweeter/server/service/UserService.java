@@ -17,7 +17,6 @@ import edu.byu.cs.tweeter.model.net.response.GetUserResponse;
 import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
 import edu.byu.cs.tweeter.server.dao.Database;
-import edu.byu.cs.tweeter.server.dao.dynamo.S3;
 import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 import edu.byu.cs.tweeter.util.FakeData;
 
@@ -56,30 +55,33 @@ public class UserService {
             throw new RuntimeException("[BadRequest] Missing an image");
         }
 
-        try {
-            String imageURL = S3.putImage(request.getUsername().substring(1), request.getImage());
+//        try {
+//            String imageURL = S3.putImage(request.getUsername().substring(1), request.getImage());
 
             //Consider passing salt by reference so it only has to return one object? Can you even do that in Java?
-            byte[][] hashResults = hashPassword(request.getPassword(), null);
+//            byte[][] hashResults = hashPassword(request.getPassword(), null);
 
-            User toAdd = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL, hashResults[0], hashResults[1]);
+//            User toAdd = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL, hashResults[0], hashResults[1]);
 
-            getNewUserDAO().add(toAdd);
+//            getNewUserDAO().add(toAdd);
+//            getNewUserDAO().add(new User("d", "a", "@isdf", "asdfasdf"));
 
-            AuthToken token = generateNewAuthToken();
-            getNewAuthTokenDAO().add(token);
-
-            return new AuthResponse(toAdd, token);
-        } catch (DataAccessException | NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            if (e.getMessage().startsWith("The username " + request.getUsername()) || e.getMessage().equals("This authToken already exists.")) {
-                return new AuthResponse(e.getMessage());
-            } else if (e.getClass() == NoSuchAlgorithmException.class) {
-                throw new RuntimeException("[Internal Server Error] Password hashing failed. Please try again later.");
-            } else {
-                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
-            }
-        }
+//            AuthToken token = generateNewAuthToken();
+//            getNewAuthTokenDAO().add(token);
+//
+//            return new AuthResponse(toAdd, token);
+        //TODO: talk to a TA about what on earth is happening here to make it time out?????
+            return new AuthResponse(new User("", "", "", ""), new AuthToken());
+//        } catch (DataAccessException e) {
+//            e.printStackTrace();
+//            if (e.getMessage().startsWith("The username") || e.getMessage().equals("This authToken already exists.")) {
+//                return new AuthResponse(e.getMessage());
+////            } else if (e.getClass() == NoSuchAlgorithmException.class) {
+////                throw new RuntimeException("[Internal Server Error] Password hashing failed. Please try again later.");
+//            } else {
+//                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+//            }
+//        }
     }
 
     private byte[][] hashPassword(String password, byte[] salt) throws NoSuchAlgorithmException {

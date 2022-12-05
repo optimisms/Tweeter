@@ -55,7 +55,7 @@ public class UsersDAO implements Database<User> {
             return;
         }
         //If item does exist, throw exception
-        throw new DataAccessException("The username " + newUser.getUser_alias() + " is not available.");
+        throw new DataAccessException("The username " + newUser.getUser_alias() + " is not available");
     }
 
     @Override
