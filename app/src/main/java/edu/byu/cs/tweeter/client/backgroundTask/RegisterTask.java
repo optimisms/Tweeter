@@ -40,7 +40,7 @@ public class RegisterTask extends AuthenticateTask<RegisterRequest, AuthResponse
 
     @Override
     protected RegisterRequest getAuthRequest() {
-        return new RegisterRequest(firstName, lastName, username, password, image);
+        return new RegisterRequest(username, password, firstName, lastName, image);
     }
 
     @Override
