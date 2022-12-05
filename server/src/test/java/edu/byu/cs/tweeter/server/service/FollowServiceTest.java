@@ -14,13 +14,12 @@ import edu.byu.cs.tweeter.model.net.request.PagedRequest;
 import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
 import edu.byu.cs.tweeter.server.dao.dynamo.FollowDAO;
-import edu.byu.cs.tweeter.server.dao.dynamo.NewFollowDAO;
 
 public class FollowServiceTest {
 
     private PagedRequest<User> request;
     private List<User> expectedResponse;
-    private NewFollowDAO mockFollowDAO;
+    private FollowDAO mockFollowDAO;
     private FollowService followServiceSpy;
 
     @BeforeEach
@@ -41,7 +40,7 @@ public class FollowServiceTest {
 
         // Setup a mock FollowDAO that will return known responses
         expectedResponse = Arrays.asList(resultUser1, resultUser2, resultUser3);
-        mockFollowDAO = Mockito.mock(NewFollowDAO.class);
+        mockFollowDAO = Mockito.mock(FollowDAO.class);
         Mockito.when(mockFollowDAO.getFollowing(request.getTargetUserAlias(), request.getLimit(), null)).thenReturn(expectedResponse);
 
         followServiceSpy = Mockito.spy(FollowService.class);

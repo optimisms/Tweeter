@@ -7,7 +7,7 @@ import edu.byu.cs.tweeter.server.dao.Database;
 import edu.byu.cs.tweeter.server.dao.FollowDatabase;
 import edu.byu.cs.tweeter.server.dao.dynamo.AuthTokenDAO;
 import edu.byu.cs.tweeter.server.dao.dynamo.FeedDAO;
-import edu.byu.cs.tweeter.server.dao.dynamo.NewFollowDAO;
+import edu.byu.cs.tweeter.server.dao.dynamo.FollowDAO;
 import edu.byu.cs.tweeter.server.dao.dynamo.StoryDAO;
 import edu.byu.cs.tweeter.server.dao.dynamo.UsersDAO;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
@@ -36,7 +36,7 @@ public class DynamoDAOFactory implements DAOFactory {
         authTokenDAO = new AuthTokenDAO(enhancedClient);
         feedDAO = new FeedDAO(enhancedClient);
         storyDAO = new StoryDAO(enhancedClient);
-        followDAO = new NewFollowDAO(enhancedClient);
+        followDAO = new FollowDAO(enhancedClient);
         userDAO = new UsersDAO(enhancedClient);
     }
 

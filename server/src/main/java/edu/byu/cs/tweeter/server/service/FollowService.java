@@ -35,7 +35,7 @@ public class FollowService {
         }
 
         try {
-            Follow relationship = getNewFollowDAO().get(request.getFollower().getAlias(), request.getFollowee().getAlias());
+            Follow relationship = getFollowDAO().get(request.getFollower().getAlias(), request.getFollowee().getAlias());
 
             if (relationship != null) { return new IsFollowerResponse(true); }
             else { return new IsFollowerResponse(false); }
@@ -59,15 +59,15 @@ public class FollowService {
         try {
             Follow toAdd = new Follow(request.getFollower(), request.getFollowee());
 
-            getNewFollowDAO().add(toAdd);
+            getFollowDAO().add(toAdd);
 
-            User follower = getNewUserDAO().get(request.getFollower().getAlias(), null);
+            User follower = getUserDAO().get(request.getFollower().getAlias(), null);
             follower.setFollowingCount(follower.getFollowingCount() + 1);
-            getNewUserDAO().update(follower);
+            getUserDAO().update(follower);
 
-            User followee = getNewUserDAO().get(request.getFollowee().getAlias(), null);
+            User followee = getUserDAO().get(request.getFollowee().getAlias(), null);
             followee.setFollowerCount(followee.getFollowerCount() + 1);
-            getNewUserDAO().update(followee);
+            getUserDAO().update(followee);
 
             return new FollowResponse();
         } catch (DataAccessException e) {
@@ -90,15 +90,15 @@ public class FollowService {
         try {
             Follow toDelete = new Follow(request.getUnfollower(), request.getUnfollowee());
 
-            getNewFollowDAO().delete(toDelete);
+            getFollowDAO().delete(toDelete);
 
-            User unfollower = getNewUserDAO().get(request.getUnfollower().getAlias(), null);
+            User unfollower = getUserDAO().get(request.getUnfollower().getAlias(), null);
             unfollower.setFollowingCount(unfollower.getFollowingCount() - 1);
-            getNewUserDAO().update(unfollower);
+            getUserDAO().update(unfollower);
 
-            User unfollowee = getNewUserDAO().get(request.getUnfollowee().getAlias(), null);
+            User unfollowee = getUserDAO().get(request.getUnfollowee().getAlias(), null);
             unfollowee.setFollowerCount(unfollowee.getFollowerCount() - 1);
-            getNewUserDAO().update(unfollowee);
+            getUserDAO().update(unfollowee);
 
             return new UnfollowResponse();
         } catch (DataAccessException e) {
@@ -119,7 +119,7 @@ public class FollowService {
 
         try {
             String lastFolloweeAlias = request.getLastItem() == null ? null : request.getLastItem().getAlias();
-            List<User> following = getNewFollowDAO().getFollowing(request.getTargetUserAlias(), request.getLimit(), lastFolloweeAlias);
+            List<User> following = getFollowDAO().getFollowing(request.getTargetUserAlias(), request.getLimit(), lastFolloweeAlias);
 
             return new GetFollowingResponse(following, following.size() == request.getLimit());
         } catch (DataAccessException e) {
@@ -137,7 +137,7 @@ public class FollowService {
 
         try {
             String lastFollowerAlias = request.getLastItem() == null ? null : request.getLastItem().getAlias();
-            List<User> followers = getNewFollowDAO().getFollowers(request.getTargetUserAlias(), request.getLimit(), lastFollowerAlias);
+            List<User> followers = getFollowDAO().getFollowers(request.getTargetUserAlias(), request.getLimit(), lastFollowerAlias);
 
             return new GetFollowersResponse(followers, followers.size() == request.getLimit());
         } catch (DataAccessException e) {
@@ -146,25 +146,13 @@ public class FollowService {
         }
     }
 
-    //TODO: Migrate all below to DAOs
-
-    /**
-     * Returns the users that the user specified in the request is following. Uses information in
-     * the request object to limit the number of followees returned and to return the next set of
-     * followees after any that were returned in a previous request. Uses the {@link FollowDAO} to
-     * get the followees.
-     *
-     * @param request contains the data required to fulfill the request.
-     * @return the followees.
-     */
-
     public CountResponse getFollowersCount(CountRequest request) {
         if (request.getTargetUser() == null) {
             throw new RuntimeException("[BadRequest] Request needs to have a target user");
         }
 
         try {
-            User user = getNewUserDAO().get(request.getTargetUser().getAlias(), null);
+            User user = getUserDAO().get(request.getTargetUser().getAlias(), null);
 
             return new CountResponse(user.getFollowerCount());
         } catch (DataAccessException e) {
@@ -183,7 +171,7 @@ public class FollowService {
         }
 
         try {
-            User user = getNewUserDAO().get(request.getTargetUser().getAlias(), null);
+            User user = getUserDAO().get(request.getTargetUser().getAlias(), null);
 
             return new CountResponse(user.getFollowingCount());
         } catch (DataAccessException e) {
@@ -196,6 +184,7 @@ public class FollowService {
         }
     }
 
+
     /**
      * Returns an instance of {@link FollowDAO}. Allows mocking of the FollowDAO class
      * for testing purposes. All usages of FollowDAO should get their FollowDAO
@@ -203,8 +192,6 @@ public class FollowService {
      *
      * @return the instance.
      */
-    FollowDatabase getNewFollowDAO() { return DynamoDAOFactory.getInstance().getFollowDAO(); }
-    Database<User> getNewUserDAO() { return DynamoDAOFactory.getInstance().getUsersDAO(); }
-
-    FollowDAO getFollowDAO() { return new FollowDAO(); }
+    FollowDatabase getFollowDAO() { return DynamoDAOFactory.getInstance().getFollowDAO(); }
+    Database<User> getUserDAO() { return DynamoDAOFactory.getInstance().getUsersDAO(); }
 }
