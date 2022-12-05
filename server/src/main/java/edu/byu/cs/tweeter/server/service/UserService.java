@@ -131,11 +131,29 @@ public class UserService {
             throw new RuntimeException("[BadRequest] Missing a password");
         }
 
-        // TODO: Generates dummy data. Replace with a real implementation.
+        try{
+            User registered = getNewUserDAO().get(request.getUsername(), null);
 
-        User user = getDummyUser();
-        AuthToken authToken = getDummyAuthToken();
-        return new AuthResponse(user, authToken);
+            byte[][] hashResults = hashPassword(request.getPassword(), registered.getHashSalt());
+
+            if (hashResults[0] != registered.getHashedPassword()) {
+                return new AuthResponse("[BadRequest] Incorrect password");
+            }
+
+            AuthToken token = generateNewAuthToken();
+            getNewAuthTokenDAO().add(token);
+
+            User toReturn = new User(registered.getFirstName(), registered.getLastName(), registered.getAlias(), registered.getImageUrl());
+
+            return new AuthResponse(toReturn, token);
+        } catch (Exception e) {//DataAccessException | RuntimeException e) {
+            e.printStackTrace();
+            if (e.getMessage().startsWith("[BadRequest]")) {
+                return new AuthResponse(e.getMessage());
+            } else {
+                return new AuthResponse("[Internal Server Error] " + e.getMessage());
+            }
+        }
     }
 
     public LogoutResponse logout(LogoutRequest request) {
