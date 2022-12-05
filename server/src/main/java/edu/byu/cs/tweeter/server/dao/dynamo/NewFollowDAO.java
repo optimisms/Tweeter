@@ -108,14 +108,14 @@ public class NewFollowDAO implements Database<Follow> {
         newFollow.setFollowee_alias(toAdd.getFollowee().getAlias());
 
         try {
-            get(newFollow.follower_alias, newFollow.followee_alias);
+            get(newFollow.getFollower_alias(), newFollow.getFollowee_alias());
         } catch (DataAccessException e) {
             //If item does not exist, add it
             table.putItem(newFollow);
             return;
         }
         //If item does exist, throw exception
-        throw new DataAccessException("User " + newFollow.follower_alias + " is already following " + newFollow.followee_alias);
+        throw new DataAccessException("User " + newFollow.getFollower_alias() + " is already following " + newFollow.getFollowee_alias());
     }
 
     @Override
@@ -135,19 +135,22 @@ public class NewFollowDAO implements Database<Follow> {
 
     @Override
     public void delete(Follow toDelete) throws DataAccessException {
-        DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));
-        Key key = Key.builder()
-                .partitionValue(toDelete.getFollower().getAlias())
-                .sortValue(toDelete.getFollowee().getAlias())
-                .build();
+        String follower_alias = toDelete.getFollower().getAlias();
+        String followee_alias = toDelete.getFollowee().getAlias();
 
         try {
-            get(toDelete.getFollower().getAlias(), toDelete.getFollowee().getAlias());
+            get(follower_alias, followee_alias);
         } catch (DataAccessException e) {
             //If item does not exist, throw exception
-            throw new DataAccessException("User " + toDelete.getFollower().getAlias() + " is not following " + toDelete.getFollowee().getAlias());
+            throw new DataAccessException("User " + follower_alias + " is not following " + followee_alias);
         }
         //If item exists, delete it
+        DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));
+        Key key = Key.builder()
+                .partitionValue(follower_alias)
+                .sortValue(followee_alias)
+                .build();
+
         table.deleteItem(key);
     }
 }

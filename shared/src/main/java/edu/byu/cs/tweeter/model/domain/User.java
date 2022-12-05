@@ -12,6 +12,8 @@ public class User implements Comparable<User>, Serializable {
     private String lastName;
     private String alias;
     private String imageUrl;
+    private byte[] hashedPassword;
+    private byte[] hashSalt;
 
     /**
      * Allows construction of the object from Json. Private so it won't be called by other code.
@@ -27,6 +29,15 @@ public class User implements Comparable<User>, Serializable {
         this.lastName = lastName;
         this.alias = alias;
         this.imageUrl = imageURL;
+    }
+
+    public User(String firstName, String lastName, String alias, String imageURL, byte[] hashedPassword, byte[] hashSalt) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.alias = alias;
+        this.imageUrl = imageURL;
+        this.hashedPassword = hashedPassword;
+        this.hashSalt = hashSalt;
     }
 
     public String getFirstName() {
@@ -63,6 +74,22 @@ public class User implements Comparable<User>, Serializable {
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+
+    public byte[] getHashedPassword() {
+        return hashedPassword;
+    }
+
+    public void setHashedPassword(byte[] hashedPassword) {
+        this.hashedPassword = hashedPassword;
+    }
+
+    public byte[] getHashSalt() {
+        return hashSalt;
+    }
+
+    public void setHashSalt(byte[] hashSalt) {
+        this.hashSalt = hashSalt;
     }
 
     @Override

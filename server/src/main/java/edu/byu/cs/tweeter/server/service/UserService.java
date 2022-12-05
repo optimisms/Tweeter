@@ -1,5 +1,10 @@
 package edu.byu.cs.tweeter.server.service;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.GetUserRequest;
@@ -52,10 +57,10 @@ public class UserService {
         try {
             String imageURL = S3.putImage(request.getUsername().substring(1), request.getImage());
 
-            //TODO: implement password hashing and storing
-            // Have to change domain models to accept a password
+            //Consider passing salt by reference so it only has to return one object? Can you even do that in Java?
+            byte[][] hashResults = hashPassword(request.getPassword(), null);
 
-            User toAdd = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL);
+            User toAdd = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL, hashResults[0], hashResults[1]);
 
             getNewUserDAO().add(toAdd);
 
@@ -64,14 +69,37 @@ public class UserService {
             //TODO: implement error checking for authToken?
 
             return new AuthResponse(toAdd, token);
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | NoSuchAlgorithmException e) {
             e.printStackTrace();
             if (e.getMessage().startsWith("The username " + request.getUsername())) {
                 return new AuthResponse(e.getMessage());
+            } else if (e.getClass() == NoSuchAlgorithmException.class) {
+                throw new RuntimeException("[Internal Server Error] Password hashing failed. Please try again later.");
             } else {
                 throw new RuntimeException("[Internal Server Error] " + e.getMessage());
             }
         }
+    }
+
+    private byte[][] hashPassword(String password, byte[] salt) throws NoSuchAlgorithmException {
+        //If called by login, salt is retrieved from DB and passed in
+        //Otherwise, salt should be generated for register
+        if (salt == null) {
+            SecureRandom random = new SecureRandom();
+            salt = new byte[16];
+            random.nextBytes(salt);
+        }
+
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        md.update(salt);
+
+        byte[] hashedPassword = md.digest(password.getBytes(StandardCharsets.UTF_8));
+
+        //No idea if this is the right way to do this??
+        byte[][] toReturn = new byte[2][];
+        toReturn[0] = hashedPassword;
+        toReturn[1] = salt;
+        return toReturn;
     }
 
     //TODO: migrate below to new Dynamo DAOs

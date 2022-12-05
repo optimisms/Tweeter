@@ -45,13 +45,16 @@ public class UsersDAO implements Database<User> {
 
         UserBean newUser = new UserBean();
         newUser.setUser_alias(toAdd.getAlias());
-        newUser.setFirst_name(toAdd.getFirstName());
-        newUser.setLast_name(toAdd.getLastName());
-        newUser.setImage_url(toAdd.getImageUrl());
         try {
             get(newUser.getUser_alias());
         } catch (DataAccessException e) {
             //If item does not exist, add it
+            newUser.setFirst_name(toAdd.getFirstName());
+            newUser.setLast_name(toAdd.getLastName());
+            newUser.setImage_url(toAdd.getImageUrl());
+            newUser.setPassword(toAdd.getHashedPassword());
+            newUser.setSalt(toAdd.getHashSalt());
+
             table.putItem(newUser);
             return;
         }

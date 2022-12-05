@@ -9,6 +9,9 @@ public class UserBean {
     private String last_name;
     private String user_alias;
     private String image_url;
+    private byte[] password;
+    private byte[] salt;
+
 
     public String getFirst_name() {
         return first_name;
@@ -41,5 +44,21 @@ public class UserBean {
 
     public void setImage_url(String image_url) {
         this.image_url = image_url;
+    }
+
+    public byte[] getPassword() {
+        return password;
+    }
+
+    public void setPassword(byte[] password) {
+        this.password = password;
+    }
+
+    public byte[] getSalt() {
+        return salt;
+    }
+
+    public void setSalt(byte[] salt) {
+        this.salt = salt;
     }
 }
