@@ -7,11 +7,10 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import java.io.ByteArrayInputStream;
-import java.net.URL;
 import java.util.Base64;
 
 public class S3 {
-    public static URL put(String imageName, String imageString) {
+    public static String putImage(String imageName, String imageString) {
         AmazonS3 s3 = AmazonS3ClientBuilder
                 .standard()
                 .withRegion("us-west-2")
@@ -35,7 +34,7 @@ public class S3 {
         client.putObject(req);
 
         //Get image url
-        return s3.getUrl(targetBucket, imageName);
+        return s3.getUrl(targetBucket, imageName).toString();
     }
 }
 

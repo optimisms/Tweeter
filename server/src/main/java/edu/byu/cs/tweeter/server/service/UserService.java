@@ -69,12 +69,23 @@ public class UserService {
             throw new RuntimeException("[BadRequest] Missing an image");
         }
 
-        
+        //TODO: check that user is not already registered
 
-        // TODO: Generates dummy data. Replace with a real implementation.
-        User user = getDummyUser();
-        AuthToken authToken = getDummyAuthToken();
-        return new AuthResponse(user, authToken);
+        String imageURL = S3.putImage(request.getUsername().substring(1), request.getImage());
+
+        User toAdd = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL);
+        getNewUserDAO().add(toAdd);
+
+        AuthToken token = generateNewAuthToken();
+
+        //TODO: implement error checking
+
+        return new AuthResponse(toAdd, token);
+    }
+
+    private AuthToken generateNewAuthToken() {
+        //TODO: generate AuthToken
+        return null;
     }
 
     public LogoutResponse logout(LogoutRequest request) {

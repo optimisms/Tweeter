@@ -48,6 +48,7 @@ public class UsersDAO implements Database<User> {
         newUser.setFirst_name(toAdd.getFirstName());
         newUser.setLast_name(toAdd.getLastName());
         newUser.setImage_url(toAdd.getImageUrl());
+
         //TODO: add check that item does not already exist in table and throw exception if true
         table.putItem(newUser);
     }
