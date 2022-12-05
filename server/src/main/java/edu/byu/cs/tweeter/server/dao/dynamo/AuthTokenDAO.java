@@ -26,12 +26,12 @@ public class AuthTokenDAO implements Database<AuthToken> {
         DynamoDbTable<AuthTokenBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(AuthTokenBean.class));
         Key key = Key.builder().partitionValue(auth_token).build();
 
-        AuthTokenBean token = table.getItem(key);
+        AuthTokenBean tokenBean = table.getItem(key);
 
-        if (token == null) {
+        if (tokenBean == null) {
             throw new DataAccessException("Item not found at PartitionKey (" + AUTH_TOKEN_ATTR + ":" + auth_token + ")");
         } else {
-            return new AuthToken(token.getToken(), token.getDatetime());
+            return new AuthToken(tokenBean.getAuth_token(), tokenBean.getDatetime());
         }
     }
 
@@ -44,7 +44,7 @@ public class AuthTokenDAO implements Database<AuthToken> {
         } catch (DataAccessException e) {
             //If item does not exist, add it
             AuthTokenBean newToken = new AuthTokenBean();
-            newToken.setToken(toAdd.getToken());
+            newToken.setAuth_token(toAdd.getToken());
             newToken.setDatetime(toAdd.getDatetime());
 
             table.putItem(newToken);
@@ -66,7 +66,7 @@ public class AuthTokenDAO implements Database<AuthToken> {
         }
 
         //If item does exist, update it
-        token.setToken(toUpdate.getToken());
+        token.setAuth_token(toUpdate.getToken());
         token.setDatetime(toUpdate.getDatetime());
 
         table.putItem(token);

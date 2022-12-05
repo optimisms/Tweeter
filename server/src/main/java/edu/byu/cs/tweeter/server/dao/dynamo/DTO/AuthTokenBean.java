@@ -5,16 +5,16 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbParti
 
 @DynamoDbBean
 public class AuthTokenBean {
-    private String token;
+    private String auth_token;
     private String datetime;
 
     @DynamoDbPartitionKey
-    public String getToken() {
-        return token;
+    public String getAuth_token() {
+        return auth_token;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public void setAuth_token(String auth_token) {
+        this.auth_token = auth_token;
     }
 
     public String getDatetime() {

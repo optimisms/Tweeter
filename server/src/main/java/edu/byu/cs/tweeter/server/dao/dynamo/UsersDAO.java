@@ -62,9 +62,6 @@ public class UsersDAO implements Database<User> {
 
     @Override
     public void update(User toUpdate) throws DataAccessException {
-        //TODO: implement so that counts can be updated
-        //This would be necessary if we had a way to change password/pic/name
-
         DynamoDbTable<UserBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(UserBean.class));
         Key key = Key.builder().partitionValue(toUpdate.getAlias()).build();
 
