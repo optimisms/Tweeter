@@ -166,21 +166,7 @@ public class FollowDAO implements FollowDatabase {
 
         SdkIterable<Page<FollowBean>> results2 = index.query(request);
         PageIterable<FollowBean> pages = PageIterable.create(results2);
-        pages
-                .stream()
-                .limit(1)
-                .forEach
-                        (followersPage
-                                -> followersPage
-                                .items()
-                                .forEach
-                                        (f
-                                                ->
-                                                beans
-                                                        .add
-                                                                (f)
-                                        )
-                        );
+        pages.stream().limit(1).forEach(followersPage -> followersPage.items().forEach(f -> beans.add(f)));
 
         List<User> toReturn = new ArrayList<>();
         for (FollowBean curr : beans) {
