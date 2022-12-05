@@ -40,7 +40,7 @@ public class UsersDAO implements Database<User> {
     }
 
     @Override
-    public void add(User toAdd) {
+    public void add(User toAdd) throws DataAccessException {
         DynamoDbTable<UserBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(UserBean.class));
 
         UserBean newUser = new UserBean();
@@ -48,9 +48,13 @@ public class UsersDAO implements Database<User> {
         newUser.setFirst_name(toAdd.getFirstName());
         newUser.setLast_name(toAdd.getLastName());
         newUser.setImage_url(toAdd.getImageUrl());
-
-        //TODO: add check that item does not already exist in table and throw exception if true
-        table.putItem(newUser);
+        try {
+            get(newUser.getUser_alias());
+        } catch (DataAccessException e) {
+            table.putItem(newUser);
+            return;
+        }
+        throw new DataAccessException("The username " + newUser.getUser_alias() + " is not available.");
     }
 
     @Override

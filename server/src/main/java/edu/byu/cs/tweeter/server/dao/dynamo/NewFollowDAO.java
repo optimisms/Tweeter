@@ -100,20 +100,26 @@ public class NewFollowDAO implements Database<Follow> {
 //    }
 
     @Override
-    public void add(Follow toAdd) {
+    public void add(Follow toAdd) throws DataAccessException {
         DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));
 
         FollowBean newFollow = new FollowBean();
         newFollow.setFollower_alias(toAdd.getFollower().getAlias());
         newFollow.setFollowee_alias(toAdd.getFollowee().getAlias());
-        //TODO: add check that item does not already exist in table and throw exception if true
-        table.putItem(newFollow);
+
+        try {
+            get(newFollow.follower_alias, newFollow.followee_alias);
+        } catch (DataAccessException e) {
+            table.putItem(newFollow);
+            return;
+        }
+        throw new DataAccessException("User " + newFollow.follower_alias + " is already following " + newFollow.followee_alias);
     }
 
     @Override
     public void update(Follow toUpdate) {
         //TODO: figure out when you would use update for the Follow table
-        //Right now, the only things I can think of are to add or delete
+        //Right now, the only things I can think of are to add or delete, which of course already exist
         //Maybe if someone changes their username?
 
 //        DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));

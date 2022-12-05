@@ -52,8 +52,19 @@ public class FollowService {
             throw new RuntimeException("[BadRequest] Request needs to have a followee");
         }
 
-        Follow toAdd = new Follow(request.getFollower(), request.getFollowee());
-        getNewFollowDAO().add(toAdd);
+        try {
+            Follow toAdd = new Follow(request.getFollower(), request.getFollowee());
+
+            getNewFollowDAO().add(toAdd);
+        } catch (DataAccessException e) {
+            //TODO: check right error handling
+            e.printStackTrace();
+            if (e.getMessage().startsWith("User " + request.getFollower().getAlias())) {
+                return new FollowResponse(e.getMessage());
+            } else {
+                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+            }
+        }
 
         //TODO: implement error checking
         return new FollowResponse();

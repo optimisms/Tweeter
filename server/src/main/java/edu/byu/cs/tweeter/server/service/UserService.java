@@ -23,13 +23,12 @@ public class UserService {
         try {
             User user = getNewUserDAO().get(request.getAlias());
 
-            if (user != null) { return new GetUserResponse(user); }
-            else { return new GetUserResponse("Get user request failed. Reason unknown"); }
+            return new GetUserResponse(user);
         } catch (DataAccessException e) {
             e.printStackTrace();
-            //TODO: Check this is the right error handling
+            //TODO: Check right error handling
             if (e.getMessage().startsWith("Item not found at PartitionKey (")) {
-                throw new RuntimeException("[BadRequest] " + e.getMessage());
+                return new GetUserResponse(e.getMessage());
             } else {
                 throw new RuntimeException("[Internal Server Error] " + e.getMessage());
             }
@@ -69,18 +68,26 @@ public class UserService {
             throw new RuntimeException("[BadRequest] Missing an image");
         }
 
-        //TODO: check that user is not already registered
+        try {
+            String imageURL = S3.putImage(request.getUsername().substring(1), request.getImage());
 
-        String imageURL = S3.putImage(request.getUsername().substring(1), request.getImage());
+            User toAdd = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL);
 
-        User toAdd = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL);
-        getNewUserDAO().add(toAdd);
+            getNewUserDAO().add(toAdd);
 
-        AuthToken token = generateNewAuthToken();
+            AuthToken token = generateNewAuthToken();
 
-        //TODO: implement error checking
+            //TODO: implement error checking for authToken?
 
-        return new AuthResponse(toAdd, token);
+            return new AuthResponse(toAdd, token);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            if (e.getMessage().startsWith("The username " + request.getUsername())) {
+                return new AuthResponse(e.getMessage());
+            } else {
+                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+            }
+        }
     }
 
     private AuthToken generateNewAuthToken() {
