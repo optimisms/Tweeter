@@ -39,12 +39,12 @@ public class AuthTokenDAO implements Database<AuthToken> {
     public void add(AuthToken toAdd) throws DataAccessException {
         DynamoDbTable<AuthTokenBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(AuthTokenBean.class));
 
-        AuthTokenBean newToken = new AuthTokenBean();
-        newToken.setToken(toAdd.getToken());
         try {
-            get(newToken.getToken(), null);
+            get(toAdd.getToken(), null);
         } catch (DataAccessException e) {
             //If item does not exist, add it
+            AuthTokenBean newToken = new AuthTokenBean();
+            newToken.setToken(toAdd.getToken());
             newToken.setDatetime(toAdd.getDatetime());
 
             table.putItem(newToken);
@@ -55,12 +55,39 @@ public class AuthTokenDAO implements Database<AuthToken> {
     }
 
     @Override
-    public void update(AuthToken toUpdate) {
-        //TODO: implement for renewing tokens
+    public void update(AuthToken toUpdate) throws DataAccessException {
+        DynamoDbTable<AuthTokenBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(AuthTokenBean.class));
+        Key key = Key.builder().partitionValue(toUpdate.getToken()).build();
+
+        AuthTokenBean token = table.getItem(key);
+        if (token == null) {
+            //If item does not exist, throw exception
+            throw new DataAccessException("Item not found at PartitionKey (" + AUTH_TOKEN_ATTR + ":" + toUpdate.getToken() + ")");
+        }
+
+        //If item does exist, update it
+        token.setToken(toUpdate.getToken());
+        token.setDatetime(toUpdate.getDatetime());
+
+        table.putItem(token);
     }
 
     @Override
-    public void delete(AuthToken toDelete) {
-        //TODO: implement for destroying when expired or logged out
+    public void delete(AuthToken toDelete) throws DataAccessException {
+        String token = toDelete.getToken();
+
+        try {
+            get(token, null);
+        } catch (DataAccessException e) {
+            //If item does not exist, throw exception
+            throw new DataAccessException("Item not found at PartitionKey (" + AUTH_TOKEN_ATTR + ":" + token + ")");
+        }
+        //If item exists, delete it
+        DynamoDbTable<AuthTokenBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(AuthTokenBean.class));
+        Key key = Key.builder()
+                .partitionValue(token)
+                .build();
+
+        table.deleteItem(key);
     }
 }
