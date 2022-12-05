@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.UUID;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.User;
@@ -67,6 +68,10 @@ public class UserService {
 
             AuthToken token = generateNewAuthToken();
 
+            //TODO: add token to AuthTokenDB
+
+            getNewAuthTokenDAO().add(token);
+
             //TODO: implement error checking for authToken?
 
             return new AuthResponse(toAdd, token);
@@ -103,6 +108,11 @@ public class UserService {
         return toReturn;
     }
 
+    private AuthToken generateNewAuthToken() {
+        //TODO: add datetime to generation
+        return new AuthToken(UUID.randomUUID().toString());
+    }
+
     //TODO: migrate below to new Dynamo DAOs
 
     public AuthResponse login(LoginRequest request) {
@@ -121,10 +131,6 @@ public class UserService {
         User user = getDummyUser();
         AuthToken authToken = getDummyAuthToken();
         return new AuthResponse(user, authToken);
-    }
-
-    private AuthToken generateNewAuthToken() {
-        return new AuthToken();
     }
 
     public LogoutResponse logout(LogoutRequest request) {
@@ -167,4 +173,5 @@ public class UserService {
     }
 
     Database<User> getNewUserDAO() { return new DynamoDAOFactory().getUsersDAO(); }
+    Database<AuthToken> getNewAuthTokenDAO() { return new DynamoDAOFactory().getAuthTokenDAO(); }
 }

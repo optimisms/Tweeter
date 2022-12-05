@@ -12,7 +12,6 @@ public class UserBean {
     private byte[] password;
     private byte[] salt;
 
-
     public String getFirst_name() {
         return first_name;
     }
