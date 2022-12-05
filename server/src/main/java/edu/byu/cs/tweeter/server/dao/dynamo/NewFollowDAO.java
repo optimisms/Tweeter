@@ -110,9 +110,11 @@ public class NewFollowDAO implements Database<Follow> {
         try {
             get(newFollow.follower_alias, newFollow.followee_alias);
         } catch (DataAccessException e) {
+            //If item does not exist, add it
             table.putItem(newFollow);
             return;
         }
+        //If item does exist, throw exception
         throw new DataAccessException("User " + newFollow.follower_alias + " is already following " + newFollow.followee_alias);
     }
 
@@ -132,12 +134,20 @@ public class NewFollowDAO implements Database<Follow> {
     }
 
     @Override
-    public void delete(Follow toDelete) {
+    public void delete(Follow toDelete) throws DataAccessException {
         DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));
         Key key = Key.builder()
                 .partitionValue(toDelete.getFollower().getAlias())
                 .sortValue(toDelete.getFollowee().getAlias())
                 .build();
+
+        try {
+            get(toDelete.getFollower().getAlias(), toDelete.getFollowee().getAlias());
+        } catch (DataAccessException e) {
+            //If item does not exist, throw exception
+            throw new DataAccessException("User " + toDelete.getFollower().getAlias() + " is not following " + toDelete.getFollowee().getAlias());
+        }
+        //If item exists, delete it
         table.deleteItem(key);
     }
 }

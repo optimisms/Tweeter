@@ -51,6 +51,10 @@ public class UserService {
 
         try {
             String imageURL = S3.putImage(request.getUsername().substring(1), request.getImage());
+
+            //TODO: implement password hashing and storing
+            // Have to change domain models to accept a password
+
             User toAdd = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL);
 
             getNewUserDAO().add(toAdd);

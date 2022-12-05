@@ -51,19 +51,21 @@ public class UsersDAO implements Database<User> {
         try {
             get(newUser.getUser_alias());
         } catch (DataAccessException e) {
+            //If item does not exist, add it
             table.putItem(newUser);
             return;
         }
+        //If item does exist, throw exception
         throw new DataAccessException("The username " + newUser.getUser_alias() + " is not available.");
     }
 
     @Override
     public void update(User toUpdate) {
-
+        //This would be necessary if we had a way to change password/pic/name
     }
 
     @Override
     public void delete(User toDelete) {
-
+        //This would be necessary if we had a way to delete your account
     }
 }

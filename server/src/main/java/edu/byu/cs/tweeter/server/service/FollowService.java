@@ -23,6 +23,7 @@ import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
  */
 public class FollowService {
     //TODO: Check right error handling for all methods
+
     public IsFollowerResponse isFollower(IsFollowerRequest request) {
         if (request.getFollower() == null) {
             throw new RuntimeException("[BadRequest] Request needs to have a follower");
@@ -75,11 +76,19 @@ public class FollowService {
             throw new RuntimeException("[BadRequest] Request needs to have a unfollowee");
         }
 
-        Follow toDelete = new Follow(request.getUnfollower(), request.getUnfollowee());
-        getNewFollowDAO().delete(toDelete);
+        try {
+            Follow toDelete = new Follow(request.getUnfollower(), request.getUnfollowee());
 
-        //TODO: implement error checking
-        return new UnfollowResponse();
+            getNewFollowDAO().delete(toDelete);
+
+            return new UnfollowResponse();
+        } catch (DataAccessException e) {
+            if (e.getMessage().startsWith("User " + request.getUnfollower().getAlias())) {
+                return new UnfollowResponse(e.getMessage());
+            } else {
+                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+            }
+        }
     }
 
     //TODO: Migrate all below to DAOs
