@@ -31,7 +31,7 @@ public class UsersDAO implements Database<User> {
         if (user == null) {
             throw new DataAccessException("Item not found at PartitionKey (" + USER_ALIAS_ATTR + ":" + user_alias + ")");
         } else {
-            return new User(user.getFirst_name(), user.getLast_name(), user.getUser_alias(), user.getImage_url());
+            return new User(user.getFirst_name(), user.getLast_name(), user.getUser_alias(), user.getImage_url(), user.getFollower_count(), user.getFollowing_count());
         }
     }
 

@@ -163,7 +163,18 @@ public class FollowService {
             throw new RuntimeException("[BadRequest] Request needs to have a target user");
         }
 
-        return new CountResponse(getFollowDAO().getFollowerCount(request.getTargetUser()));
+        try {
+            User user = getNewUserDAO().get(request.getTargetUser().getAlias(), null);
+
+            return new CountResponse(user.getFollowerCount());
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            if (e.getMessage().startsWith("Item not found at PartitionKey (")) {
+                return new CountResponse(e.getMessage());
+            } else {
+                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+            }
+        }
     }
 
     public CountResponse getFollowingCount(CountRequest request) {
@@ -171,7 +182,18 @@ public class FollowService {
             throw new RuntimeException("[BadRequest] Request needs to have a target user");
         }
 
-        return new CountResponse(getFollowDAO().getFolloweeCount(request.getTargetUser()));
+        try {
+            User user = getNewUserDAO().get(request.getTargetUser().getAlias(), null);
+
+            return new CountResponse(user.getFollowingCount());
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            if (e.getMessage().startsWith("Item not found at PartitionKey (")) {
+                return new CountResponse(e.getMessage());
+            } else {
+                throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+            }
+        }
     }
 
     /**
