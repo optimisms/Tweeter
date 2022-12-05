@@ -1,19 +1,34 @@
 package edu.byu.cs.tweeter.server.dao.dynamo;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import edu.byu.cs.tweeter.model.domain.Follow;
+import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
-import edu.byu.cs.tweeter.server.dao.Database;
+import edu.byu.cs.tweeter.server.dao.FollowDatabase;
 import edu.byu.cs.tweeter.server.dao.dynamo.DTO.FollowBean;
+import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
+import software.amazon.awssdk.core.pagination.sync.SdkIterable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
+import software.amazon.awssdk.enhanced.dynamodb.DynamoDbIndex;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.Page;
+import software.amazon.awssdk.enhanced.dynamodb.model.PageIterable;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
+import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-public class NewFollowDAO implements Database<Follow> {
+public class NewFollowDAO implements FollowDatabase {
     private static final String TABLE_NAME = "tweeter_following";
     public static final String INDEX_NAME = "tweeter_followers_index";
-    private static final String FOLLOWER_HANDLE_ATTR = "follower_handle";
-    private static final String FOLLOWEE_HANDLE_ATTR = "followee_handle";
+    private static final String FOLLOWER_ALIAS_ATTR = "follower_alias";
+    private static final String FOLLOWEE_ALIAS_ATTR = "followee_alias";
 
     private final DynamoDbEnhancedClient enhancedClient;
 
@@ -26,14 +41,14 @@ public class NewFollowDAO implements Database<Follow> {
     }
 
     @Override
-    public Follow get(String follower_handle, String followee_handle) throws DataAccessException {
+    public Follow get(String follower_alias, String followee_alias) throws DataAccessException {
         DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));
-        Key key = Key.builder().partitionValue(follower_handle).sortValue(followee_handle).build();
+        Key key = Key.builder().partitionValue(follower_alias).sortValue(followee_alias).build();
 
         FollowBean follow = table.getItem(key);
 
         if (follow == null) {
-            throw new DataAccessException("Item not found at PartitionKey (" + FOLLOWER_HANDLE_ATTR + ":" + follower_handle + ") with SortKey (" + FOLLOWEE_HANDLE_ATTR + ":" + followee_handle + ")");
+            throw new DataAccessException("Item not found at PartitionKey (" + FOLLOWER_ALIAS_ATTR + ":" + follower_alias + ") with SortKey (" + FOLLOWEE_ALIAS_ATTR + ":" + followee_alias + ")");
         } else {
             //TODO: create follow object to return
             //getFollower (GetUser)
@@ -41,56 +56,6 @@ public class NewFollowDAO implements Database<Follow> {
             return new Follow();
         }
     }
-
-    //TODO: add paginated get functions
-
-//    public List<FollowBean> getFollowing(String follower_handle, int pageSize, String last_followee_handle) {
-//        DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));
-//        Key key = Key.builder()
-//                .partitionValue(follower_handle)
-//                .build();
-//
-//        QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
-//                .queryConditional(QueryConditional.keyEqualTo(key)).scanIndexForward(true);
-//
-//        if (isNonEmptyString(last_followee_handle)) {
-//            Map<String, AttributeValue> startKey = new HashMap<>();
-//            startKey.put(FOLLOWER_HANDLE_ATTR, AttributeValue.builder().s(follower_handle).build());
-//            startKey.put(FOLLOWEE_HANDLE_ATTR, AttributeValue.builder().s(last_followee_handle).build());
-//
-//            requestBuilder.exclusiveStartKey(startKey);
-//        }
-//
-//        QueryEnhancedRequest request = requestBuilder.build();
-//
-//        return table.query(request).items().stream().limit(pageSize).collect(Collectors.toList());
-//    }
-//
-//    public List<FollowBean> getFollowers(String followee_handle, int pageSize, String last_follower_handle) {
-//        DynamoDbIndex<FollowBean> index = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class)).index(INDEX_NAME);
-//        Key key = Key.builder().partitionValue(followee_handle).build();
-//
-//        QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
-//                .queryConditional(QueryConditional.keyEqualTo(key)).limit(pageSize).scanIndexForward(false);
-//
-//        if (isNonEmptyString(last_follower_handle)) {
-//            Map<String, AttributeValue> startKey = new HashMap<>();
-//            startKey.put(FOLLOWEE_HANDLE_ATTR, AttributeValue.builder().s(followee_handle).build());
-//            startKey.put(FOLLOWER_HANDLE_ATTR, AttributeValue.builder().s(last_follower_handle).build());
-//
-//            requestBuilder.exclusiveStartKey(startKey);
-//        }
-//
-//        QueryEnhancedRequest request = requestBuilder.build();
-//
-//        List<FollowBean> followers = new ArrayList<>();
-//
-//        SdkIterable<Page<FollowBean>> results2 = index.query(request);
-//        PageIterable<FollowBean> pages = PageIterable.create(results2);
-//        pages.stream().limit(1).forEach(followersPage -> followersPage.items().forEach(f -> followers.add(f)));
-//
-//        return followers;
-//    }
 
     @Override
     public void add(Follow toAdd) throws DataAccessException {
@@ -118,7 +83,7 @@ public class NewFollowDAO implements Database<Follow> {
         //Maybe if someone changes their username?
 
 //        DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));
-//        Key key = Key.builder().partitionValue(follower_handle).sortValue(followee_handle).build();
+//        Key key = Key.builder().partitionValue(follower_alias).sortValue(followee_alias).build();
 //
 //        FollowBean follow = table.getItem(key);
 //        follow.setFollower_name(new_follower_name);
@@ -145,5 +110,83 @@ public class NewFollowDAO implements Database<Follow> {
                 .build();
 
         table.deleteItem(key);
+    }
+
+    //TODO: add paginated get functions
+
+    @Override
+    public List<User> getFollowing(String follower_alias, int pageSize, String last_followee_alias) throws DataAccessException {
+        DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));
+        Key key = Key.builder()
+                .partitionValue(follower_alias)
+                .build();
+
+        QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
+                .queryConditional(QueryConditional.keyEqualTo(key)).scanIndexForward(true);
+
+        if (isNonEmptyString(last_followee_alias)) {
+            Map<String, AttributeValue> startKey = new HashMap<>();
+            startKey.put(FOLLOWER_ALIAS_ATTR, AttributeValue.builder().s(follower_alias).build());
+            startKey.put(FOLLOWEE_ALIAS_ATTR, AttributeValue.builder().s(last_followee_alias).build());
+
+            requestBuilder.exclusiveStartKey(startKey);
+        }
+
+        QueryEnhancedRequest request = requestBuilder.build();
+
+        List<FollowBean> beans = table.query(request).items().stream().limit(pageSize).collect(Collectors.toList());
+
+        List<User> toReturn = new ArrayList<>();
+        for (FollowBean curr : beans) {
+            User followee = DynamoDAOFactory.getInstance().getUsersDAO().get(curr.getFollowee_alias(), null);
+            toReturn.add(followee);
+        }
+        return toReturn;
+    }
+
+    @Override
+    public List<User> getFollowers(String followee_alias, int pageSize, String last_follower_alias) throws DataAccessException {
+        DynamoDbIndex<FollowBean> index = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class)).index(INDEX_NAME);
+        Key key = Key.builder().partitionValue(followee_alias).build();
+
+        QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
+                .queryConditional(QueryConditional.keyEqualTo(key)).limit(pageSize).scanIndexForward(false);
+
+        if (isNonEmptyString(last_follower_alias)) {
+            Map<String, AttributeValue> startKey = new HashMap<>();
+            startKey.put(FOLLOWEE_ALIAS_ATTR, AttributeValue.builder().s(followee_alias).build());
+            startKey.put(FOLLOWER_ALIAS_ATTR, AttributeValue.builder().s(last_follower_alias).build());
+
+            requestBuilder.exclusiveStartKey(startKey);
+        }
+
+        QueryEnhancedRequest request = requestBuilder.build();
+
+        List<FollowBean> beans = new ArrayList<>();
+
+        SdkIterable<Page<FollowBean>> results2 = index.query(request);
+        PageIterable<FollowBean> pages = PageIterable.create(results2);
+        pages
+                .stream()
+                .limit(1)
+                .forEach
+                        (followersPage
+                                -> followersPage
+                                .items()
+                                .forEach
+                                        (f
+                                                ->
+                                                beans
+                                                        .add
+                                                                (f)
+                                        )
+                        );
+
+        List<User> toReturn = new ArrayList<>();
+        for (FollowBean curr : beans) {
+            User follower = DynamoDAOFactory.getInstance().getUsersDAO().get(curr.getFollower_alias(), null);
+            toReturn.add(follower);
+        }
+        return toReturn;
     }
 }

@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.server.service;
 
+import java.util.List;
+
 import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.CountRequest;
@@ -14,7 +16,7 @@ import edu.byu.cs.tweeter.model.net.response.GetFollowingResponse;
 import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
-import edu.byu.cs.tweeter.server.dao.Database;
+import edu.byu.cs.tweeter.server.dao.FollowDatabase;
 import edu.byu.cs.tweeter.server.dao.dynamo.FollowDAO;
 import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 
@@ -91,6 +93,42 @@ public class FollowService {
         }
     }
 
+    public GetFollowingResponse getFollowees(PagedRequest<User> request) {
+        if(request.getTargetUserAlias() == null) {
+            throw new RuntimeException("[BadRequest] Request needs to have a follower alias");
+        } else if(request.getLimit() <= 0) {
+            throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
+        }
+
+        try {
+            String lastFolloweeAlias = request.getLastItem() == null ? null : request.getLastItem().getAlias();
+            List<User> following = getNewFollowDAO().getFollowing(request.getTargetUserAlias(), request.getLimit(), lastFolloweeAlias);
+
+            return new GetFollowingResponse(following, following.size() == request.getLimit());
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+        }
+    }
+
+    public GetFollowersResponse getFollowers(PagedRequest<User> request) {
+        if(request.getTargetUserAlias() == null) {
+            throw new RuntimeException("[BadRequest] Request needs to have a followee alias");
+        } else if(request.getLimit() <= 0) {
+            throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
+        }
+
+        try {
+            String lastFollowerAlias = request.getLastItem() == null ? null : request.getLastItem().getAlias();
+            List<User> followers = getNewFollowDAO().getFollowers(request.getTargetUserAlias(), request.getLimit(), lastFollowerAlias);
+
+            return new GetFollowersResponse(followers, followers.size() == request.getLimit());
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            throw new RuntimeException("[Internal Server Error] " + e.getMessage());
+        }
+    }
+
     //TODO: Migrate all below to DAOs
 
     /**
@@ -102,25 +140,6 @@ public class FollowService {
      * @param request contains the data required to fulfill the request.
      * @return the followees.
      */
-    public GetFollowingResponse getFollowees(PagedRequest<User> request) {
-        if(request.getTargetUserAlias() == null) {
-//            return new GetFollowingResponse("[BadRequest] Request needs to have a follower alias");
-            throw new RuntimeException("[BadRequest] Request needs to have a follower alias");
-        } else if(request.getLimit() <= 0) {
-//            return new GetFollowingResponse("[BadRequest] Request needs to have a positive limit");
-            throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
-        }
-        return getFollowDAO().getFollowees(request);
-    }
-
-    public GetFollowersResponse getFollowers(PagedRequest<User> request) {
-        if(request.getTargetUserAlias() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a followee alias");
-        } else if(request.getLimit() <= 0) {
-            throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
-        }
-        return getFollowDAO().getFollowers(request);
-    }
 
     public CountResponse getFollowersCount(CountRequest request) {
         if (request.getTargetUser() == null) {
@@ -145,7 +164,7 @@ public class FollowService {
      *
      * @return the instance.
      */
-    Database<Follow> getNewFollowDAO() { return DynamoDAOFactory.getInstance().getFollowDAO(); }
+    FollowDatabase getNewFollowDAO() { return DynamoDAOFactory.getInstance().getFollowDAO(); }
 
     FollowDAO getFollowDAO() { return new FollowDAO(); }
 }

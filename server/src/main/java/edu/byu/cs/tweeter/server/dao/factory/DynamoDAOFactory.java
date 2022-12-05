@@ -1,10 +1,10 @@
 package edu.byu.cs.tweeter.server.dao.factory;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
-import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.dao.Database;
+import edu.byu.cs.tweeter.server.dao.FollowDatabase;
 import edu.byu.cs.tweeter.server.dao.dynamo.AuthTokenDAO;
 import edu.byu.cs.tweeter.server.dao.dynamo.FeedDAO;
 import edu.byu.cs.tweeter.server.dao.dynamo.NewFollowDAO;
@@ -18,7 +18,7 @@ public class DynamoDAOFactory implements DAOFactory {
     private final DynamoDbEnhancedClient enhancedClient;
     private final Database<AuthToken> authTokenDAO;
     private final Database<User> userDAO;
-    private final Database<Follow> followDAO;
+    private final FollowDatabase followDAO;
     private final Database<Status> feedDAO;
     private final Database<Status> storyDAO;
 
@@ -63,7 +63,7 @@ public class DynamoDAOFactory implements DAOFactory {
     }
 
     @Override
-    public Database<Follow> getFollowDAO() {
+    public FollowDatabase getFollowDAO() {
         return followDAO;
     }
 
