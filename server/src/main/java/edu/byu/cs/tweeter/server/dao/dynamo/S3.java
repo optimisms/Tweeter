@@ -19,6 +19,9 @@ public class S3 {
         //Bucket name
         String targetBucket = "hterry-cs-340-tweeter-profile-pics";
 
+        //File name/key
+        String key = imageName + "_" + Math.random();
+
         //Convert image to a byte array
         byte[] imageByteArray = Base64.getDecoder().decode(imageString);
 
@@ -30,7 +33,7 @@ public class S3 {
 
         //Create put request and upload image
         AmazonS3 client = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
-        PutObjectRequest req = new PutObjectRequest(targetBucket, imageName, new ByteArrayInputStream(imageByteArray), metadata);
+        PutObjectRequest req = new PutObjectRequest(targetBucket, key, new ByteArrayInputStream(imageByteArray), metadata);
         client.putObject(req);
 
         //Get image url
