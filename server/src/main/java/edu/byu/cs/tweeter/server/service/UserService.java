@@ -24,7 +24,6 @@ import edu.byu.cs.tweeter.server.dao.DataAccessException;
 import edu.byu.cs.tweeter.server.dao.Database;
 import edu.byu.cs.tweeter.server.dao.dynamo.S3;
 import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
-import edu.byu.cs.tweeter.util.FakeData;
 
 public class UserService {
     //TODO: add checking for authToken validity
@@ -34,7 +33,7 @@ public class UserService {
                 throw new RuntimeException("[BadRequest] Missing the user alias");
             }
 
-            User user = getNewUserDAO().get(request.getAlias(), null);
+            User user = getUserDAO().get(request.getAlias(), null);
 
             return new GetUserResponse(user);
         } catch (DataAccessException | RuntimeException e) {
@@ -68,10 +67,10 @@ public class UserService {
 
             User toAdd = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL, hashResults[0], hashResults[1]);
 
-            getNewUserDAO().add(toAdd);
+            getUserDAO().add(toAdd);
 
             AuthToken token = generateNewAuthToken();
-            getNewAuthTokenDAO().add(token);
+            getAuthTokenDAO().add(token);
 
             //Do not send the password or salt back, those should stay in the server
             User toReturn = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL);
@@ -84,6 +83,56 @@ public class UserService {
                 return new AuthResponse(e.getMessage());
             } else {
                 return new AuthResponse("[Internal Server Error] " + e.getMessage());
+            }
+        }
+    }
+
+    public AuthResponse login(LoginRequest request) {
+        try{
+            if(request.getUsername() == null) {
+                throw new RuntimeException("[BadRequest] Missing a username");
+            } else if(request.getPassword() == null) {
+                throw new RuntimeException("[BadRequest] Missing a password");
+            }
+
+            User registered = getUserDAO().get(request.getUsername(), null);
+
+            byte[][] hashResults = hashPassword(request.getPassword(), registered.getHashSalt());
+
+            if (!Arrays.equals(hashResults[0], registered.getHashedPassword())) {
+                return new AuthResponse("[BadRequest] Incorrect password; expected " + Arrays.toString(registered.getHashedPassword()) + " but got " + Arrays.toString(hashResults[0]));
+            }
+
+            AuthToken token = generateNewAuthToken();
+            getAuthTokenDAO().add(token);
+
+            User toReturn = new User(registered.getFirstName(), registered.getLastName(), registered.getAlias(), registered.getImageUrl());
+
+            return new AuthResponse(toReturn, token);
+        } catch (Exception e) {//DataAccessException | RuntimeException e) {
+            e.printStackTrace();
+            if (e.getMessage().startsWith("[BadRequest]")) {
+                return new AuthResponse(e.getMessage());
+            } else {
+                return new AuthResponse("[Internal Server Error] " + e.getMessage());
+            }
+        }
+    }
+
+    public LogoutResponse logout(LogoutRequest request) {
+        try {
+            if (request.getToken() == null) {
+                throw new RuntimeException("[BadRequest] Missing the token to destroy");
+            }
+
+            getAuthTokenDAO().delete(request.getToken());
+            return new LogoutResponse();
+        } catch (DataAccessException | RuntimeException e) {
+            e.printStackTrace();
+            if (e.getMessage().startsWith("[BadRequest")) {
+                return new LogoutResponse(e.getMessage());
+            } else {
+                return new LogoutResponse("[Internal Server Error] " + e.getMessage());
             }
         }
     }
@@ -122,89 +171,6 @@ public class UserService {
         return new AuthToken(token, df.format(now));
     }
 
-    //TODO: migrate below to new Dynamo DAOs
-    //TODO: Check right error handling for all methods
-
-    public AuthResponse login(LoginRequest request) {
-        if(request.getUsername() == null) {
-            throw new RuntimeException("[BadRequest] Missing a username");
-        } else if(request.getPassword() == null) {
-            throw new RuntimeException("[BadRequest] Missing a password");
-        }
-
-        try{
-            User registered = getNewUserDAO().get(request.getUsername(), null);
-
-            byte[][] hashResults = hashPassword(request.getPassword(), registered.getHashSalt());
-
-            if (!Arrays.equals(hashResults[0], registered.getHashedPassword())) {
-                return new AuthResponse("[BadRequest] Incorrect password; expected " + Arrays.toString(registered.getHashedPassword()) + " but got " + Arrays.toString(hashResults[0]));
-            }
-
-            AuthToken token = generateNewAuthToken();
-            getNewAuthTokenDAO().add(token);
-
-            User toReturn = new User(registered.getFirstName(), registered.getLastName(), registered.getAlias(), registered.getImageUrl());
-
-            return new AuthResponse(toReturn, token);
-        } catch (Exception e) {//DataAccessException | RuntimeException e) {
-            e.printStackTrace();
-            if (e.getMessage().startsWith("[BadRequest]")) {
-                return new AuthResponse(e.getMessage());
-            } else {
-                return new AuthResponse("[Internal Server Error] " + e.getMessage());
-            }
-        }
-    }
-
-    public LogoutResponse logout(LogoutRequest request) {
-        try {
-            if (request.getToken() == null) {
-                throw new RuntimeException("[BadRequest] Missing the token to destroy");
-            }
-
-            getNewAuthTokenDAO().delete(request.getToken());
-            return new LogoutResponse();
-        } catch (DataAccessException | RuntimeException e) {
-            e.printStackTrace();
-            if (e.getMessage().startsWith("[BadRequest")) {
-                return new LogoutResponse(e.getMessage());
-            } else {
-                return new LogoutResponse("[Internal Server Error] " + e.getMessage());
-            }
-        }
-    }
-
-    /**
-     * Returns the dummy user to be returned by the login operation.
-     * This is written as a separate method to allow mocking of the dummy user.
-     *
-     * @return a dummy user.
-     */
-    User getDummyUser() {
-        return getFakeData().getFirstUser();
-    }
-
-    /**
-     * Returns the dummy auth token to be returned by the login operation.
-     * This is written as a separate method to allow mocking of the dummy auth token.
-     *
-     * @return a dummy auth token.
-     */
-    AuthToken getDummyAuthToken() {
-        return getFakeData().getAuthToken();
-    }
-
-    /**
-     * Returns the {@link FakeData} object used to generate dummy users and auth tokens.
-     * This is written as a separate method to allow mocking of the {@link FakeData}.
-     *
-     * @return a {@link FakeData} instance.
-     */
-    FakeData getFakeData() {
-        return FakeData.getInstance();
-    }
-
-    Database<User> getNewUserDAO() { return DynamoDAOFactory.getInstance().getUsersDAO(); }
-    Database<AuthToken> getNewAuthTokenDAO() { return DynamoDAOFactory.getInstance().getAuthTokenDAO(); }
+    Database<User> getUserDAO() { return DynamoDAOFactory.getInstance().getUsersDAO(); }
+    Database<AuthToken> getAuthTokenDAO() { return DynamoDAOFactory.getInstance().getAuthTokenDAO(); }
 }
