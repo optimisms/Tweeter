@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
@@ -136,8 +137,8 @@ public class UserService {
 
             byte[][] hashResults = hashPassword(request.getPassword(), registered.getHashSalt());
 
-            if (hashResults[0] != registered.getHashedPassword()) {
-                return new AuthResponse("[BadRequest] Incorrect password");
+            if (!Arrays.equals(hashResults[0], registered.getHashedPassword())) {
+                return new AuthResponse("[BadRequest] Incorrect password; expected " + Arrays.toString(registered.getHashedPassword()) + " but got " + Arrays.toString(hashResults[0]));
             }
 
             AuthToken token = generateNewAuthToken();
