@@ -112,8 +112,6 @@ public class FollowDAO implements FollowDatabase {
         table.deleteItem(key);
     }
 
-    //TODO: add paginated get functions
-
     @Override
     public List<User> getFollowing(String follower_alias, int pageSize, String last_followee_alias) throws DataAccessException {
         DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));
@@ -150,7 +148,7 @@ public class FollowDAO implements FollowDatabase {
         Key key = Key.builder().partitionValue(followee_alias).build();
 
         QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
-                .queryConditional(QueryConditional.keyEqualTo(key)).limit(pageSize).scanIndexForward(false);
+                .queryConditional(QueryConditional.keyEqualTo(key)).limit(pageSize).scanIndexForward(true);
 
         if (isNonEmptyString(last_follower_alias)) {
             Map<String, AttributeValue> startKey = new HashMap<>();
