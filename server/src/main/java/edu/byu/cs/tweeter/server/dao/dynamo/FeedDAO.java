@@ -1,15 +1,15 @@
 package edu.byu.cs.tweeter.server.dao.dynamo;
 
+import java.util.List;
+
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
-import edu.byu.cs.tweeter.server.dao.Database;
+import edu.byu.cs.tweeter.server.dao.PagedDatabase;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 
-public class FeedDAO implements Database<Status> {
-    private final DynamoDbEnhancedClient enhancedClient;
-
+public class FeedDAO extends PagedDatabase<Status, Status> {
     public FeedDAO(DynamoDbEnhancedClient enhancedClient) {
-        this.enhancedClient = enhancedClient;
+        super(enhancedClient);
     }
 
     //TODO: implement
@@ -31,5 +31,10 @@ public class FeedDAO implements Database<Status> {
     @Override
     public void delete(Status toDelete) {
 
+    }
+
+    @Override
+    public List<Status> getPages(String partition_key, int pageSize, String sort_start_key, String taskType) throws DataAccessException {
+        return null;
     }
 }

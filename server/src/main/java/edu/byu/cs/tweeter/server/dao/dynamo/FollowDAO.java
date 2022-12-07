@@ -24,20 +24,14 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-public class FollowDAO implements PagedDatabase<Follow, User> {
+public class FollowDAO extends PagedDatabase<Follow, User> {
     private static final String TABLE_NAME = "tweeter_following";
     public static final String INDEX_NAME = "tweeter_followers_index";
     private static final String FOLLOWER_ALIAS_ATTR = "follower_alias";
     private static final String FOLLOWEE_ALIAS_ATTR = "followee_alias";
 
-    private final DynamoDbEnhancedClient enhancedClient;
-
     public FollowDAO(DynamoDbEnhancedClient enhancedClient) {
-        this.enhancedClient = enhancedClient;
-    }
-
-    private static boolean isNonEmptyString(String value) {
-        return (value != null && value.length() > 0);
+        super(enhancedClient);
     }
 
     @Override

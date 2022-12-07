@@ -2,21 +2,18 @@ package edu.byu.cs.tweeter.server.dao.dynamo;
 
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
-import edu.byu.cs.tweeter.server.dao.Database;
 import edu.byu.cs.tweeter.server.dao.dynamo.DTO.UserBean;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 
-public class UsersDAO implements Database<User> {
+public class UsersDAO extends DynamoDAO<User> {
     private static final String TABLE_NAME = "tweeter_users";
     private static final String USER_ALIAS_ATTR = "user_alias";
 
-    private final DynamoDbEnhancedClient enhancedClient;
-
     public UsersDAO(DynamoDbEnhancedClient enhancedClient) {
-        this.enhancedClient = enhancedClient;
+        super(enhancedClient);
     }
 
     @Override

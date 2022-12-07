@@ -7,7 +7,7 @@ import edu.byu.cs.tweeter.model.net.response.GetFeedResponse;
 import edu.byu.cs.tweeter.model.net.response.GetStoryResponse;
 import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
-import edu.byu.cs.tweeter.server.dao.Database;
+import edu.byu.cs.tweeter.server.dao.PagedDatabase;
 import edu.byu.cs.tweeter.server.dao.dynamo.StatusDAO;
 import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 
@@ -55,6 +55,6 @@ public class StatusService {
     StatusDAO getStatusDAO() {
         return new StatusDAO();
     }
-    private Database<Status> getNewStatusDAO() { return DynamoDAOFactory.getInstance().getStoryDAO();
+    private PagedDatabase<Status, Status> getNewStatusDAO() { return DynamoDAOFactory.getInstance().getStoryDAO();
     }
 }

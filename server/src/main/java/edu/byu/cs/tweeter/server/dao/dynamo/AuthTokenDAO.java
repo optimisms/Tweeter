@@ -2,21 +2,18 @@ package edu.byu.cs.tweeter.server.dao.dynamo;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
-import edu.byu.cs.tweeter.server.dao.Database;
 import edu.byu.cs.tweeter.server.dao.dynamo.DTO.AuthTokenBean;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 
-public class AuthTokenDAO implements Database<AuthToken> {
+public class AuthTokenDAO extends DynamoDAO<AuthToken> {
     private static final String TABLE_NAME = "tweeter_auth_tokens";
     private static final String AUTH_TOKEN_ATTR = "auth_token";
 
-    private final DynamoDbEnhancedClient enhancedClient;
-
     public AuthTokenDAO(DynamoDbEnhancedClient enhancedClient) {
-        this.enhancedClient = enhancedClient;
+        super (enhancedClient);
     }
 
     @Override

@@ -20,8 +20,8 @@ public class DynamoDAOFactory implements DAOFactory {
     private final Database<AuthToken> authTokenDAO;
     private final Database<User> userDAO;
     private final PagedDatabase<Follow, User> followDAO;
-    private final Database<Status> feedDAO;
-    private final Database<Status> storyDAO;
+    private final PagedDatabase<Status, Status> feedDAO;
+    private final PagedDatabase<Status, Status> storyDAO;
 
     private static DynamoDAOFactory instance;
 
@@ -64,12 +64,12 @@ public class DynamoDAOFactory implements DAOFactory {
     }
 
     @Override
-    public Database<Status> getFeedDAO() {
+    public PagedDatabase<Status, Status> getFeedDAO() {
         return feedDAO;
     }
 
     @Override
-    public Database<Status> getStoryDAO() {
+    public PagedDatabase<Status, Status> getStoryDAO() {
         return storyDAO;
     }
 

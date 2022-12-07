@@ -1,25 +1,22 @@
 package edu.byu.cs.tweeter.server.dao.dynamo;
 
+import java.util.List;
+
 import edu.byu.cs.tweeter.model.domain.Status;
-import edu.byu.cs.tweeter.server.dao.Database;
+import edu.byu.cs.tweeter.server.dao.DataAccessException;
+import edu.byu.cs.tweeter.server.dao.PagedDatabase;
 import edu.byu.cs.tweeter.server.dao.dynamo.DTO.StoryBean;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 
-public class StoryDAO implements Database<Status> {
+public class StoryDAO extends PagedDatabase<Status, Status> {
     private static final String TABLE_NAME = "tweeter_story";
     private static final String SENDER_ALIAS_ATTR = "sender_alias";
     private static final String TIMESTAMP_ATTR = "timestamp";
 
-    private final DynamoDbEnhancedClient enhancedClient;
-
     public StoryDAO(DynamoDbEnhancedClient enhancedClient) {
-        this.enhancedClient = enhancedClient;
-    }
-
-    private static boolean isNonEmptyString(String value) {
-        return (value != null && value.length() > 0);
+        super(enhancedClient);
     }
 
     //TODO: implement
@@ -55,5 +52,10 @@ public class StoryDAO implements Database<Status> {
     @Override
     public void delete(Status toDelete) {
 // Could implement if we had a way to delete statuses
+    }
+
+    @Override
+    public List<Status> getPages(String partition_key, int pageSize, String sort_start_key, String taskType) throws DataAccessException {
+        return null;
     }
 }
