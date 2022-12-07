@@ -130,6 +130,7 @@ public class User implements Comparable<User>, Serializable {
         this.hashSalt = hashSalt;
     }
 
+    public User makeSecureUser() { return new User(firstName, lastName, alias, imageUrl, followerCount, followingCount); }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

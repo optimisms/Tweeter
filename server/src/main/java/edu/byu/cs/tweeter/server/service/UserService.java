@@ -33,7 +33,7 @@ public class UserService {
                 throw new RuntimeException("[BadRequest] Missing the user alias");
             }
 
-            User user = getUserDAO().get(request.getAlias(), null);
+            User user = getUserDAO().get(request.getAlias(), null).makeSecureUser();
 
             return new GetUserResponse(user);
         } catch (DataAccessException | RuntimeException e) {
@@ -72,10 +72,7 @@ public class UserService {
             AuthToken token = generateNewAuthToken();
             getAuthTokenDAO().add(token);
 
-            //Do not send the password or salt back, those should stay in the server
-            User toReturn = new User(request.getFirstName(), request.getLastName(), request.getUsername(), imageURL);
-
-            return new AuthResponse(toReturn, token);
+            return new AuthResponse(toAdd.makeSecureUser(), token);
             //TODO: ask TAs if I should be catching any and all exceptions or just specific types
         } catch (Exception e) {//DataAccessException | RuntimeException e) {
             e.printStackTrace();
@@ -106,7 +103,7 @@ public class UserService {
             AuthToken token = generateNewAuthToken();
             getAuthTokenDAO().add(token);
 
-            User toReturn = new User(registered.getFirstName(), registered.getLastName(), registered.getAlias(), registered.getImageUrl());
+            User toReturn = registered.makeSecureUser();
 
             return new AuthResponse(toReturn, token);
         } catch (Exception e) {//DataAccessException | RuntimeException e) {

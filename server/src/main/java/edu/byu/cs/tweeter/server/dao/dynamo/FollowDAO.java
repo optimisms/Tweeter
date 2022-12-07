@@ -32,12 +32,12 @@ public class FollowDAO implements FollowDatabase {
 
     private final DynamoDbEnhancedClient enhancedClient;
 
-    private static boolean isNonEmptyString(String value) {
-        return (value != null && value.length() > 0);
-    }
-
     public FollowDAO(DynamoDbEnhancedClient enhancedClient) {
         this.enhancedClient = enhancedClient;
+    }
+
+    private static boolean isNonEmptyString(String value) {
+        return (value != null && value.length() > 0);
     }
 
     @Override
@@ -136,7 +136,7 @@ public class FollowDAO implements FollowDatabase {
 
         List<User> toReturn = new ArrayList<>();
         for (FollowBean curr : beans) {
-            User followee = DynamoDAOFactory.getInstance().getUsersDAO().get(curr.getFollowee_alias(), null);
+            User followee = DynamoDAOFactory.getInstance().getUsersDAO().get(curr.getFollowee_alias(), null).makeSecureUser();
             toReturn.add(followee);
         }
         return toReturn;
@@ -168,7 +168,7 @@ public class FollowDAO implements FollowDatabase {
 
         List<User> toReturn = new ArrayList<>();
         for (FollowBean curr : beans) {
-            User follower = DynamoDAOFactory.getInstance().getUsersDAO().get(curr.getFollower_alias(), null);
+            User follower = DynamoDAOFactory.getInstance().getUsersDAO().get(curr.getFollower_alias(), null).makeSecureUser();
             toReturn.add(follower);
         }
         return toReturn;
