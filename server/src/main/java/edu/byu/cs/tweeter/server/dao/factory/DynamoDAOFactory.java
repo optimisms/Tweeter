@@ -1,10 +1,11 @@
 package edu.byu.cs.tweeter.server.dao.factory;
 
 import edu.byu.cs.tweeter.model.domain.AuthToken;
+import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.dao.Database;
-import edu.byu.cs.tweeter.server.dao.FollowDatabase;
+import edu.byu.cs.tweeter.server.dao.PagedDatabase;
 import edu.byu.cs.tweeter.server.dao.dynamo.AuthTokenDAO;
 import edu.byu.cs.tweeter.server.dao.dynamo.FeedDAO;
 import edu.byu.cs.tweeter.server.dao.dynamo.FollowDAO;
@@ -18,16 +19,11 @@ public class DynamoDAOFactory implements DAOFactory {
     private final DynamoDbEnhancedClient enhancedClient;
     private final Database<AuthToken> authTokenDAO;
     private final Database<User> userDAO;
-    private final FollowDatabase followDAO;
+    private final PagedDatabase<Follow, User> followDAO;
     private final Database<Status> feedDAO;
     private final Database<Status> storyDAO;
 
     private static DynamoDAOFactory instance;
-
-
-    //TODO: don't forget to make sure that enhanced client hasn't been created before creating it
-    //Check everywhere!!! Do not create multiple!!!
-    //Maybe talk to TAs about how best to do this
 
     private DynamoDAOFactory() {
         DynamoDbClient dynamoDbClient = DynamoDbClient.builder().region(Region.US_WEST_2).build();
@@ -63,7 +59,7 @@ public class DynamoDAOFactory implements DAOFactory {
     }
 
     @Override
-    public FollowDatabase getFollowDAO() {
+    public PagedDatabase<Follow, User> getFollowDAO() {
         return followDAO;
     }
 

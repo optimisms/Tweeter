@@ -17,7 +17,7 @@ import edu.byu.cs.tweeter.model.net.response.IsFollowerResponse;
 import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
 import edu.byu.cs.tweeter.server.dao.Database;
-import edu.byu.cs.tweeter.server.dao.FollowDatabase;
+import edu.byu.cs.tweeter.server.dao.PagedDatabase;
 import edu.byu.cs.tweeter.server.dao.dynamo.FollowDAO;
 import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 
@@ -122,7 +122,7 @@ public class FollowService {
             }
 
             String lastFolloweeAlias = request.getLastItem() == null ? null : request.getLastItem().getAlias();
-            List<User> following = getFollowDAO().getFollowing(request.getTargetUserAlias(), request.getLimit(), lastFolloweeAlias);
+            List<User> following = getFollowDAO().getPages(request.getTargetUserAlias(), request.getLimit(), lastFolloweeAlias, "getFollowing");
 
             return new GetFollowingResponse(following, following.size() == request.getLimit());
         } catch (DataAccessException | RuntimeException e) {
@@ -145,7 +145,7 @@ public class FollowService {
             }
 
             String lastFollowerAlias = request.getLastItem() == null ? null : request.getLastItem().getAlias();
-            List<User> followers = getFollowDAO().getFollowers(request.getTargetUserAlias(), request.getLimit(), lastFollowerAlias);
+            List<User> followers = getFollowDAO().getPages(request.getTargetUserAlias(), request.getLimit(), lastFollowerAlias, "getFollowers");
 
             return new GetFollowersResponse(followers, followers.size() == request.getLimit());
         } catch (DataAccessException | RuntimeException e) {
@@ -208,6 +208,6 @@ public class FollowService {
      *
      * @return the instance.
      */
-    FollowDatabase getFollowDAO() { return DynamoDAOFactory.getInstance().getFollowDAO(); }
+    PagedDatabase<Follow, User> getFollowDAO() { return DynamoDAOFactory.getInstance().getFollowDAO(); }
     Database<User> getUserDAO() { return DynamoDAOFactory.getInstance().getUsersDAO(); }
 }

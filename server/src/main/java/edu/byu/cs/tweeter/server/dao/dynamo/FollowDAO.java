@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
-import edu.byu.cs.tweeter.server.dao.FollowDatabase;
+import edu.byu.cs.tweeter.server.dao.PagedDatabase;
 import edu.byu.cs.tweeter.server.dao.dynamo.DTO.FollowBean;
 import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
@@ -24,7 +24,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-public class FollowDAO implements FollowDatabase {
+public class FollowDAO implements PagedDatabase<Follow, User> {
     private static final String TABLE_NAME = "tweeter_following";
     public static final String INDEX_NAME = "tweeter_followers_index";
     private static final String FOLLOWER_ALIAS_ATTR = "follower_alias";
@@ -112,8 +112,7 @@ public class FollowDAO implements FollowDatabase {
         table.deleteItem(key);
     }
 
-    @Override
-    public List<User> getFollowing(String follower_alias, int pageSize, String last_followee_alias) throws DataAccessException {
+    private List<User> getFollowing(String follower_alias, int pageSize, String last_followee_alias) throws DataAccessException {
         DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));
         Key key = Key.builder()
                 .partitionValue(follower_alias)
@@ -142,8 +141,7 @@ public class FollowDAO implements FollowDatabase {
         return toReturn;
     }
 
-    @Override
-    public List<User> getFollowers(String followee_alias, int pageSize, String last_follower_alias) throws DataAccessException {
+    private List<User> getFollowers(String followee_alias, int pageSize, String last_follower_alias) throws DataAccessException {
         DynamoDbIndex<FollowBean> index = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class)).index(INDEX_NAME);
         Key key = Key.builder().partitionValue(followee_alias).build();
 
@@ -172,5 +170,11 @@ public class FollowDAO implements FollowDatabase {
             toReturn.add(follower);
         }
         return toReturn;
+    }
+
+    @Override
+    public List<User> getPages(String partition_key, int pageSize, String sort_start_key, String taskType) throws DataAccessException {
+        if (taskType.equals("getFollowers")) return getFollowers(partition_key, pageSize, sort_start_key);
+        else { return getFollowing(partition_key, pageSize, sort_start_key); }
     }
 }
