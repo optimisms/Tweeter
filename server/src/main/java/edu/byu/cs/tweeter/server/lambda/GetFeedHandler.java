@@ -6,6 +6,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.net.request.PagedRequest;
 import edu.byu.cs.tweeter.model.net.response.GetFeedResponse;
+import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 import edu.byu.cs.tweeter.server.service.StatusService;
 
 /**
@@ -15,6 +16,6 @@ import edu.byu.cs.tweeter.server.service.StatusService;
 public class GetFeedHandler implements RequestHandler<PagedRequest<Status>, GetFeedResponse> {
     @Override
     public GetFeedResponse handleRequest(PagedRequest<Status> getFeedRequest, Context context) {
-        return new StatusService().getFeed(getFeedRequest);
+        return new StatusService(DynamoDAOFactory.getInstance()).getFeed(getFeedRequest);
     }
 }

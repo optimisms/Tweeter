@@ -11,6 +11,6 @@ public interface DAOFactory {
     Database<AuthToken> getAuthTokenDAO();
     Database<User> getUsersDAO();
     PagedDatabase<Follow, User> getFollowDAO();
-    Database<Status> getFeedDAO();
-    Database<Status> getStoryDAO();
+    PagedDatabase<Status, Status> getFeedDAO();
+    PagedDatabase<Status, Status> getStoryDAO();
 }

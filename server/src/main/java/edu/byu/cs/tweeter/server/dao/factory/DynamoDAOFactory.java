@@ -36,6 +36,9 @@ public class DynamoDAOFactory implements DAOFactory {
         userDAO = new UsersDAO(enhancedClient);
     }
 
+    //TODO: ask Dr. Rodham if there's a way to put this in the parent class and use the static AND abstract functionality together
+    // Right now I can't put it in the parent (when abstract class, not interface) bc it has the new() declaration which can't be
+    // used for an abstract class
     public static DynamoDAOFactory getInstance() {
         if (instance == null) {
             synchronized(DynamoDAOFactory.class) {
@@ -72,13 +75,4 @@ public class DynamoDAOFactory implements DAOFactory {
     public PagedDatabase<Status, Status> getStoryDAO() {
         return storyDAO;
     }
-
-//    public DynamoDbEnhancedClient getClient() {
-//        if (enhancedClient == null)
-//        {
-//            DynamoDbClient dynamoDbClient = DynamoDbClient.builder().region(Region.US_WEST_2).build();
-//            enhancedClient = DynamoDbEnhancedClient.builder().dynamoDbClient(dynamoDbClient).build();
-//        }
-//        return enhancedClient;
-//    }
 }

@@ -24,9 +24,14 @@ import edu.byu.cs.tweeter.model.net.response.LogoutResponse;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
 import edu.byu.cs.tweeter.server.dao.Database;
 import edu.byu.cs.tweeter.server.dao.dynamo.S3;
-import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
+import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
 
 public class UserService {
+    DAOFactory factory;
+    public UserService(DAOFactory factory) {
+        this.factory = factory;
+    }
+
     public GetUserResponse getUser(GetUserRequest request) {
         try {
             if (request.getAlias() == null) {
@@ -147,7 +152,7 @@ public class UserService {
             random.nextBytes(salt);
         }
 
-        MessageDigest md = null;
+        MessageDigest md;
         try {
             md = MessageDigest.getInstance("SHA-512");
         } catch (NoSuchAlgorithmException e) {
@@ -172,6 +177,6 @@ public class UserService {
         return new AuthToken(token, df.format(now));
     }
 
-    Database<User> getUserDAO() { return DynamoDAOFactory.getInstance().getUsersDAO(); }
-    Database<AuthToken> getAuthTokenDAO() { return DynamoDAOFactory.getInstance().getAuthTokenDAO(); }
+    Database<User> getUserDAO() { return factory.getUsersDAO(); }
+    Database<AuthToken> getAuthTokenDAO() { return factory.getAuthTokenDAO(); }
 }

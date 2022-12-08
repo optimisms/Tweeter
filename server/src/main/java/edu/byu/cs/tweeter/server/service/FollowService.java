@@ -19,13 +19,21 @@ import edu.byu.cs.tweeter.model.net.response.UnfollowResponse;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
 import edu.byu.cs.tweeter.server.dao.Database;
 import edu.byu.cs.tweeter.server.dao.PagedDatabase;
-import edu.byu.cs.tweeter.server.dao.dynamo.FollowDAO;
-import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
+import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
 
 /**
  * Contains the business logic for getting the users a user is following.
  */
 public class FollowService {
+    DAOFactory factory;
+
+    public FollowService(DAOFactory factory) {
+        this.factory = factory;
+    }
+
+    PagedDatabase<Follow, User> getFollowDAO() { return factory.getFollowDAO(); }
+    Database<User> getUserDAO() { return factory.getUsersDAO(); }
+
     public IsFollowerResponse isFollower(IsFollowerRequest request) {
         try {
             if (request.getFollower() == null) {
@@ -228,14 +236,4 @@ public class FollowService {
 
         }
     }
-
-    /**
-     * Returns an instance of {@link FollowDAO}. Allows mocking of the FollowDAO class
-     * for testing purposes. All usages of FollowDAO should get their FollowDAO
-     * instance from this method to allow for mocking of the instance.
-     *
-     * @return the instance.
-     */
-    PagedDatabase<Follow, User> getFollowDAO() { return DynamoDAOFactory.getInstance().getFollowDAO(); }
-    Database<User> getUserDAO() { return DynamoDAOFactory.getInstance().getUsersDAO(); }
 }

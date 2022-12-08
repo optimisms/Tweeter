@@ -11,9 +11,14 @@ import edu.byu.cs.tweeter.model.net.response.GetStoryResponse;
 import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
 import edu.byu.cs.tweeter.server.dao.PagedDatabase;
-import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
+import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
 
 public class StatusService {
+    DAOFactory factory;
+    public StatusService(DAOFactory factory) {
+        this.factory = factory;
+    }
+
     public PostStatusResponse postStatus(PostStatusRequest request) {
         try {
             if (request.getStatus() == null) {
@@ -91,6 +96,6 @@ public class StatusService {
         }
     }
 
-    private PagedDatabase<Status, Status> getStoryDAO() { return DynamoDAOFactory.getInstance().getStoryDAO(); }
-    private PagedDatabase<Status, Status> getFeedDAO() { return DynamoDAOFactory.getInstance().getFeedDAO(); }
+    private PagedDatabase<Status, Status> getStoryDAO() { return factory.getStoryDAO(); }
+    private PagedDatabase<Status, Status> getFeedDAO() { return factory.getFeedDAO(); }
 }

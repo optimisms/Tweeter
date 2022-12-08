@@ -158,6 +158,7 @@ public class FollowDAO extends PagedDatabase<Follow, User> {
         PageIterable<FollowBean> pages = PageIterable.create(results2);
         pages.stream().limit(1).forEach(followersPage -> followersPage.items().forEach(f -> beans.add(f)));
 
+        //TODO: convert to return the list of aliases and then have the server ask the UserDAO for the users
         List<User> toReturn = new ArrayList<>();
         for (FollowBean curr : beans) {
             User follower = DynamoDAOFactory.getInstance().getUsersDAO().get(curr.getFollower_alias(), null).makeSecureUser();

@@ -5,12 +5,13 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import edu.byu.cs.tweeter.model.net.request.CountRequest;
 import edu.byu.cs.tweeter.model.net.response.CountResponse;
+import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 import edu.byu.cs.tweeter.server.service.FollowService;
 
 public class GetFollowersCountHandler implements RequestHandler<CountRequest, CountResponse> {
     @Override
     public CountResponse handleRequest(CountRequest request, Context context) {
-        return new FollowService().getFollowersCount(request);
+        return new FollowService(DynamoDAOFactory.getInstance()).getFollowersCount(request);
     }
 }
 
