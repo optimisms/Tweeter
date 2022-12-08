@@ -44,7 +44,7 @@ public class FollowDAO extends PagedDatabase<Follow, User> {
         if (follow == null) {
             throw new DataAccessException("Item not found at PartitionKey (" + FOLLOWER_ALIAS_ATTR + ":" + follower_alias + ") with SortKey (" + FOLLOWEE_ALIAS_ATTR + ":" + followee_alias + ")");
         } else {
-            //TODO: create follow object to return
+            //TODO: create follow object to return (see TODO in getFollowers)
             //getFollower (GetUser)
             //getFollowee (GetUser)
             return new Follow();
@@ -75,14 +75,6 @@ public class FollowDAO extends PagedDatabase<Follow, User> {
         //TODO: figure out when you would use update for the Follow table
         //Right now, the only things I can think of are to add or delete, which of course already exist
         //Maybe if someone changes their username?
-
-//        DynamoDbTable<FollowBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class));
-//        Key key = Key.builder().partitionValue(follower_alias).sortValue(followee_alias).build();
-//
-//        FollowBean follow = table.getItem(key);
-//        follow.setFollower_name(new_follower_name);
-//        follow.setFollowee_name(new_followee_name);
-//        table.updateItem(follow);
     }
 
     @Override
@@ -158,7 +150,7 @@ public class FollowDAO extends PagedDatabase<Follow, User> {
         PageIterable<FollowBean> pages = PageIterable.create(results2);
         pages.stream().limit(1).forEach(followersPage -> followersPage.items().forEach(f -> beans.add(f)));
 
-        //TODO: convert to return the list of aliases and then have the server ask the UserDAO for the users
+        //TODO: change so that no DAO needs to access another DAO; store the User information in the follow table too
         List<User> toReturn = new ArrayList<>();
         for (FollowBean curr : beans) {
             User follower = DynamoDAOFactory.getInstance().getUsersDAO().get(curr.getFollower_alias(), null).makeSecureUser();

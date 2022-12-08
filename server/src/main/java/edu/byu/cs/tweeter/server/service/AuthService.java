@@ -10,6 +10,7 @@ import edu.byu.cs.tweeter.model.domain.AuthToken;
 
 public class AuthService {
     public static boolean tokenIsValid(AuthToken token) throws ParseException {
+        //TODO: check the database to make sure the token actually exists in the DB
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy h:m");
 
         Date authDate = sdf.parse(token.getDatetime());
