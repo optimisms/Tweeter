@@ -32,7 +32,7 @@ public class PostStatusTask extends AuthenticatedTask {
     @Override
     protected void runTask() {
         try {
-            PostStatusRequest req = new PostStatusRequest(status);
+            PostStatusRequest req = new PostStatusRequest(getAuthToken(), status);
             PostStatusResponse resp = getServerFacade().postStatus(req, StatusService.POST_STATUS_URL_PATH);
 
             if (resp.isSuccess()) {

@@ -5,6 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -26,17 +27,20 @@ import edu.byu.cs.tweeter.server.dao.dynamo.S3;
 import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 
 public class UserService {
-    //TODO: add checking for authToken validity
     public GetUserResponse getUser(GetUserRequest request) {
         try {
             if (request.getAlias() == null) {
                 throw new RuntimeException("[BadRequest] Missing the user alias");
+            } else if (request.getToken() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have an authToken");
+            } else if (!AuthService.tokenIsValid(request.getToken())) {
+                throw new RuntimeException("[BadRequest] Request needs to have a valid authToken");
             }
 
             User user = getUserDAO().get(request.getAlias(), null).makeSecureUser();
 
             return new GetUserResponse(user);
-        } catch (DataAccessException | RuntimeException e) {
+        } catch (DataAccessException | RuntimeException | ParseException e) {
             e.printStackTrace();
             if (e.getMessage().startsWith("[BadRequest")) {
                 return new GetUserResponse(e.getMessage());

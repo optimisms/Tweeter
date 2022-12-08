@@ -35,7 +35,7 @@ public class GetUserTask extends AuthenticatedTask {
     @Override
     protected void runTask() {
         try {
-            GetUserRequest req = new GetUserRequest(alias);
+            GetUserRequest req = new GetUserRequest(getAuthToken(), alias);
             GetUserResponse resp = getServerFacade().getUser(req, UserService.GET_USER_URL_PATH);
 
             if (resp.isSuccess()) {

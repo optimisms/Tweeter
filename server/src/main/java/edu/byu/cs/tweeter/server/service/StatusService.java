@@ -1,5 +1,6 @@
 package edu.byu.cs.tweeter.server.service;
 
+import java.text.ParseException;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.Status;
@@ -13,19 +14,22 @@ import edu.byu.cs.tweeter.server.dao.PagedDatabase;
 import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 
 public class StatusService {
-    //TODO: update to include authToken checking
-
-    //TODO: update to include updating feed
     public PostStatusResponse postStatus(PostStatusRequest request) {
         try {
-            if(request.getStatus() == null) {
+            if (request.getStatus() == null) {
                 throw new RuntimeException("[BadRequest] Request needs to have a status to post");
+            } else if (request.getToken() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have an authToken");
+            } else if (!AuthService.tokenIsValid(request.getToken())) {
+                throw new RuntimeException("[BadRequest] Request needs to have a valid authToken");
             }
 
             getStoryDAO().add(request.getStatus());
+
+            //TODO: update to include updating feeds for real
             getFeedDAO().add(request.getStatus());
             return new PostStatusResponse();
-        } catch (DataAccessException e) {
+        } catch (DataAccessException | ParseException e) {
             e.printStackTrace();
             if (e.getMessage().startsWith("[BadRequest]")) {
                 return new PostStatusResponse(e.getMessage());
@@ -41,13 +45,17 @@ public class StatusService {
                 throw new RuntimeException("[BadRequest] Request needs to have a follower alias");
             } else if(request.getLimit() <= 0) {
                 throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
+            } else if (request.getAuthToken() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have an authToken");
+            } else if (!AuthService.tokenIsValid(request.getAuthToken())) {
+                throw new RuntimeException("[BadRequest] Request needs to have a valid authToken");
             }
 
             String lastStatusTimestamp = request.getLastItem() == null ? null : request.getLastItem().getDate();
             List<Status> feed = getFeedDAO().getPages(request.getTargetUserAlias(), request.getLimit(), lastStatusTimestamp, "getFeed");
 
             return new GetFeedResponse(feed, feed.size() == request.getLimit());
-        } catch (DataAccessException | RuntimeException e) {
+        } catch (DataAccessException | RuntimeException | ParseException e) {
             e.printStackTrace();
             if (e.getMessage().startsWith("[BadRequest]")) {
                 return new GetFeedResponse(e.getMessage());
@@ -63,13 +71,17 @@ public class StatusService {
                 throw new RuntimeException("[BadRequest] Request needs to have a followee alias");
             } else if(request.getLimit() <= 0) {
                 throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
+            } else if (request.getAuthToken() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have an authToken");
+            } else if (!AuthService.tokenIsValid(request.getAuthToken())) {
+                throw new RuntimeException("[BadRequest] Request needs to have a valid authToken");
             }
 
             String lastStatusTimestamp = request.getLastItem() == null ? null : request.getLastItem().getDate();
             List<Status> story = getStoryDAO().getPages(request.getTargetUserAlias(), request.getLimit(), lastStatusTimestamp, "getStory");
 
             return new GetStoryResponse(story, story.size() == request.getLimit());
-        } catch (DataAccessException | RuntimeException e) {
+        } catch (DataAccessException | RuntimeException | ParseException e) {
             e.printStackTrace();
             if (e.getMessage().startsWith("[BadRequest]")) {
                 return new GetStoryResponse(e.getMessage());

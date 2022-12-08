@@ -36,7 +36,7 @@ public abstract class GetCountTask extends AuthenticatedTask {
     @Override
     protected void runTask() {
         try {
-            CountRequest req = new CountRequest(targetUser);
+            CountRequest req = new CountRequest(getAuthToken(), targetUser);
             CountResponse resp = getCountResponse(req);
 
             if (resp.isSuccess()) {
