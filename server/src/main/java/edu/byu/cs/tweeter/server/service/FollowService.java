@@ -1,7 +1,9 @@
 package edu.byu.cs.tweeter.server.service;
 
+import java.text.ParseException;
 import java.util.List;
 
+import edu.byu.cs.tweeter.model.domain.AuthToken;
 import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.CountRequest;
@@ -55,6 +57,10 @@ public class FollowService {
                 throw new RuntimeException("[BadRequest] Request needs to have a follower");
             } else if (request.getFollowee() == null) {
                 throw new RuntimeException("[BadRequest] Request needs to have a followee");
+            } else if (request.getToken() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have an authToken");
+            } else if (!AuthService.tokenIsValid(request.getToken())) {
+                throw new RuntimeException("[BadRequest] Request needs to have a valid authToken");
             }
 
             Follow toAdd = new Follow(request.getFollower(), request.getFollowee());
@@ -70,7 +76,7 @@ public class FollowService {
             getUserDAO().update(followee);
 
             return new FollowResponse();
-        } catch (DataAccessException | RuntimeException e) {
+        } catch (DataAccessException | RuntimeException | ParseException e) {
             e.printStackTrace();
 
             if (e.getMessage().startsWith("[BadRequest]")) {
