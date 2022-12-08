@@ -10,7 +10,6 @@ import edu.byu.cs.tweeter.model.net.response.GetStoryResponse;
 import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
 import edu.byu.cs.tweeter.server.dao.PagedDatabase;
-import edu.byu.cs.tweeter.server.dao.dynamo.StatusDAO;
 import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 
 public class StatusService {
@@ -23,7 +22,8 @@ public class StatusService {
                 throw new RuntimeException("[BadRequest] Request needs to have a status to post");
             }
 
-            getNewStatusDAO().add(request.getStatus());
+            getStoryDAO().add(request.getStatus());
+            getFeedDAO().add(request.getStatus());
             return new PostStatusResponse();
         } catch (DataAccessException e) {
             e.printStackTrace();
@@ -35,14 +35,26 @@ public class StatusService {
         }
     }
 
-    //TODO: migrate below to DynamoDB
     public GetFeedResponse getFeed(PagedRequest<Status> request) {
-        if(request.getTargetUserAlias() == null) {
-            throw new RuntimeException("[BadRequest] Request needs to have a follower alias");
-        } else if(request.getLimit() <= 0) {
-            throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
+        try {
+            if(request.getTargetUserAlias() == null) {
+                throw new RuntimeException("[BadRequest] Request needs to have a follower alias");
+            } else if(request.getLimit() <= 0) {
+                throw new RuntimeException("[BadRequest] Request needs to have a positive limit");
+            }
+
+            String lastStatusTimestamp = request.getLastItem() == null ? null : request.getLastItem().getDate();
+            List<Status> feed = getFeedDAO().getPages(request.getTargetUserAlias(), request.getLimit(), lastStatusTimestamp, "getFeed");
+
+            return new GetFeedResponse(feed, feed.size() == request.getLimit());
+        } catch (DataAccessException | RuntimeException e) {
+            e.printStackTrace();
+            if (e.getMessage().startsWith("[BadRequest]")) {
+                return new GetFeedResponse(e.getMessage());
+            } else {
+                return new GetFeedResponse("[Internal Server Error] " + e.getMessage());
+            }
         }
-        return getStatusDAO().getFeed(request);
     }
 
     public GetStoryResponse getStory(PagedRequest<Status> request) {
@@ -54,7 +66,7 @@ public class StatusService {
             }
 
             String lastStatusTimestamp = request.getLastItem() == null ? null : request.getLastItem().getDate();
-            List<Status> story = getNewStatusDAO().getPages(request.getTargetUserAlias(), request.getLimit(), lastStatusTimestamp, "getStory");
+            List<Status> story = getStoryDAO().getPages(request.getTargetUserAlias(), request.getLimit(), lastStatusTimestamp, "getStory");
 
             return new GetStoryResponse(story, story.size() == request.getLimit());
         } catch (DataAccessException | RuntimeException e) {
@@ -67,9 +79,6 @@ public class StatusService {
         }
     }
 
-    StatusDAO getStatusDAO() {
-        return new StatusDAO();
-    }
-    private PagedDatabase<Status, Status> getNewStatusDAO() { return DynamoDAOFactory.getInstance().getStoryDAO();
-    }
+    private PagedDatabase<Status, Status> getStoryDAO() { return DynamoDAOFactory.getInstance().getStoryDAO(); }
+    private PagedDatabase<Status, Status> getFeedDAO() { return DynamoDAOFactory.getInstance().getFeedDAO(); }
 }
