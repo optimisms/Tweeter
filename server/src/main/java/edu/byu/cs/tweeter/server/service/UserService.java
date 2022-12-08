@@ -106,7 +106,7 @@ public class UserService {
             byte[][] hashResults = hashPassword(request.getPassword(), registered.getHashSalt());
 
             if (!Arrays.equals(hashResults[0], registered.getHashedPassword())) {
-                return new AuthResponse("[BadRequest] Incorrect password; expected " + Arrays.toString(registered.getHashedPassword()) + " but got " + Arrays.toString(hashResults[0]));
+                return new AuthResponse("[BadRequest] Incorrect password");
             }
 
             AuthToken token = generateNewAuthToken();
