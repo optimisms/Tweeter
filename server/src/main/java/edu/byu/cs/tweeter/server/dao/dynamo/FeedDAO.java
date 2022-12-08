@@ -74,7 +74,7 @@ public class FeedDAO extends PagedDatabase<Status, Status> {
                 .build();
 
         QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
-                .queryConditional(QueryConditional.keyEqualTo(key)).scanIndexForward(true);
+                .queryConditional(QueryConditional.keyEqualTo(key)).scanIndexForward(false);
 
         if (isNonEmptyString(last_status_timestamp)) {
             Map<String, AttributeValue> startKey = new HashMap<>();
