@@ -3,10 +3,12 @@ package edu.byu.cs.tweeter.server.dao.dynamo;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
 import java.io.ByteArrayInputStream;
+import java.nio.file.Paths;
 import java.util.Base64;
 
 public class S3 {
@@ -20,7 +22,8 @@ public class S3 {
         String targetBucket = "hterry-cs-340-tweeter-profile-pics";
 
         //File name/key
-        String key = imageName + "_" + Math.random();
+        //TODO: add random number to the end of username
+        String path = Paths.get(imageName + ".jpg").toString();
 
         //Convert image to a byte array
         byte[] imageByteArray = Base64.getDecoder().decode(imageString);
@@ -29,15 +32,16 @@ public class S3 {
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(imageByteArray.length);
         //TODO: maybe change this to just image/* ?
-        metadata.setContentType("image/jpg");
+        metadata.setContentType("image/jpeg");
 
         //Create put request and upload image
         AmazonS3 client = AmazonS3ClientBuilder.standard().withRegion(Regions.DEFAULT_REGION).build();
-        PutObjectRequest req = new PutObjectRequest(targetBucket, key, new ByteArrayInputStream(imageByteArray), metadata);
+
+        PutObjectRequest req = new PutObjectRequest(targetBucket, path, new ByteArrayInputStream(imageByteArray), metadata).withCannedAcl(CannedAccessControlList.PublicRead);
         client.putObject(req);
 
         //Get image url
-        return s3.getUrl(targetBucket, imageName).toString();
+        return s3.getUrl(targetBucket, path).toString();
     }
 }
 
