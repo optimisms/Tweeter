@@ -19,6 +19,8 @@ public class StatusService {
         this.factory = factory;
     }
 
+    //TODO: add storing timestamps as longs so they sort correctly and then converting them to strings to display for the statuses
+
     public PostStatusResponse postStatus(PostStatusRequest request) {
         try {
             if (request.getStatus() == null) {
