@@ -30,6 +30,9 @@ dependencies {
     // https://mvnrepository.com/artifact/javax.xml.bind/jaxb-api
     implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.4.0-b180830.0359'
 
+    implementation 'com.amazonaws:aws-java-sdk-sqs:1.12.351'
+    implementation 'com.amazonaws:aws-lambda-java-events:3.11.0'
+
     // Testing related dependencies
 
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.8.2"

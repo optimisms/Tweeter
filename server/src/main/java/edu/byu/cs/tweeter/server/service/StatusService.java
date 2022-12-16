@@ -1,5 +1,7 @@
 package edu.byu.cs.tweeter.server.service;
 
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+
 import java.text.ParseException;
 import java.util.List;
 
@@ -33,8 +35,10 @@ public class StatusService {
 
             getStoryDAO().add(request.getStatus());
 
+            //Push to queue
+
             //TODO: update to include updating feeds for real
-            getFeedDAO().add(request.getStatus());
+            //getFeedDAO().add(request.getStatus());
             return new PostStatusResponse();
         } catch (DataAccessException | ParseException e) {
             e.printStackTrace();
@@ -44,6 +48,14 @@ public class StatusService {
                 return new PostStatusResponse("[Internal Server Error] " + e.getMessage());
             }
         }
+    }
+
+    public PostStatusResponse makeBatch(SQSEvent event) {
+        return null;
+    }
+
+    public PostStatusResponse writeBatch(SQSEvent event) {
+        return null;
     }
 
     public GetFeedResponse getFeed(PagedRequest<Status> request) {
