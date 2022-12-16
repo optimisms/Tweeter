@@ -56,6 +56,14 @@ public class StatusService {
         }
     }
 
+    public PostStatusResponse makeBatch(SQSEvent.SQSMessage msg) {
+
+
+        String queueUrl = "https://sqs.us-west-2.amazonaws.com/475409691518/write-batch-queue";
+
+        return null;
+    }
+
     private void pushToQueue(String queueUrl, String messageBody) {
         SendMessageRequest send_msg_request = new SendMessageRequest()
                 .withQueueUrl(queueUrl)
@@ -68,13 +76,7 @@ public class StatusService {
         System.out.println("Message ID: " + msgId);
     }
 
-    public PostStatusResponse makeBatch(SQSEvent event) {
-        String queueUrl = "https://sqs.us-west-2.amazonaws.com/475409691518/write-batch-queue";
-
-        return null;
-    }
-
-    public PostStatusResponse writeBatch(SQSEvent event) {
+    public PostStatusResponse writeBatch(SQSEvent.SQSMessage msg) {
         return null;
     }
 

@@ -4,13 +4,15 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 
-import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 import edu.byu.cs.tweeter.server.service.StatusService;
 
-public class WriteBatchHandler implements RequestHandler<SQSEvent, PostStatusResponse> {
+public class WriteBatchHandler implements RequestHandler<SQSEvent, Void> {
     @Override
-    public PostStatusResponse handleRequest(SQSEvent event, Context context) {
-        return new StatusService(DynamoDAOFactory.getInstance()).writeBatch(event);
+    public Void handleRequest(SQSEvent event, Context context) {
+        for (SQSEvent.SQSMessage msg : event.getRecords()) {
+            new StatusService(DynamoDAOFactory.getInstance()).writeBatch(msg);
+        }
+        return null;
     }
 }
