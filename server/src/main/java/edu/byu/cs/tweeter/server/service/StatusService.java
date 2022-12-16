@@ -1,6 +1,10 @@
 package edu.byu.cs.tweeter.server.service;
 
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.amazonaws.services.sqs.model.SendMessageResult;
 
 import java.text.ParseException;
 import java.util.List;
@@ -14,6 +18,7 @@ import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
 import edu.byu.cs.tweeter.server.dao.PagedDatabase;
 import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
+import edu.byu.cs.tweeter.server.net.JsonSerializer;
 
 public class StatusService {
     DAOFactory factory;
@@ -29,18 +34,19 @@ public class StatusService {
                 throw new RuntimeException("[BadRequest] Request needs to have a status to post");
             } else if (request.getToken() == null) {
                 throw new RuntimeException("[BadRequest] Request needs to have an authToken");
-            } else if (!AuthService.tokenIsValid(request.getToken())) {
-                throw new RuntimeException("[BadRequest] Request needs to have a valid authToken");
+                //TODO: uncomment this when ready to test w emulator
+//            } else if (!AuthService.tokenIsValid(request.getToken())) {
+//                throw new RuntimeException("[BadRequest] Request needs to have a valid authToken");
             }
 
             getStoryDAO().add(request.getStatus());
 
-            //Push to queue
+            String queueUrl = "https://sqs.us-west-2.amazonaws.com/475409691518/make-batch-queue";
+            String messageBody = JsonSerializer.serialize(request.getStatus());
+            pushToQueue(queueUrl, messageBody);
 
-            //TODO: update to include updating feeds for real
-            //getFeedDAO().add(request.getStatus());
             return new PostStatusResponse();
-        } catch (DataAccessException | ParseException e) {
+        } catch (DataAccessException e){// | ParseException e) {
             e.printStackTrace();
             if (e.getMessage().startsWith("[BadRequest]")) {
                 return new PostStatusResponse(e.getMessage());
@@ -50,7 +56,21 @@ public class StatusService {
         }
     }
 
+    private void pushToQueue(String queueUrl, String messageBody) {
+        SendMessageRequest send_msg_request = new SendMessageRequest()
+                .withQueueUrl(queueUrl)
+                .withMessageBody(messageBody);
+
+        AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
+        SendMessageResult send_msg_result = sqs.sendMessage(send_msg_request);
+
+        String msgId = send_msg_result.getMessageId();
+        System.out.println("Message ID: " + msgId);
+    }
+
     public PostStatusResponse makeBatch(SQSEvent event) {
+        String queueUrl = "https://sqs.us-west-2.amazonaws.com/475409691518/write-batch-queue";
+
         return null;
     }
 
