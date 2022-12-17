@@ -55,12 +55,12 @@ public class StoryDAO extends PagedDatabase<Status, Status> {
     //TODO: implement
     @Override
     public void update(Status toUpdate) {
-// Could implement if we had a way to edit statuses
+        // Could implement if we had a way to edit statuses
     }
 
     @Override
     public void delete(Status toDelete) {
-// Could implement if we had a way to delete statuses
+        // Could implement if we had a way to delete statuses
     }
 
     @Override
