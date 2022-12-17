@@ -1,14 +1,22 @@
 package edu.byu.cs.tweeter.server.dao.dynamo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
+import edu.byu.cs.tweeter.server.dao.UserDatabase;
 import edu.byu.cs.tweeter.server.dao.dynamo.DTO.UserBean;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteResult;
+import software.amazon.awssdk.enhanced.dynamodb.model.WriteBatch;
+import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
-public class UsersDAO extends DynamoDAO<User> {
+public class UsersDAO extends UserDatabase {
     private static final String TABLE_NAME = "tweeter_users";
     private static final String USER_ALIAS_ATTR = "user_alias";
 
@@ -78,5 +86,53 @@ public class UsersDAO extends DynamoDAO<User> {
     @Override
     public void delete(User toDelete) {
         //This would be necessary if we had a way to delete your account
+    }
+
+    @Override
+    public void addUserBatch(List<User> users) {
+        List<UserBean> batchToWrite = new ArrayList<>();
+        for (User u : users) {
+            UserBean dto = new UserBean(u);
+            batchToWrite.add(dto);
+
+            if (batchToWrite.size() == 25) {
+                // package this batch up and send to DynamoDB.
+                writeChunkOfUserDTOs(batchToWrite);
+                batchToWrite = new ArrayList<>();
+            }
+        }
+
+        // write any remaining
+        if (batchToWrite.size() > 0) {
+            // package this batch up and send to DynamoDB.
+            writeChunkOfUserDTOs(batchToWrite);
+        }
+    }
+
+    private void writeChunkOfUserDTOs(List<UserBean> batchToWrite) {
+        if (batchToWrite.size() > 25)
+            throw new RuntimeException("Too many followers to write");
+
+        DynamoDbTable<UserBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(UserBean.class));
+        WriteBatch.Builder<UserBean> writeBuilder = WriteBatch.builder(UserBean.class).mappedTableResource(table);
+
+        for (UserBean item : batchToWrite) {
+            writeBuilder.addPutItem(builder -> builder.item(item));
+        }
+        BatchWriteItemEnhancedRequest batchWriteItemEnhancedRequest = BatchWriteItemEnhancedRequest.builder()
+                .writeBatches(writeBuilder.build()).build();
+
+        try {
+            BatchWriteResult result = enhancedClient.batchWriteItem(batchWriteItemEnhancedRequest);
+
+//             just hammer dynamodb again with anything that didn't get written this time
+            if (result.unprocessedPutItemsForTable(table).size() > 0) {
+                writeChunkOfUserDTOs(result.unprocessedPutItemsForTable(table));
+            }
+
+        } catch (DynamoDbException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
     }
 }

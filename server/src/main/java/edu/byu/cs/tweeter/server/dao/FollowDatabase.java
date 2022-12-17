@@ -12,4 +12,5 @@ public abstract class FollowDatabase extends PagedDatabase<Follow, User> {
     }
 
     public abstract List<String> getAllFollowers(String followee_alias);
+    public abstract void addFollowersBatch(List<String> followers, String followTarget);
 }

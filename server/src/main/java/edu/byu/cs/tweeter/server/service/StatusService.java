@@ -32,6 +32,15 @@ public class StatusService {
 
     //TODO: add storing timestamps as longs so they sort correctly and then converting them to strings to display for the statuses
 
+    private void createDummyUsers() {
+        for (int i = 0; i < 100; i++) {
+
+        }
+    }
+    private void createUserAndFollow() {
+
+    }
+
     public PostStatusResponse postStatus(PostStatusRequest request) {
         try {
             if (request.getStatus() == null) {
