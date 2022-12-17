@@ -10,15 +10,18 @@ import java.text.ParseException;
 import java.util.List;
 
 import edu.byu.cs.tweeter.model.domain.Status;
+import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.model.net.request.PagedRequest;
 import edu.byu.cs.tweeter.model.net.request.PostStatusRequest;
 import edu.byu.cs.tweeter.model.net.response.GetFeedResponse;
 import edu.byu.cs.tweeter.model.net.response.GetStoryResponse;
 import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
+import edu.byu.cs.tweeter.server.dao.FollowDatabase;
 import edu.byu.cs.tweeter.server.dao.PagedDatabase;
 import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
 import edu.byu.cs.tweeter.server.net.JsonSerializer;
+import edu.byu.cs.tweeter.server.net.request.WriteBatchRequest;
 
 public class StatusService {
     DAOFactory factory;
@@ -56,12 +59,22 @@ public class StatusService {
         }
     }
 
-    public PostStatusResponse makeBatch(SQSEvent.SQSMessage msg) {
+    public void makeBatch(SQSEvent.SQSMessage msg) {
+        Status status = JsonSerializer.deserialize(msg.getBody(), Status.class);
+        User poster = status.getUser();
 
+        List<String> followers = getFollowDAO().getAllFollowers(poster.getAlias());
 
         String queueUrl = "https://sqs.us-west-2.amazonaws.com/475409691518/write-batch-queue";
-
-        return null;
+        for (int i = 0; i < followers.size(); i += 25) {
+            int batchSize = 25;
+            if (followers.size() - i < 25) {
+                batchSize = followers.size() - i;
+            }
+            WriteBatchRequest req = new WriteBatchRequest(followers.subList(i, i + batchSize), status);
+            String messageBody = JsonSerializer.serialize(req);
+            pushToQueue(queueUrl, messageBody);
+        }
     }
 
     private void pushToQueue(String queueUrl, String messageBody) {
@@ -76,8 +89,7 @@ public class StatusService {
         System.out.println("Message ID: " + msgId);
     }
 
-    public PostStatusResponse writeBatch(SQSEvent.SQSMessage msg) {
-        return null;
+    public void writeBatch(SQSEvent.SQSMessage msg) {
     }
 
     public GetFeedResponse getFeed(PagedRequest<Status> request) {
@@ -134,4 +146,5 @@ public class StatusService {
 
     private PagedDatabase<Status, Status> getStoryDAO() { return factory.getStoryDAO(); }
     private PagedDatabase<Status, Status> getFeedDAO() { return factory.getFeedDAO(); }
+    private FollowDatabase getFollowDAO() { return factory.getFollowDAO(); }
 }

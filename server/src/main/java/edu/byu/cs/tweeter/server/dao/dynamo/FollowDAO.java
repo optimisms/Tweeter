@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import edu.byu.cs.tweeter.model.domain.Follow;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
-import edu.byu.cs.tweeter.server.dao.PagedDatabase;
+import edu.byu.cs.tweeter.server.dao.FollowDatabase;
 import edu.byu.cs.tweeter.server.dao.dynamo.DTO.FollowBean;
 import edu.byu.cs.tweeter.server.dao.factory.DynamoDAOFactory;
 import software.amazon.awssdk.core.pagination.sync.SdkIterable;
@@ -24,7 +24,7 @@ import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
-public class FollowDAO extends PagedDatabase<Follow, User> {
+public class FollowDAO extends FollowDatabase {
     private static final String TABLE_NAME = "tweeter_following";
     public static final String INDEX_NAME = "tweeter_followers_index";
     private static final String FOLLOWER_ALIAS_ATTR = "follower_alias";
@@ -155,6 +155,37 @@ public class FollowDAO extends PagedDatabase<Follow, User> {
         for (FollowBean curr : beans) {
             User follower = DynamoDAOFactory.getInstance().getUsersDAO().get(curr.getFollower_alias(), null).makeSecureUser();
             toReturn.add(follower);
+        }
+        return toReturn;
+    }
+
+    @Override
+    public List<String> getAllFollowers(String followee_alias) {
+        DynamoDbIndex<FollowBean> index = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FollowBean.class)).index(INDEX_NAME);
+        Key key = Key.builder().partitionValue(followee_alias).build();
+
+        QueryEnhancedRequest.Builder requestBuilder = QueryEnhancedRequest.builder()
+                .queryConditional(QueryConditional.keyEqualTo(key)).scanIndexForward(true);
+
+//        if (isNonEmptyString(last_follower_alias)) {
+//            Map<String, AttributeValue> startKey = new HashMap<>();
+//            startKey.put(FOLLOWEE_ALIAS_ATTR, AttributeValue.builder().s(followee_alias).build());
+//            startKey.put(FOLLOWER_ALIAS_ATTR, AttributeValue.builder().s(last_follower_alias).build());
+//
+//            requestBuilder.exclusiveStartKey(startKey);
+//        }
+
+        QueryEnhancedRequest request = requestBuilder.build();
+
+        List<FollowBean> beans = new ArrayList<>();
+
+        SdkIterable<Page<FollowBean>> results2 = index.query(request);
+        PageIterable<FollowBean> pages = PageIterable.create(results2);
+        pages.stream().limit(1).forEach(followersPage -> followersPage.items().forEach(f -> beans.add(f)));
+
+        List<String> toReturn = new ArrayList<>();
+        for (FollowBean curr : beans) {
+            toReturn.add(curr.getFollower_alias());
         }
         return toReturn;
     }
