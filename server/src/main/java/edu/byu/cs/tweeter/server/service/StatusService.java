@@ -17,6 +17,7 @@ import edu.byu.cs.tweeter.model.net.response.GetFeedResponse;
 import edu.byu.cs.tweeter.model.net.response.GetStoryResponse;
 import edu.byu.cs.tweeter.model.net.response.PostStatusResponse;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
+import edu.byu.cs.tweeter.server.dao.FeedDatabase;
 import edu.byu.cs.tweeter.server.dao.FollowDatabase;
 import edu.byu.cs.tweeter.server.dao.PagedDatabase;
 import edu.byu.cs.tweeter.server.dao.factory.DAOFactory;
@@ -90,6 +91,11 @@ public class StatusService {
     }
 
     public void writeBatch(SQSEvent.SQSMessage msg) {
+        WriteBatchRequest req = JsonSerializer.deserialize(msg.getBody(), WriteBatchRequest.class);
+        List<String> followers = req.getFollowerAliases();
+        Status status = req.getStatus();
+
+        getFeedDAO().batchWrite(followers, status);
     }
 
     public GetFeedResponse getFeed(PagedRequest<Status> request) {
@@ -145,6 +151,6 @@ public class StatusService {
     }
 
     private PagedDatabase<Status, Status> getStoryDAO() { return factory.getStoryDAO(); }
-    private PagedDatabase<Status, Status> getFeedDAO() { return factory.getFeedDAO(); }
+    private FeedDatabase getFeedDAO() { return factory.getFeedDAO(); }
     private FollowDatabase getFollowDAO() { return factory.getFollowDAO(); }
 }

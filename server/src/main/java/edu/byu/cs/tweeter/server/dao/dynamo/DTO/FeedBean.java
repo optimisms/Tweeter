@@ -2,6 +2,7 @@ package edu.byu.cs.tweeter.server.dao.dynamo.DTO;
 
 import java.util.List;
 
+import edu.byu.cs.tweeter.model.domain.Status;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbSortKey;
@@ -17,6 +18,31 @@ public class FeedBean {
     public String timestamp;
     public List<String> urls;
     public List<String> mentions;
+
+    public FeedBean() {}
+
+    public FeedBean(Status status) {
+        this.receiver_alias = status.getReceiver_alias();
+        this.post = status.getPost();
+        this.sender_firstName = status.getUser().getFirstName();
+        this.sender_lastName = status.getUser().getLastName();
+        this.sender_alias = status.getUser().getAlias();
+        this.sender_imageUrl = status.getUser().getImageUrl();
+        this.timestamp = status.getDate();
+        this.urls = status.getUrls();
+        this.mentions = status.getMentions();
+    }
+    public FeedBean(String receiver_alias, Status status) {
+        this.receiver_alias = receiver_alias;
+        this.post = status.getPost();
+        this.sender_firstName = status.getUser().getFirstName();
+        this.sender_lastName = status.getUser().getLastName();
+        this.sender_alias = status.getUser().getAlias();
+        this.sender_imageUrl = status.getUser().getImageUrl();
+        this.timestamp = status.getDate();
+        this.urls = status.getUrls();
+        this.mentions = status.getMentions();
+    }
 
     @DynamoDbPartitionKey
     public String getReceiver_alias() {

@@ -9,17 +9,21 @@ import java.util.stream.Collectors;
 import edu.byu.cs.tweeter.model.domain.Status;
 import edu.byu.cs.tweeter.model.domain.User;
 import edu.byu.cs.tweeter.server.dao.DataAccessException;
-import edu.byu.cs.tweeter.server.dao.PagedDatabase;
+import edu.byu.cs.tweeter.server.dao.FeedDatabase;
 import edu.byu.cs.tweeter.server.dao.dynamo.DTO.FeedBean;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.Key;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteItemEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.BatchWriteResult;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryConditional;
 import software.amazon.awssdk.enhanced.dynamodb.model.QueryEnhancedRequest;
+import software.amazon.awssdk.enhanced.dynamodb.model.WriteBatch;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
-public class FeedDAO extends PagedDatabase<Status, Status> {
+public class FeedDAO extends FeedDatabase {
     private static final String TABLE_NAME = "tweeter_feed";
     private static final String RECEIVER_ALIAS_ATTR = "receiver_alias";
     private static final String TIMESTAMP_ATTR = "timestamp";
@@ -38,18 +42,7 @@ public class FeedDAO extends PagedDatabase<Status, Status> {
     public void add(Status toAdd) {
         DynamoDbTable<FeedBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FeedBean.class));
 
-        FeedBean newStatus = new FeedBean();
-
-        //TODO: update this to have the correct receiver alias
-        newStatus.setReceiver_alias("@aaaaa");
-        newStatus.setPost(toAdd.getPost());
-        newStatus.setSender_alias(toAdd.getUser().getAlias());
-        newStatus.setSender_firstName(toAdd.getUser().getFirstName());
-        newStatus.setSender_lastName(toAdd.getUser().getLastName());
-        newStatus.setSender_imageUrl(toAdd.getUser().getImageUrl());
-        newStatus.setTimestamp(toAdd.getDate());
-        newStatus.setUrls(toAdd.getUrls());
-        newStatus.setMentions(toAdd.getMentions());
+        FeedBean newStatus = new FeedBean(toAdd);
 
         table.putItem(newStatus);
     }
@@ -95,5 +88,44 @@ public class FeedDAO extends PagedDatabase<Status, Status> {
             toReturn.add(newStatus);
         }
         return toReturn;
+    }
+
+    @Override
+    public void batchWrite(List<String> followers, Status status) {
+        if(followers.size() > 25)
+            throw new RuntimeException("Too many followers to write");
+
+        DynamoDbTable<FeedBean> table = enhancedClient.table(TABLE_NAME, TableSchema.fromBean(FeedBean.class));
+        WriteBatch.Builder<FeedBean> writeBuilder = WriteBatch.builder(FeedBean.class).mappedTableResource(table);
+
+        List<FeedBean> beans = makeFeedDTOs(followers, status);
+
+        for (FeedBean item : beans) {
+            writeBuilder.addPutItem(builder -> builder.item(item));
+        }
+        BatchWriteItemEnhancedRequest batchWriteItemEnhancedRequest = BatchWriteItemEnhancedRequest.builder()
+                .writeBatches(writeBuilder.build()).build();
+
+        try {
+            BatchWriteResult result = enhancedClient.batchWriteItem(batchWriteItemEnhancedRequest);
+
+            // just hammer dynamodb again with anything that didn't get written this time
+//            if (result.unprocessedPutItemsForTable(table).size() > 0) {
+//                batchWrite(result.unprocessedPutItemsForTable(table));
+//            }
+
+        } catch (DynamoDbException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+    }
+
+    private List<FeedBean> makeFeedDTOs(List<String> followers, Status status) {
+        List<FeedBean> beans = new ArrayList<>();
+        for (String alias : followers) {
+            FeedBean bean = new FeedBean(alias, status);
+            beans.add(bean);
+        }
+        return beans;
     }
 }

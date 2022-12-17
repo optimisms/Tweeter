@@ -16,6 +16,8 @@ public class Status implements Serializable {
      * User who sent the status.
      */
     public User user;
+
+    public String receiver_alias;
     /**
      * String representation of the date/time at which the status was sent.
      */
@@ -40,12 +42,29 @@ public class Status implements Serializable {
         this.mentions = mentions;
     }
 
+    public Status(String post, User user, String receiver_alias, String datetime, List<String> urls, List<String> mentions) {
+        this.post = post;
+        this.user = user;
+        this.receiver_alias = receiver_alias;
+        this.datetime = datetime;
+        this.urls = urls;
+        this.mentions = mentions;
+    }
+
     public void setUser(User user) {
         this.user = user;
     }
 
     public User getUser() {
         return user;
+    }
+
+    public String getReceiver_alias() {
+        return receiver_alias;
+    }
+
+    public void setReceiver_alias(String receiver_alias) {
+        this.receiver_alias = receiver_alias;
     }
 
     public String getDate() {
